@@ -7,14 +7,16 @@ class Duck {
 public:
     void SetName(const std::string& name) {
         name_ = name;
+        duck_path_ = 0;
     }
     void Fly(int distance) {
-        // Напишите тело метода самостоятельно.
+        duck_path_ += distance;
+        std::cout << name_ << " flies " << distance << "km.  Total flight distance is " << duck_path_ << "km." << std::endl;
     }
 
 private:
     std::string name_;
-    // Добавьте члены-данные при необходимости.
+    int duck_path_ ;
 };
 
 int main() {
