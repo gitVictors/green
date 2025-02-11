@@ -15,6 +15,7 @@ public:
         std::cout << name_ << " flies "s << distance << "km. Total flight distance is "s << duck_path_ << "km."s << std::endl;
     }
 
+
 private:
     std::string name_;
     int duck_path_ ;
@@ -32,13 +33,16 @@ int main() {
     for (int i = 0; i < num_ducks ; ++i){
         Duck tmp_duck;
         std::string str;
-        std::cin >> str;
+        //std::cin >> str>> std::ws;
+        std::getline(std::cin, str);
         tmp_duck.SetName(str) ;
         duck_mss.push_back(tmp_duck);
     }
     
+
+
     //количество команд
-    std::cin >> num_commands;
+    std::cin >> num_commands >> std::ws;
 
     //выполнение
     for (int i = 0; i < num_commands; ++i) {
