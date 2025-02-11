@@ -52,10 +52,3 @@ int main() {
     }
 }
 
-// int duck_number, distance;
-// std::cin >> duck_number >> distance;
-// if (duck_number == 1) {
-//     duck1.Fly(distance);
-// } else if (duck_number == 2) {
-//     duck2.Fly(distance);
-// }
