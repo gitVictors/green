@@ -1,0 +1,11 @@
+
+{
+    "editor.tabSize": 4,                   // Настройка размера табуляции
+    "files.autoSave": "onWindowChange",
+    "files.associations": {
+        "cstdint": "cpp",
+        "string_view": "cpp"
+    } // Автосохранение файлов
+    //"eslint.enable": true,                 // Включение линтинга ESLint
+    //"prettier.requireConfig": true         // Применение Prettier только при наличии конфигурации
+}
