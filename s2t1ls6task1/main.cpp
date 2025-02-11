@@ -11,7 +11,7 @@ public:
     }
     void Fly(int distance) {
         duck_path_ += distance;
-        std::cout << name_ << " flies " << distance << "km.  Total flight distance is " << duck_path_ << "km." << std::endl;
+        std::cout << name_ << " flies " << distance << "km. Total flight distance is " << duck_path_ << "km." << std::endl;
     }
 
 private:
