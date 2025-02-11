@@ -55,11 +55,18 @@ private:
 };
 
 int main() {
+
+
     TV tv;
     tv.TurnOn();
     for (auto i = 0; i < 10; ++i) {
-        int channel = (71 * i) % MAX_CHANNEL + 1;
+        int channel = (641 * i) % MAX_CHANNEL + 1;
         assert(tv.SelectChannel(channel));
         assert(tv.GetCurrentChannel() == channel);
+        tv.TurnOff();
+        assert(!tv.IsTurnedOn());
+        tv.TurnOn();
+        assert(tv.GetCurrentChannel() == channel);
     }
+
 }
