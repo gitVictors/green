@@ -1,16 +1,31 @@
 #include <iostream>
 
 struct Vector2D {
-    // Допишите метод ScaleBy.
-
     double x = 0.0;
     double y = 0.0;
+    
+    void ScaleBy(double s) {
+        x *= s;
+        y *= s;
+    }
+
 };
 
 struct Point {
-    // Допишите методы OffsetBy и Subtract.
     double x = 0.0;
     double y = 0.0;
+    
+    void OffsetBy(Vector2D v){
+        x += v.x;
+        y += v.y;
+    }
+
+    Vector2D Subtract(Point p){
+        x -= p.x;
+        y -= p.y;
+        return { x, y };
+    }
+
 };
 
 int main() {
