@@ -1,0 +1,2 @@
+Ссылка на урок: [Спринт 3/20: Спринт 2 → Тема 1/10: Классы → Урок 7/11: Классы]( https://practicum.yandex.ru/trainer/cpp-plus-backend/lesson/3c581c15-5090-4722-b8ca-33e3a68ecd86/#dad19103-fbf9-4adb-9c19-73df72e03a3e )
+Вопрос: 
