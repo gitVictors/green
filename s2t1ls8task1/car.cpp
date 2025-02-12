@@ -83,7 +83,7 @@ bool Car::SetSpeed(int new_speed) {
     if (!engine_is_on_ || new_speed < 0) {
         return false;
     }
-    if (speed_ == new_speed) {
+    if (speed_ == new_speed) { 
         return true;
     }
     if (!IsSpeedValidForGear(new_speed, gear_)) {
