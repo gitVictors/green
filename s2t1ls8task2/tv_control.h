@@ -13,5 +13,6 @@ public:
     static bool ReadAndApplyCommand(TV& tv);
 
 private:
+    static void ClickTurnOn (TV& tv);
     static void Info(TV& tv);
 };

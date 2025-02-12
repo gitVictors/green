@@ -24,8 +24,16 @@ bool TVControl::ReadAndApplyCommand(TV& tv) {
     // Реализуйте обработку остальных команд.
     // ......................................
 
+    if (action == "TurnOn"s){
+        ClickTurnOn(tv);
+    }
+
     std::cout << "Unknown command"s << std::endl;
     return false;
+}
+
+void TVControl::ClickTurnOn (TV& tv){
+    tv.TurnOn();
 }
 
 void TVControl::Info(TV& tv) {
