@@ -65,4 +65,5 @@ private:
     bool engine_is_on_ = false;
     Gear gear_ = Gear::PARKED;
     int speed_ = 0;
+    Direction direction_ = Direction::STOPPED;
 };
