@@ -14,7 +14,7 @@ bool Car::TurnEngineOff() {
     return true;
 }
 
-bool Car::IsEngineOn() {
+bool Car::IsEngineOn() const {
     return engine_is_on_;
 }
 
@@ -32,11 +32,11 @@ bool Car::SetGear(Gear new_gear) {
     return true;
 }
 
-Gear Car::GetGear() {
+Gear Car::GetGear()const {
     return gear_;
 }
 
-int Car::GetSpeed() {
+int Car::GetSpeed() const{
     return speed_;
 }
 
@@ -54,7 +54,7 @@ bool Car::SetSpeed(int new_speed) {
     return true;
 }
 
-Direction Car::GetDirection() {
+Direction Car::GetDirection()const {
     if (gear_ == Gear::PARKED || speed_ == 0) {
         return Direction::STOPPED;
     }

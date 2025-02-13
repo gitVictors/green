@@ -27,7 +27,7 @@ public:
     bool TurnEngineOff();
 
     // Возвращает true, если двигатель автомобиля включён, и false — в противном случае.
-    bool IsEngineOn();
+    bool IsEngineOn() const;
 
     // Включает передачу new_gear. Возвращает true в случае успеха
     // и false, если переключиться не удалось.
@@ -39,10 +39,10 @@ public:
     bool SetGear(Gear new_gear);
 
     // Возвращает текущую передачу автомобиля.
-    Gear GetGear();
+    Gear GetGear()const;
 
     // Возвращает текущую скорость автомобиля.
-    int GetSpeed();
+    int GetSpeed()const;
 
     // Устанавливает текущую скорость автомобиля. Возвращает true, если желаемую скорость
     // удалось установить, и false — в противном случае.
@@ -53,7 +53,7 @@ public:
     bool SetSpeed(int new_speed);
 
     // Возвращает направление движения (вперёд, назад или стоит на месте).
-    Direction GetDirection();
+    Direction GetDirection()const ;
 
     // Проверяет возможность езды со скоростью speed при включённой передаче gear.
     static bool IsSpeedValidForGear(int speed, Gear gear);
