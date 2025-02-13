@@ -3,6 +3,8 @@
     "editor.tabSize": 4,                   // Настройка размера табуляции
     "files.autoSave": "onWindowChange",
     "files.associations": {
+        "*.h": "c",
+        "*.api": "c",
         "cstdint": "cpp",
         "string_view": "cpp",
         "istream": "cpp",
@@ -70,7 +72,19 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "ios": "cpp",
+        "xfacet": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocinfo": "cpp",
+        "xlocnum": "cpp",
+        "xmemory": "cpp",
+        "xmemory0": "cpp",
+        "xstddef": "cpp",
+        "xstring": "cpp",
+        "xtr1common": "cpp",
+        "xutility": "cpp"
     } // Автосохранение файлов
     //"eslint.enable": true,                 // Включение линтинга ESLint
     //"prettier.requireConfig": true         // Применение Prettier только при наличии конфигурации
