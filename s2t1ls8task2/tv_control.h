@@ -14,7 +14,7 @@ public:
 
 private:
     static void TurnOn (TV& tv);
-    static void ClickTurnOff (TV& tv);
-    static void ClickSelectChannel(TV& tv); 
+    static void TurnOff (TV& tv);
+    static void SelectChannel(TV& tv); 
     static void Info(TV& tv);
 };

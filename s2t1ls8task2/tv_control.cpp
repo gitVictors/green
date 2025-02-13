@@ -27,12 +27,12 @@ bool TVControl::ReadAndApplyCommand(TV& tv) {
     }
 
     if (action == "TurnOff"){
-        ClickTurnOff(tv);
+        TVControl::TurnOff(tv);
         return true;
     }
 
     if (action == "SelectChannel"s){
-        ClickSelectChannel(tv);
+        TVControl::SelectChannel(tv);
         return true;
     }
 
@@ -40,7 +40,7 @@ bool TVControl::ReadAndApplyCommand(TV& tv) {
     return false;
 }
 
-void TVControl::ClickTurnOff (TV& tv){
+void TVControl::TurnOff (TV& tv){
     tv.TurnOff();
     std::cout << "TV is turned off" << std::endl;
 }
@@ -50,7 +50,7 @@ void TVControl::TurnOn (TV& tv){
     std::cout << "Turning on"s << std::endl;
 }
 
-void TVControl::ClickSelectChannel (TV& tv) {
+void TVControl::SelectChannel (TV& tv) {
     int chnl = 0;
     if (!(std::cin >> chnl)) {
         std::cout << "Invalid argument"s << std::endl;
