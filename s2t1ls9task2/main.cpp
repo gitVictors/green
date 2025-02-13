@@ -52,7 +52,7 @@ public:
     // Возвращает разницу между текущим временем и other в секундах.
     // Предполагается, что оба момента происходят в одни сутки.
     // Текущее время не изменяется.
-    int Subtract(Time other) {
+    int Subtract(Time other) const{
         int diff = time_offset_ - other.time_offset_;
         //return (diff + SECONDS_PER_DAY) % SECONDS_PER_DAY; //если вдруг результат будет отрицательный 
         return diff;
