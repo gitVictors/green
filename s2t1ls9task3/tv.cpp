@@ -8,11 +8,11 @@ void TV::TurnOff() {
     is_turned_on_ = false;
 }
 
-bool TV::IsTurnedOn() {
+bool TV::IsTurnedOn() const{
     return is_turned_on_;
 }
 
-int TV::GetCurrentChannel() {
+int TV::GetCurrentChannel()const {
     return is_turned_on_ ? current_channel_ : 0;
 }
 
