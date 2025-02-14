@@ -8,7 +8,7 @@ using Number = double;
 
 class Calculator {
 
-    public:
+public :
     //. Заменяет текущий результат на число n.
     void Set(Number n);
 
@@ -43,4 +43,8 @@ class Calculator {
     //Возвращает текущее число, преобразовывая его в std::string функцией std::to_string.
     std::string GetNumberRepr() const;
 
+private :
+    Number number_= 0;
+    Number member_ = 0;
+    bool is_mem_load_ = false;
 };
