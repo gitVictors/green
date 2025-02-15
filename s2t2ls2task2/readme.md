@@ -1,0 +1,1 @@
+Ссылка на урок: [Спринт 3/17: Спринт 2 → Тема 1/10: Классы → Урок 9/11: Константные методы]( https://practicum.yandex.ru/trainer/cpp-plus-backend/lesson/6bbdc529-b1a4-45dd-9c48-b8fba41b69a2/#f3bd18fb-55aa-43c4-b8a3-bc338c8467b7 )
