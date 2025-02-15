@@ -8,7 +8,7 @@ int main() {
 
     Point p2{10, 20};
     assert(p2.x == 10);
-    assert(p2.y == 20);
+    assert(p2.y == 20); 
 
     // Этот код не должен компилироваться:
     // Point p3{10};
