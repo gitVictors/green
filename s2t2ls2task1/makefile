@@ -9,7 +9,7 @@ LDFLAGS =
 #-ljsoncpp -lws2_32 -lcrypto
 
 # Список исходных файлов
-SRCS = main.cpp tv.cpp
+SRCS = main.cpp 
 
 # Объектные файлы (меняем .cpp на .o)
 OBJS = $(SRCS:.cpp=.o)
