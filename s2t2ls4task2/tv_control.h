@@ -13,8 +13,10 @@ public:
 
 private:
     /* Приватные методы класса должны стать нестатическими и не принимать ссылку на tv. */
-    static void Info(const TV& tv);
-    static void TurnOn(TV& tv);
-    static void TurnOff(TV& tv);
-    static bool SelectChannel(TV& tv);
+    void Info(const TV& tv);
+    void TurnOn(TV& tv);
+    void TurnOff(TV& tv);
+    bool SelectChannel(TV& tv);
+    //Ссылка натв
+    TV& tv_;
 };
