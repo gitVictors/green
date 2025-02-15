@@ -1,8 +1,30 @@
 #pragma once
 
+#include <numeric>
+
 class Rational {
 public:
-    /* Напишите необходимые конструкторы. */
+    Rational () = default;
+
+    Rational (int numerator) {
+        numerator_ = numerator;
+    }
+
+    Rational (int numerator, int denominator){
+        if (denominator == 0 ) std::abort();
+
+        int var = std::gcd (numerator, denominator);
+        
+        numerator_ = numerator/var;
+        denominator_ = denominator/var; 
+
+        if (denominator_ < 0){
+            denominator_ *= -1; //делаем положительным
+            numerator_ *= -1;  //делаем отрицательным
+        }
+
+
+    }
 
     double AsDouble() const {
         return numerator_ * 1.0 / denominator_;
