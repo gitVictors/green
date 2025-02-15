@@ -42,7 +42,7 @@ public:
 
     robot.Go();
     */
-
+    //результат
     Robot (Logger lg):
     logger_(lg)
     {
