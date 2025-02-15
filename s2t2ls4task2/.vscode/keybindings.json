@@ -1,0 +1,43 @@
+
+
+[
+    /*
+    [
+    {
+        "key": "up",
+        "command": "cursorUp",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "down",
+        "command": "cursorDown",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "left",
+        "command": "cursorLeft",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "right",
+        "command": "cursorRight",
+        "when": "textInputFocus"
+    }
+]
+    */
+    
+    // "key": "ctrl+shift+b",             // Клавиши для вызова команды
+   {
+        "key": "alt+x",             // Клавиши для вызова команды
+        "command": "workbench.action.tasks.build"  // Команда для выполнения
+    },
+    {
+        "key": "ctrl+q",
+        "command": "workbench.action.terminal.new",
+         "when": "editorTextFocus"  
+    },
+    {
+        "key": "ctrl+shift+a",
+        "command": "workbench.action.nextEditor"
+    }
+]
