@@ -1,6 +1,7 @@
 #pragma once
 
 #include <numeric>
+#include <cstdlib>
 
 class Rational {
 public:
@@ -11,10 +12,11 @@ public:
     }
 
     Rational (int numerator, int denominator){
+
         if (denominator == 0 ) std::abort();
 
         int var = std::gcd (numerator, denominator);
-        
+
         numerator_ = numerator/var;
         denominator_ = denominator/var; 
 
