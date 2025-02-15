@@ -48,8 +48,10 @@ private:
 class Person {
 public:
     Person(const std::string& name, const std::string& surname, 
-           const Address& address)
-    // Проинициализируйте поля класса в списке инициализации.
+           const Address& address):
+           name_(name),
+           surname_(surname),
+           address_(address)
     {
     }
 
