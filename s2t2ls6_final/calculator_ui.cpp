@@ -7,6 +7,8 @@ bool CalculatorUI::Parse(std::istream& input) {
     Number operand;
     if (ReadNumber(input, operand)) {
         calc_.Set(operand);
+    }else {
+        return false;
     }
  
     calc_.Set(operand);
@@ -61,7 +63,7 @@ bool CalculatorUI::Parse(std::istream& input) {
         } else if (token == "q"s) {
             return true;
         } else {
-            err_ << "Error: Unknown token "s << token <<std::endl;
+            err_ << "Error: Unknown token \'"s << token << "\'"s <<std::endl;
             return false;
         }
     }
