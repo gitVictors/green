@@ -60,7 +60,7 @@ bool CalculatorUI::Parse(std::istream& input) {
                 break;
             }
             calc_.Set(right);
-        } else if (token == "q"s) {
+        } else if (token == "q"s) { 
             return true;
         } else {
             err_ << "Error: Unknown token \'"s << token << "\'"s <<std::endl;
