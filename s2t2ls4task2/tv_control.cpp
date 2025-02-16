@@ -4,25 +4,25 @@
 
 using namespace std::literals;
 
-bool TVControl::ReadAndApplyCommand(TV& tv) {
+bool TVControl::ReadAndApplyCommand() const{
     std::string action;
     if (!(std::cin >> action)) {
         std::cout << "Invalid command"s << std::endl;
         return false;
     }
     if (action == "TurnOn"s) {
-        TurnOn(tv);
+        TurnOn();
         return true;
     }
     if (action == "TurnOff"s) {
-        TurnOff(tv);
+        TurnOff();
         return true;
     }
     if (action == "SelectChannel"s) {
-        return SelectChannel(tv);
+        return SelectChannel();
     }
     if (action == "Info"s) {
-        Info(tv);
+        Info();
         return true;
     }
     if (action == "Exit"s) {
@@ -32,35 +32,35 @@ bool TVControl::ReadAndApplyCommand(TV& tv) {
     return false;
 }
 
-void TVControl::Info(const TV& tv) {
-    if (!tv.IsTurnedOn()) {
+void TVControl::Info() const {
+    if (!tv_.IsTurnedOn()) {
         std::cout << "TV is turned off"s << std::endl;
         return;
     }
-    std::cout << "TV is turned on. Channel is "s << tv.GetCurrentChannel() << std::endl;
+    std::cout << "TV is turned on. Channel is "s << tv_.GetCurrentChannel() << std::endl;
 }
 
-void TVControl::TurnOn(TV& tv) {
-    tv.TurnOn();
+void TVControl::TurnOn() const{
+    tv_.TurnOn();
     std::cout << "Turning on"s << std::endl;
 }
 
-void TVControl::TurnOff(TV& tv) {
-    tv.TurnOff();
+void TVControl::TurnOff()const {
+    tv_.TurnOff();
     std::cout << "TV is turned off"s << std::endl;
 }
 
-bool TVControl::SelectChannel(TV& tv) {
+bool TVControl::SelectChannel() const {
     int channel;
     if (!(std::cin >> channel)) {
         std::cout << "Invalid argument"s << std::endl;
         return false;
     }
-    if (tv.SelectChannel(channel)) {
+    if (tv_.SelectChannel(channel)) {
         std::cout << "Channel selected"s << std::endl;
         return true;
     }
-    if (!tv.IsTurnedOn()) {
+    if (!tv_.IsTurnedOn()) {
         std::cout << "TV is not turned on"s << std::endl;
     } else {
         std::cout << "Invalid channel"s << std::endl;
