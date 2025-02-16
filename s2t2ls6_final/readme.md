@@ -1,2 +1,2 @@
-Ссылка на урок: [Спринт 3/17: Спринт 2 → Тема 2/10: Классы. Продолжение → Урок 4/7: Ссылки внутри класса]( https://practicum.yandex.ru/trainer/cpp-plus-backend/lesson/2bda431e-3be8-4150-969b-09675845ff7c/#ed7e32bf-9867-4873-bb68-6ddc16dbe7db )
+Ссылка на урок: [Спринт 3/17: Спринт 2 → Тема 2/10: Классы. Продолжение → Урок 6/7: Финальное задание]( https://practicum.yandex.ru/trainer/cpp-plus-backend/lesson/9fe76840-144d-4b3d-b802-e37e5b3875c1/#a7402330-a3ff-4b23-a2b2-09a6216a056c )
 Вопрос: 
