@@ -60,5 +60,26 @@ Weekday Read(std::istream &day) {
 }
 
 int main() {
-    // Напишите код тут.
+    Weekday day_t;
+    char operation_t;
+    int var = 0;
+
+    day_t = Read (std::cin);
+    std::cin >> operation_t >> var;
+
+    switch (operation_t){
+    case '+' :
+        day_t = day_t + var;
+        break;
+    case '-':
+        day_t = day_t - var;
+        break;
+    default:
+        std::cout << "Wrong operation!";
+        break;
+    }
+
+     Print (std::cout, day_t);
+
+    return 0;
 }
