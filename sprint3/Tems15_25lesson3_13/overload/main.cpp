@@ -6,12 +6,35 @@ using Vector2I = std::pair<int, int>;
 
 Vector2I operator+(const Vector2I& vect1, const Vector2I& vect2)
 {
-    return
+    return Vector2I{vect1.first + vect2.first, vect1.second + vect2.second };
 }
-Vector2I operator-(const Vector2I& vect1, const Vector2I& vect2);
-Vector2I operator*(const Vector2I& vect, int value);
-void Print(std::ostream& str, const Vector2I& vect);
-Vector2I Read(std::istream& str);
+Vector2I operator-(const Vector2I& vect1, const Vector2I& vect2)
+{
+    return Vector2I{vect1.first - vect2.first, vect1.second - vect2.second};
+}
+Vector2I operator*(const Vector2I& vect, int value)
+{
+    return  Vector2I{ vect.first * value, vect.second * value };
+}
+
+void Print(std::ostream& str, const Vector2I& vect)
+{
+    str << "{"<< vect.first << "," << vect.second << "}";
+}
+
+Vector2I Read(std::istream& str)
+{
+    char openBrace, comma, closeBrace;
+    int first, second;
+
+    if (!(str >> openBrace >> first >> comma >> second >> closeBrace))
+    {
+        return {0, 0};
+    }
+
+    return Vector2I{first, second};
+
+}
 
 int main() {
     Vector2I point1;
