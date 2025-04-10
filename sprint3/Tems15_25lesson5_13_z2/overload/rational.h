@@ -47,7 +47,16 @@ inline std::istream& operator>>(std::istream& is, Rational& rt) {
 
 }
 
-inline std::istream& operator<<(std::istream& is, const Rational& rt) {
+inline std::istream& operator<<(std::istream& ot, const Rational& rt) {
 
+    if  ( rt.denominator_ == 0  || rt.denominator_ == 1 ){
+        ot << rt.numerator_ << " " << "/";
+    }
+    else {
+
+        ot <<
+    }
+
+    return ot;
 }
 
