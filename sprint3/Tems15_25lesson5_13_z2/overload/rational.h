@@ -11,6 +11,7 @@ public:
         : numerator_{numerator}, denominator_{denominator} {}
 
     friend inline std::istream& operator>>(std::istream& is, Rational& rt);
+    friend inline std::istream& operator<<(std::istream& is, const Rational& rt);
 
 private:
     int numerator_ = 0;
@@ -46,7 +47,7 @@ inline std::istream& operator>>(std::istream& is, Rational& rt) {
 
 }
 
+inline std::istream& operator<<(std::istream& is, const Rational& rt) {
 
-
-
+}
 
