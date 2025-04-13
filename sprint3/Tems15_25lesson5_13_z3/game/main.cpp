@@ -1,19 +1,16 @@
-#include <QCoreApplication>
+#include "game.h"
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication a(argc, argv);
+using namespace std::literals;
 
-    // Set up code that uses the Qt event loop here.
-    // Call a.quit() or a.exit() to quit the application.
-    // A not very useful example would be including
-    // #include <QTimer>
-    // near the top of the file and calling
-    // QTimer::singleShot(5000, &a, &QCoreApplication::quit);
-    // which quits the application after 5 seconds.
+int main() {
+    int board_size, scores;
+    std::cout << "Размер поля: "s << std::endl;
+    std::cin >> board_size;
+    std::cout << "Сколько очков нужно для победы: "s << std::endl;
+    std::cin >> scores;
 
-    // If you do not need a running Qt event loop, remove the call
-    // to a.exec() or use the Non-Qt Plain C++ Application template.
+    std::random_device rd;
 
-    return a.exec();
+    Game game{rd(), board_size, scores};
+    game.Start();
 }
