@@ -1,7 +1,8 @@
 #pragma once
 
 #include <iostream>
-
+#include <string>
+#include <algorithm>
 
 
 class Rational {
@@ -11,7 +12,7 @@ public:
         : numerator_{numerator}, denominator_{denominator} {}
 
     friend inline std::istream& operator>>(std::istream& is, Rational& rt);
-    friend inline std::istream& operator<<(std::istream& is, const Rational& rt);
+    friend inline  std::ostream& operator<<(std::ostream& os, const Rational& rt);
 
 private:
     int numerator_ = 0;
@@ -21,40 +22,48 @@ private:
 // Напишите здесь реализацию ввода-вывода.
 
 inline std::istream& operator>>(std::istream& is, Rational& rt) {
-    int var;
-    std::string div { '/' };
-    int denom;
+    //int num;
+    std::string div; // { '/' };
+    //int denom;
+    std::string line;
 
-    if (!(is >> var)){
-         is.setstate(std::ios::failbit);
-        return is;
+    std::getline(is, line);
+
+    line.erase( std::remove (line.begin(), line.end(), ' '), line.end());
+
+    size_t slash_pos = line.find('/');
+    if (slash_pos == std::string::npos){
+        rt.numerator_ = std::stoi(line);
+        rt.denominator_ = 1;
+    }else {
+        rt.numerator_= std::stoi (line.substr(0, slash_pos) );
+
+        if (line.size() > slash_pos+1)
+            rt.denominator_ = std::stoi (line.substr( slash_pos + 1 ));
+        else{
+            is.unget();
+            is.setstate(std::ios_base::failbit );
+        }
+
+        if (rt.denominator_ == 0){
+            rt.denominator_ = 1;
+            is.setstate(std::ios_base::failbit );
+        }
     }
-
-    if (!(is >> std::ws >> div )){
-        is.setstate(std::ios::failbit);
-        return is;
-    }
-
-    if (!(is >> denom) || (denom == 0)){
-        is.setstate(std::ios::failbit);
-        return is;
-    }
-
-    rt.numerator_ = var;
-    rt.denominator_ = denom;
 
     return is;
 
 }
 
-inline std::istream& operator<<(std::istream& ot, const Rational& rt) {
+inline std::ostream& operator<<(std::ostream& ot, const Rational& rt) {
 
-    if  ( rt.denominator_ == 0  || rt.denominator_ == 1 ){
-        ot << rt.numerator_ << " " << "/";
+    if  ( rt.denominator_ == 0  || rt.denominator_ == 1 )
+    {
+        ot << rt.numerator_; //<< " " << "/";
     }
-    else {
-
-        ot <<
+    else
+    {
+        ot << rt.numerator_ << " " << "/" << " " << rt.denominator_;
     }
 
     return ot;
