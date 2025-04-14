@@ -61,10 +61,14 @@ private:
 };
 
 // Напишите здесь перегрузки ввода и вывода для класса Grasshopper.
-inline Grasshopper& operator>>(Grasshopper& k, int hops){
-
+inline Grasshopper& operator>>(Grasshopper& k, int hops)
+{
+    k.pos_grasshopper_ = std::clamp(k.pos_grasshopper_ + hops, 0, k.board_size_ - 1);
+    return k;
 }
 
-inline Grasshopper& operator<<(Grasshopper& k, int hops){
-
+inline Grasshopper& operator<<(Grasshopper& k, int hops)
+{
+    k.pos_grasshopper_ = std::clamp(k.pos_grasshopper_ - hops, 0, k.board_size_ - 1);
+    return k;
 }

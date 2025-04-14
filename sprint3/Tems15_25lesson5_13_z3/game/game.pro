@@ -1,6 +1,8 @@
 QT = core
 
-CONFIG += c++17 cmdline
+CONFIG += c++20 cmdline
+
+#QMAKE_CXXFLAGS += -execution-charset:utf-8 -source-charset:utf-8
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
