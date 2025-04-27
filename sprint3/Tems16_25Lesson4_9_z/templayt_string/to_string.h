@@ -14,8 +14,14 @@ std::ostream& operator << (std::ostream &os, const std::pair<F, S> &p) {
 // Напишите функцию ToString для вывода вектора
 // любых элементов.
 template<typename T>
-std::string ToString(const std::vector<T>) {
-    std::ostringstream ost;
-
-
+std::string ToString(const std::vector<T>& vct) {
+    using namespace std::literals;
+    std::ostringstream os ;
+    for (size_t i = 0; i < vct.size(); ++i){
+        os << vct[i];
+        if ( i != (vct.size() - 1) ) {
+            os << ", ";
+        }
+    }
+    return os.str();
 }
