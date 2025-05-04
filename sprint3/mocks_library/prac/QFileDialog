@@ -1,0 +1,9 @@
+#pragma once
+
+#include <QFileDialog>
+
+namespace prac {
+
+using QFileDialog = ::QFileDialog;
+
+}

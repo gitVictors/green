@@ -1,0 +1,85 @@
+#pragma once
+
+#include <QTimer>
+#include <QMainWindow>
+#include <QObject>
+#include <QWidget>
+
+namespace prac {
+
+#ifndef PRAC_TESTS
+
+using QTimer = ::QTimer;
+
+#else
+
+class QTimer : public ::QObject{
+
+    Q_OBJECT
+
+public:
+    QTimer() {
+        last_created_ = this;
+    }
+
+    QTimer(QObject* w) : QObject(w){
+        last_created_ = this;
+    }
+    
+    QTimer(const QTimer&) = delete;
+
+    ~QTimer() override =default;
+
+    bool isOn() const {
+        return is_on_;
+    }
+
+    int getInterval() const {
+        return interval_;
+    }
+
+    void emitTimeout() {
+        emit timeout();
+    }
+
+    static QTimer* getLastCreated() {
+        return last_created_;
+    }
+
+public slots:
+    void start(int msec) {
+        is_on_ = true;
+        interval_ = msec;
+    }
+
+    void start() {
+        is_on_ = true;
+    }
+
+    void setInterval(int interval) {
+        interval_ = interval;
+    }
+
+    void setSingleShot(bool single_shot) {
+        single_shot_ = single_shot;
+    }
+
+    void stop() {
+        is_on_ = false;
+    }
+
+signals:
+    void timeout();
+
+private:
+    inline static QTimer* last_created_ = nullptr;
+
+    bool is_on_ = false;
+    bool single_shot_ = false;
+    int interval_ = 0;
+};
+
+
+#endif
+
+}  // namespace prac

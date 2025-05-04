@@ -1,0 +1,84 @@
+#pragma once
+
+#include <QPainter>
+#include <QColor>
+#include <QMainWindow>
+#include <QObject>
+#include <QPen>
+#include <QPointF>
+#include <QWidget>
+#include <QtWidgets/QMainWindow>
+
+#ifndef PRAC_TESTS
+
+namespace prac {
+using QPainter = ::QPainter;
+}
+
+#else
+
+namespace prac {
+
+inline double norm(const QPointF& point) {
+    return std::sqrt(point.x() * point.x() + point.y() * point.y());
+}
+
+struct Line {
+    Line(const QPointF& start, const QPointF& stop): start(start), stop(stop) {};
+
+    bool areSame(const Line& another) const
+    {
+        return ((this->start == another.start && this->stop == another.stop) ||
+                (this->start == another.stop  && this->stop == another.start));
+    };
+
+    bool operator==(const Line& another) const
+    {
+        return areSame(another);
+    }
+
+    QPointF start;
+    QPointF stop;
+};
+
+
+class QPainter : public ::QObject {
+
+    Q_OBJECT
+
+public:
+    QPainter() {
+        pens.clear();
+        lines.clear();
+    }
+
+    QPainter(QMainWindow* w) {
+        (void)w;
+        pens.clear();
+        lines.clear();
+    }
+
+    void setPen(::QPen pen) {
+        pens.push_back(pen);
+    }
+
+    void setPen(::QColor) {}
+
+    void setFont(::QFont) {}
+
+    void drawLine([[maybe_unused]] ::QPointF start,[[maybe_unused]]  ::QPointF stop) {
+        lines.emplace_back(start, stop);
+    }
+
+    void drawText(const QRectF &, int , const QString &, QRectF * = nullptr) {}
+
+public slots:
+signals:
+public:
+    inline static std::vector<::QPen> pens;
+    inline static std::vector<Line> lines;
+};
+
+}  // namespace prac
+
+#endif

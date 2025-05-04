@@ -1,0 +1,9 @@
+#pragma once
+
+#include <QMediaPlayer>
+
+namespace prac {
+
+using QMediaPlayer = ::QMediaPlayer;
+
+}
