@@ -19,7 +19,7 @@ MainWindow::~MainWindow () {
 
  //устанавливает вводимое число или результат вычисления в ui->l_result.
 void MainWindow::SetInputText(const std::string& text){
-    ui->l_result->setStyleSheet("");
+   // ui->l_result->setStyleSheet("");
     ui->l_result->setText(QString::fromStdString(text));
 }
 
@@ -149,6 +149,11 @@ void MainWindow::on_pushButton_div_clicked()
     operation_cb_(Operation::DIVISION);
 }
 
+void MainWindow::on_pushButton_power_clicked()
+{
+    operation_cb_(Operation::POWER);
+}
+
 //----Кнопрки управления ----------------------------------------------
 void MainWindow::on_pushButton_delete_clicked()
 {
@@ -198,4 +203,7 @@ void MainWindow::on_cmb_controller_currentIndexChanged(int index)
     ControllerType type = static_cast<ControllerType>(index);
     controller_cb_(type);  //SetControllerCallback
 }
+
+
+
 

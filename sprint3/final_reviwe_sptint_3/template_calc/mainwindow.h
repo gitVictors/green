@@ -79,7 +79,8 @@ private slots:
 
     void on_pushButton_div_clicked();
 
-   // void on_pushButton_power_clicked();
+
+    void on_pushButton_power_clicked();
 
     void on_pushButton_negative_clicked();
 
@@ -91,6 +92,8 @@ private slots:
 
 
     void on_cmb_controller_currentIndexChanged(int index);
+
+
 
 private:
     Ui::MainWindow* ui;

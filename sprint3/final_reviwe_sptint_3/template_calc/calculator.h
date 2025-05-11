@@ -102,7 +102,7 @@ public :
     };
 
     //Возвращает true, если ячейка памяти непустая.
-    bool HasMem() const{
+    bool GetHasMem() const{
         return member_.has_value() ;
     };
 
