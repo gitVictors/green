@@ -19,7 +19,10 @@ MainWindow::~MainWindow () {
 
  //устанавливает вводимое число или результат вычисления в ui->l_result.
 void MainWindow::SetInputText(const std::string& text){
-   // ui->l_result->setStyleSheet("");
+    ui->l_result->setStyleSheet("");
+    QFont font = ui->l_result->font(); // Получаем текущий шрифт
+    font.setPointSize(14);             // Устанавливаем размер 14
+    ui->l_result->setFont(font);       // Применяем шрифт
     ui->l_result->setText(QString::fromStdString(text));
 }
 
@@ -42,13 +45,13 @@ void MainWindow::SetMemText(const std::string& text) {
 // устанавливает текст экстра-кнопки. Если передано nullopt, то нужно скрыть экстра-кнопку.
 void MainWindow::SetExtraKey(const std::optional<std::string>& key) {
     if (key == "." ) {
-        ui->pushButton_dot->setText(".");
-        ui->pushButton_dot->setVisible(true);
+        ui->tb_extra->setText(".");
+        ui->tb_extra->setVisible(true);
     } else if (key == "/"){
-        ui->pushButton_dot->setText("/");
-        ui->pushButton_dot->setVisible(true);
+        ui->tb_extra->setText("/");
+        ui->tb_extra->setVisible(true);
     }else if (key == std::nullopt){
-        ui->pushButton_dot->setVisible(false);
+        ui->tb_extra->setVisible(false);
     }
 }
 
@@ -191,10 +194,10 @@ void MainWindow::on_pushButton_MemSave_clicked()
 }
 
 
-void MainWindow::on_pushButton_dot_clicked()
-{
-    control_cb_(ControlKey::EXTRA_KEY);
-}
+// void MainWindow::on_pushButton_dot_clicked()
+// {
+//     control_cb_(ControlKey::EXTRA_KEY);
+// }
 
 void MainWindow::on_cmb_controller_currentIndexChanged(int index)
 {
@@ -205,5 +208,8 @@ void MainWindow::on_cmb_controller_currentIndexChanged(int index)
 }
 
 
-
+void MainWindow::on_tb_extra_clicked()
+{
+    control_cb_(ControlKey::EXTRA_KEY);
+}
 

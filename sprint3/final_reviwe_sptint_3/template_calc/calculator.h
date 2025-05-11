@@ -95,10 +95,13 @@ public :
     };
 
     // Загружает число из памяти калькулятора в текущий результат.
-    void Load(){
-        if (member_.has_value()) {
-            number_ = member_.value();
-        }
+    std::optional<Error> Load(){
+        // if (member_.has_value()) {
+        //     number_ = member_.value();
+        //     return std::nullopt;
+        // }
+        number_ = *member_;
+        return std::nullopt;
     };
 
     //Возвращает true, если ячейка памяти непустая.
@@ -113,5 +116,5 @@ public :
 
 private :
     T number_= T{0};
-    std::optional<T> member_ = 0;
+    std::optional<T> member_ = std::nullopt;
 };

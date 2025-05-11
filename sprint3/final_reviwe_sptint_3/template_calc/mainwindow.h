@@ -67,7 +67,7 @@ private slots:
 
     void on_pushButton_delete_clicked();
 
-    void on_pushButton_dot_clicked();
+   // void on_pushButton_dot_clicked();
 
     void on_pushButton_add_clicked();
 
@@ -94,6 +94,8 @@ private slots:
     void on_cmb_controller_currentIndexChanged(int index);
 
 
+
+    void on_tb_extra_clicked();
 
 private:
     Ui::MainWindow* ui;
