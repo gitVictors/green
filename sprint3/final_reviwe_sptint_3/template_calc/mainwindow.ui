@@ -221,6 +221,45 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="0">
+     <widget class="QComboBox" name="cmb_controller">
+      <item>
+       <property name="text">
+        <string>double</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>float</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>uint8_t</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>int</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>int64_t</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>size_t</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Rational</string>
+       </property>
+      </item>
+     </widget>
+    </item>
    </layout>
   </widget>
  </widget>
