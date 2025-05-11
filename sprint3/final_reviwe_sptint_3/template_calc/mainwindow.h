@@ -13,7 +13,9 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
+
     Q_OBJECT
 
 public:
@@ -77,7 +79,7 @@ private slots:
 
     void on_pushButton_div_clicked();
 
-    void on_pushButton_power_clicked();
+   // void on_pushButton_power_clicked();
 
     void on_pushButton_negative_clicked();
 

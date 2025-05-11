@@ -41,10 +41,13 @@ void MainWindow::SetMemText(const std::string& text) {
 
 // устанавливает текст экстра-кнопки. Если передано nullopt, то нужно скрыть экстра-кнопку.
 void MainWindow::SetExtraKey(const std::optional<std::string>& key) {
-    if (key.has_value()) {
-        ui->pushButton_dot->setText(QString::fromStdString(key.value()));
+    if (key == "." ) {
+        ui->pushButton_dot->setText(".");
         ui->pushButton_dot->setVisible(true);
-    } else {
+    } else if (key == "/"){
+        ui->pushButton_dot->setText("/");
+        ui->pushButton_dot->setVisible(true);
+    }else if (key == std::nullopt){
         ui->pushButton_dot->setVisible(false);
     }
 }
@@ -192,7 +195,7 @@ void MainWindow::on_cmb_controller_currentIndexChanged(int index)
 {
     if (!controller_cb_) return;
 
-    ControllerType type = static_cast<ControllerType> (ui->cmb_controller->itemData(index).toInt());
+    ControllerType type = static_cast<ControllerType>(index);
     controller_cb_(type);  //SetControllerCallback
 }
 
