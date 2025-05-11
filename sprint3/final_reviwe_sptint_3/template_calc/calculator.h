@@ -90,18 +90,25 @@ public :
     };
 
     //Сохраняет текущий результат в ячейку памяти калькулятора.
-    void Save(){
+     std::optional<Error> Save(){
         member_ = number_;
+        return std::nullopt;
     };
 
     // Загружает число из памяти калькулятора в текущий результат.
-    std::optional<Error> Load(){
-        // if (member_.has_value()) {
-        //     number_ = member_.value();
-        //     return std::nullopt;
-        // }
-        number_ = *member_;
-        return std::nullopt;
+    // std::optional<T> Load() const{
+    //     // if (member_.has_value()) {
+    //     //     number_ = member_.value();
+    //     //     return std::nullopt;
+    //     // }
+    //     // number_ = *member_;
+    //     // return std::nullopt;
+    //     return member_;
+    // };
+
+    std::optional<T> Load() const {
+        number_ = member_.value();
+        return member_;
     };
 
     //Возвращает true, если ячейка памяти непустая.
