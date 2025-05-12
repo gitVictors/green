@@ -43,8 +43,10 @@ public :
 
     // Делит текущий результат на n.
     std::optional<Error> Div(T n) {
-        if (n == T{0}) {
-            return "Division by zero";
+        if constexpr (std::is_integral_v<T> || std::is_same_v<T, Rational> ){
+            if (n == T{0}) {
+                return "Division by zero";
+            }
         }
         number_ /= n;
         return std::nullopt;
@@ -95,19 +97,11 @@ public :
         return std::nullopt;
     };
 
-    // Загружает число из памяти калькулятора в текущий результат.
-    // std::optional<T> Load() const{
-    //     // if (member_.has_value()) {
-    //     //     number_ = member_.value();
-    //     //     return std::nullopt;
-    //     // }
-    //     // number_ = *member_;
-    //     // return std::nullopt;
-    //     return member_;
-    // };
 
-    std::optional<T> Load() const {
-        number_ = member_.value();
+    std::optional<T> Load() {
+        if (member_.has_value()){
+            number_ = member_.value();
+        }
         return member_;
     };
 

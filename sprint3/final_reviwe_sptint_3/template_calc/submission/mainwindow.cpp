@@ -203,6 +203,7 @@ void MainWindow::on_cmb_controller_currentIndexChanged(int index)
 {
     if (!controller_cb_) return;
 
+    control_cb_(ControlKey::MEM_CLEAR);
     ControllerType type = static_cast<ControllerType>(index);
     controller_cb_(type);  //SetControllerCallback
 }
