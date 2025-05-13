@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include "enums.h"
 
-#include <QDebug>
 #include <QString>
 
 MainWindow::MainWindow(QWidget* parent)
@@ -57,22 +56,30 @@ void MainWindow::SetExtraKey(const std::optional<std::string>& key) {
 
 //колбэк-функция. нужно вызывать при нажатии кнопки с цифрами от 0 до 9.
 void MainWindow::SetDigitKeyCallback(std::function<void(int key)> cb) {
-    digit_cb_ = cb;
+    if (cb){
+        digit_cb_ = cb;
+    }
 }
 
 //колбэк-функция. нужно вызывать при нажатии кнопки операции (сложение, вычитание, умножение, деление, возведение в степень).
 void MainWindow::SetProcessOperationKeyCallback(std::function<void(Operation key)> cb) {
-    operation_cb_ = cb;
+    if (cb) {
+        operation_cb_ = cb;
+    }
 }
 
 //колбэк-функция. нужно вызывать при нажатии других кнопок. Они перечислены в типе ControlKey в enums.h.
 void MainWindow::SetProcessControlKeyCallback(std::function<void(ControlKey key)> cb) {
-    control_cb_ = cb;
+    if (cb) {
+        control_cb_ = cb;
+    }
 }
 
 // колбэк-функция. нужно вызывать при изменении типа чисел.
 void MainWindow::SetControllerCallback(std::function<void(ControllerType controller)> cb) {
-    controller_cb_ = cb;
+    if (cb) {
+        controller_cb_ = cb;
+    }
 }
 
 //---- Нажатие 0-9 ---------------------------------------------
@@ -193,11 +200,6 @@ void MainWindow::on_pushButton_MemSave_clicked()
     control_cb_(ControlKey::MEM_SAVE);
 }
 
-
-// void MainWindow::on_pushButton_dot_clicked()
-// {
-//     control_cb_(ControlKey::EXTRA_KEY);
-// }
 
 void MainWindow::on_cmb_controller_currentIndexChanged(int index)
 {

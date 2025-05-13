@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstdint>
+#include <compare>
 
 class Rational {
 public :

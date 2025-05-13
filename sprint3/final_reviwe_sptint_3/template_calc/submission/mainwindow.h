@@ -1,10 +1,8 @@
 #pragma once
 
-#include "calculator.h"
 #include "enums.h"
 
 #include <QMainWindow>
-
 
 
 QT_BEGIN_NAMESPACE
@@ -67,8 +65,6 @@ private slots:
 
     void on_pushButton_delete_clicked();
 
-   // void on_pushButton_dot_clicked();
-
     void on_pushButton_add_clicked();
 
     void on_pushButton_result_clicked();
@@ -78,7 +74,6 @@ private slots:
     void on_pushButton_mult_clicked();
 
     void on_pushButton_div_clicked();
-
 
     void on_pushButton_power_clicked();
 
@@ -90,10 +85,7 @@ private slots:
 
     void on_pushButton_MemSave_clicked();
 
-
     void on_cmb_controller_currentIndexChanged(int index);
-
-
 
     void on_tb_extra_clicked();
 
