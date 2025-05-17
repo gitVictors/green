@@ -34,6 +34,20 @@ private slots:
 
     void on_list_widget_currentRowChanged(int currentRow);
 
+    void on_Button_Edit_clicked();
+
+    void on_erase_clicked();
+
+    void on_insert_clicked();
+
+    void on_minus_minus_clicked();
+
+    void on_plus_plus_clicked();
+
+    void on_begin_clicked();
+
+    void on_end_clicked();
+
 private:
     void ApplyModel();
     void ApplyIterator();

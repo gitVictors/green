@@ -9,6 +9,6 @@
 
 struct Model {
     using container = std::vector<std::string>;
-    container items;
-    container::iterator iterator = items.begin();
+    container items ;
+    container::iterator iterator = items.end();
 };

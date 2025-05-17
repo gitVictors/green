@@ -14,17 +14,7 @@
    <string>std::vector demo</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QListWidget" name="list_widget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>20</y>
-      <width>291</width>
-      <height>571</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>320</x>
@@ -163,7 +153,7 @@
      <item row="1" column="0" colspan="2">
       <spacer name="verticalSpacer">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -174,6 +164,16 @@
       </spacer>
      </item>
     </layout>
+   </widget>
+   <widget class="QListWidget" name="list_widget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>281</width>
+      <height>571</height>
+     </rect>
+    </property>
    </widget>
   </widget>
  </widget>
