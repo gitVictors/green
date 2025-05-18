@@ -1,19 +1,61 @@
-#include <QCoreApplication>
+#include "post.h"
+#include <cassert>
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication a(argc, argv);
+void TestEmpty() {
+    Post post;
+    assert(0 == post.GetUnderlying().capacity());
+    post.SetPostCapacity(10);
+    assert(0 == post.GetUnderlying().size());
+    assert(10 <= post.GetUnderlying().capacity());
+}
 
-    // Set up code that uses the Qt event loop here.
-    // Call a.quit() or a.exit() to quit the application.
-    // A not very useful example would be including
-    // #include <QTimer>
-    // near the top of the file and calling
-    // QTimer::singleShot(5000, &a, &QCoreApplication::quit);
-    // which quits the application after 5 seconds.
+void Test1() {
+    Post post;
+    assert(0 == post.GetUnderlying().capacity());
+    post.SetPostCapacity(10);
+    size_t free = post.GetFreePlace();
+    assert(10 <= free);
+    for (size_t n = 0; n < free; ++n) {
+        post.AddPackage("s1", "a1", 111);
+    }
+    assert(free == post.GetUnderlying().size());
+    assert(free == post.GetUnderlying().capacity());
+}
 
-    // If you do not need a running Qt event loop, remove the call
-    // to a.exec() or use the Non-Qt Plain C++ Application template.
+void TestChangeCapacityUp() {
+    Post post;
+    assert(0 == post.GetUnderlying().capacity());
+    post.SetPostCapacity(10);
+    size_t free = post.GetFreePlace();
+    for (size_t n = 0; n < free; ++n) {
+        post.AddPackage("s1", "a1", 111);
+    }
+    post.AddPackage("s1", "a1", 111);
+    assert(free == post.GetUnderlying().size());
+    assert(free == post.GetUnderlying().capacity());
 
-    return a.exec();
+    post.SetPostCapacity(free + 1);
+    post.AddPackage("s1", "a1", 111);
+    assert(free + 1 == post.GetUnderlying().size());
+}
+
+void TestChangeCapacityDown() {
+    Post post;
+    assert(0 == post.GetUnderlying().capacity());
+    post.SetPostCapacity(10);
+    for (size_t n = 0; n < 6; ++n) {
+        post.AddPackage("s1", "a1", 111);
+    }
+    assert(6 == post.GetUnderlying().size());
+
+    post.SetPostCapacity(5);
+
+    assert(5 == post.GetUnderlying().size());
+}
+
+int main() {
+    TestEmpty();
+    Test1();
+    TestChangeCapacityUp();
+    TestChangeCapacityDown();
 }
