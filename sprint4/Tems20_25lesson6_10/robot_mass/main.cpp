@@ -1,19 +1,41 @@
-#include <QCoreApplication>
+#include <iostream>
+#include "robot.h"
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication a(argc, argv);
+int ReadArg(const std::string& command) {
+    return std::stoi(command.substr(1));
+}
 
-    // Set up code that uses the Qt event loop here.
-    // Call a.quit() or a.exit() to quit the application.
-    // A not very useful example would be including
-    // #include <QTimer>
-    // near the top of the file and calling
-    // QTimer::singleShot(5000, &a, &QCoreApplication::quit);
-    // which quits the application after 5 seconds.
+int main() {
+    int w, h;
+    std::cin >> w >> h;
+    Robot robot(w, h);
 
-    // If you do not need a running Qt event loop, remove the call
-    // to a.exec() or use the Non-Qt Plain C++ Application template.
-
-    return a.exec();
+    std::string command;
+    while(std::cin >> command) {
+        switch(command[0]) {
+        case 'U':
+            robot.GoUp(ReadArg(command));
+            break;
+        case 'D':
+            robot.GoDown(ReadArg(command));
+            break;
+        case 'L':
+            robot.GoLeft(ReadArg(command));
+            break;
+        case 'R':
+            robot.GoRight(ReadArg(command));
+            break;
+        case 'B':
+            robot.PutBalls(ReadArg(command));
+            break;
+        case 'P':
+            robot.PrintField(std::cout);
+            break;
+        case 'Q':
+            return 0;
+        default:
+            std::cout << "Unknown command" << std::endl;
+            return 1;
+        }
+    }
 }
