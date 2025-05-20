@@ -102,7 +102,7 @@ void MainWindow::ApplyIterator(){
     }
 
 
-    ui->Button_Edit->setDisabled(vector_model_.iterator == vector_model_.items.end() );
+    ui->btn_edit->setDisabled(vector_model_.iterator == vector_model_.items.end() );
     ui->pop_back->setDisabled( vector_model_.iterator == vector_model_.items.end());
     ui->erase->setDisabled(vector_model_.iterator == vector_model_.items.end() );
     ui->plus_plus->setDisabled(vector_model_.iterator == vector_model_.items.end() );
@@ -112,7 +112,7 @@ void MainWindow::ApplyIterator(){
     if (vector_model_.iterator == vector_model_.items.end()) {
         ui->txt_elem_content->clear();
     } else {
-        ui->txt_elem_content->setText(QString::fromStdString(*vector_model_.iterator    ));
+        ui->txt_elem_content->setText( QString::fromStdString(*vector_model_.iterator) );
     }
 
 }
@@ -186,7 +186,7 @@ void MainWindow::on_list_widget_currentRowChanged(int currentRow)
 }
 
 
-void MainWindow::on_Button_Edit_clicked()
+void MainWindow::on_btn_edit_clicked()
 {
     QString txt_str =  ui->txt_elem_content->text();
 
@@ -276,7 +276,7 @@ void MainWindow:: on_btn_resize_clicked() //on_resize_clicked()
 
 void MainWindow::on_count_clicked()
 {
-    std::string txt_f = ui->txt_elem_count->text().toStdString();
+    std::string txt_f = ui->le_count->text().toStdString();
 
     int cnt_txt = std::count (vector_model_.items.begin(), vector_model_.items.end(), txt_f );
 
@@ -292,12 +292,32 @@ void MainWindow::on_btn_find_clicked()
     auto itrator = std::find (vector_model_.items.begin(), vector_model_.items.end(), txt_f);
 
     if (itrator == vector_model_.items.end())
-        return ;
+        vector_model_.iterator = vector_model_.items.end();
+    else
+        vector_model_.iterator = itrator;
 
-    int itr = std::distance( vector_model_.items.begin(), itrator);
-    ui->list_widget->setCurrentRow(itr); //выделение
+    ApplyIterator();
 
- //   ApplyIterator();
+}
 
+
+void MainWindow::on_min_element_clicked()
+{
+    auto itr = std::min_element(vector_model_.items.begin(), vector_model_.items.end());
+
+    vector_model_.iterator = itr;
+
+    ApplyIterator();
+
+}
+
+
+void MainWindow::on_max_element_clicked()
+{
+    auto itr = std::max_element(vector_model_.items.begin(), vector_model_.items.end());
+
+    vector_model_.iterator = itr;
+
+    ApplyIterator();
 }
 

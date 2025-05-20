@@ -33,7 +33,7 @@ private slots:
 
     void on_list_widget_currentRowChanged(int currentRow);
 
-    void on_Button_Edit_clicked();
+    void on_btn_edit_clicked();
 
     void on_erase_clicked();
 
@@ -55,6 +55,10 @@ private slots:
 
 
     void on_btn_find_clicked();
+
+    void on_min_element_clicked();
+
+    void on_max_element_clicked();
 
 private:
     void ApplyModel();

@@ -17,7 +17,7 @@ public:
         packages_.reserve(capacity);
         if (packages_.size() > capacity){
             packages_.resize(capacity);
-             packages_.shrink_to_fit();
+            packages_.shrink_to_fit();
         }
        // packages_.shrink_to_fit(); //максимально уменьшаем вместимостью оптимизируем.
     }
