@@ -31,7 +31,6 @@ private slots:
 
     void on_month_clicked();
 
-
     void on_list_widget_currentRowChanged(int currentRow);
 
     void on_Button_Edit_clicked();
@@ -48,11 +47,11 @@ private slots:
 
     void on_end_clicked();
 
-    //void on_reserve_clicked();
     void on_btn_reserve_clicked();
 
-   // void on_resize_clicked();
     void on_btn_resize_clicked();
+
+    void on_count_clicked();
 
 private:
     void ApplyModel();

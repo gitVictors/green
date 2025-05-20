@@ -109,8 +109,6 @@ void MainWindow::ApplyIterator(){
     ui->minus_minus->setDisabled( vector_model_.iterator == vector_model_.items.begin() );
 
 
-
-
     if (vector_model_.iterator == vector_model_.items.end()) {
         ui->txt_elem_content->clear();
     } else {
@@ -272,5 +270,16 @@ void MainWindow:: on_btn_resize_clicked() //on_resize_clicked()
     vector_model_.items.resize( txt_sz.toUInt() );
     vector_model_.iterator = vector_model_.items.begin();
     ApplyModel();
+}
+
+
+
+void MainWindow::on_count_clicked()
+{
+    std::string txt_f = ui->txt_elem_count->text().toStdString();
+
+    int cnt_txt = std::count (vector_model_.items.begin(), vector_model_.items.end(), txt_f );
+
+    ui->lbl_count->setText( QString::number(cnt_txt) );
 }
 

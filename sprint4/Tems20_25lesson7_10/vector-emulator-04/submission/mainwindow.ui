@@ -28,180 +28,220 @@
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>22</y>
-      <width>305</width>
+      <y>20</y>
+      <width>320</width>
       <height>571</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0" colspan="4">
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="1">
-        <widget class="QPushButton" name="Button_Edit">
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="7" column="0">
+        <widget class="QPushButton" name="minus_minus">
          <property name="text">
-          <string>Edit</string>
+          <string>--</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLineEdit" name="txt_elem_content"/>
+       <item row="5" column="0">
+        <widget class="QPushButton" name="clear">
+         <property name="text">
+          <string>clear</string>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="0" colspan="2">
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
+       <item row="0" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLineEdit" name="txt_elem_content"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="Button_Edit">
            <property name="text">
-            <string>Методы</string>
+            <string>Edit</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QPushButton" name="pop_back">
+         <item>
+          <widget class="QPushButton" name="pushButton">
            <property name="text">
-            <string>pop_back</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="push_back">
-           <property name="text">
-            <string>push_back</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QPushButton" name="erase">
-           <property name="text">
-            <string>erase</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="insert">
-           <property name="text">
-            <string>insert</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QPushButton" name="clear">
-           <property name="text">
-            <string>clear</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Итератор</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QPushButton" name="minus_minus">
-           <property name="text">
-            <string>--</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QPushButton" name="plus_plus">
-           <property name="text">
-            <string>++</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QPushButton" name="begin">
-           <property name="text">
-            <string>begin</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QPushButton" name="end">
-           <property name="text">
-            <string>end</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Заголовки</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
-          <widget class="QPushButton" name="days">
-           <property name="text">
-            <string>= дни недели</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="1">
-          <widget class="QPushButton" name="month">
-           <property name="text">
-            <string>= месяцы</string>
+            <string>find</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
+       <item row="10" column="0">
+        <widget class="QPushButton" name="days">
+         <property name="text">
+          <string>= дни недели</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Итератор</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Заголовки</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLineEdit" name="txt_elem_count"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="count">
+           <property name="text">
+            <string>count</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lbl_count">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
+        <widget class="QPushButton" name="pop_back">
+         <property name="text">
+          <string>pop_back</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QPushButton" name="begin">
+         <property name="text">
+          <string>begin</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="push_back">
+         <property name="text">
+          <string>push_back</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="insert">
+         <property name="text">
+          <string>insert</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QPushButton" name="end">
+         <property name="text">
+          <string>end</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Методы</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QPushButton" name="plus_plus">
+         <property name="text">
+          <string>++</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QPushButton" name="erase">
+         <property name="text">
+          <string>erase</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QPushButton" name="month">
+         <property name="text">
+          <string>= месяцы</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
-     <item row="1" column="2">
+     <item row="1" column="0">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>258</width>
+         <height>158</height>
         </size>
        </property>
       </spacer>
      </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>capasity():</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QLineEdit" name="txt_capacity"/>
-     </item>
-     <item row="2" column="3">
-      <widget class="QPushButton" name="btn_reserve">
-       <property name="focusPolicy">
-        <enum>Qt::TabFocus</enum>
-       </property>
-       <property name="text">
-        <string>reserve</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>size():</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="2">
-      <widget class="QLineEdit" name="txt_size"/>
-     </item>
-     <item row="3" column="3">
-      <widget class="QPushButton" name="btn_resize">
-       <property name="focusPolicy">
-        <enum>Qt::TabFocus</enum>
-       </property>
-       <property name="text">
-        <string>resize</string>
-       </property>
-      </widget>
+     <item row="2" column="0">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>capasity():</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_capacity"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_reserve">
+           <property name="focusPolicy">
+            <enum>Qt::TabFocus</enum>
+           </property>
+           <property name="text">
+            <string>reserve</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>size():</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_size"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_resize">
+           <property name="focusPolicy">
+            <enum>Qt::TabFocus</enum>
+           </property>
+           <property name="text">
+            <string>resize</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
