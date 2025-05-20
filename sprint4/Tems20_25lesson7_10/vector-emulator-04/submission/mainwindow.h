@@ -53,6 +53,9 @@ private slots:
 
     void on_count_clicked();
 
+
+    void on_btn_find_clicked();
+
 private:
     void ApplyModel();
     void ApplyIterator();

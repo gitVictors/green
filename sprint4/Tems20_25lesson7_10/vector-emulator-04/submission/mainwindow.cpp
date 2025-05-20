@@ -283,3 +283,21 @@ void MainWindow::on_count_clicked()
     ui->lbl_count->setText( QString::number(cnt_txt) );
 }
 
+
+
+void MainWindow::on_btn_find_clicked()
+{
+    std::string txt_f =  ui->txt_elem_content->text().toStdString();
+
+    auto itrator = std::find (vector_model_.items.begin(), vector_model_.items.end(), txt_f);
+
+    if (itrator == vector_model_.items.end())
+        return ;
+
+    int itr = std::distance( vector_model_.items.begin(), itrator);
+    ui->list_widget->setCurrentRow(itr); //выделение
+
+ //   ApplyIterator();
+
+}
+
