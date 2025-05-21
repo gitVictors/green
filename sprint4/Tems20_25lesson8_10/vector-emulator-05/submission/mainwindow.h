@@ -24,11 +24,11 @@ public:
 
 private slots:
 
-    void on_push_back_clicked();
+    void on_btn_push_back_clicked();
 
     void on_clear_clicked();
 
-    void on_pop_back_clicked();
+    void on_btn_pop_back_clicked();
 
     void on_days_clicked();
 

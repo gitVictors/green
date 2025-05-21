@@ -61,7 +61,7 @@ void MainWindow::ApplyModel() {
 
 
 
-    ui->pop_back->setDisabled(vector_model_.items.size() == 0);
+    ui->btn_pop_back->setDisabled(vector_model_.items.size() == 0);
 
     if (!vector_model_.items.empty())
         ui->txt_size->setText( QString::number( vector_model_.items.size() ) );
@@ -105,7 +105,7 @@ void MainWindow::ApplyIterator(){
 
 
     ui->btn_edit->setDisabled(vector_model_.iterator == vector_model_.items.end() );
-    ui->pop_back->setDisabled( vector_model_.iterator == vector_model_.items.end());
+    ui->btn_pop_back->setDisabled( vector_model_.iterator == vector_model_.items.end());
     ui->erase->setDisabled(vector_model_.iterator == vector_model_.items.end() );
     ui->plus_plus->setDisabled(vector_model_.iterator == vector_model_.items.end() );
     ui->minus_minus->setDisabled( vector_model_.iterator == vector_model_.items.begin() );
@@ -119,7 +119,7 @@ void MainWindow::ApplyIterator(){
 
 }
 
-void MainWindow::on_push_back_clicked()
+void MainWindow::on_btn_push_back_clicked()
 {
     QString txt = ui->txt_elem_content->text();
 
@@ -140,7 +140,7 @@ void MainWindow::on_clear_clicked()
 }
 
 
-void MainWindow::on_pop_back_clicked()
+void MainWindow::on_btn_pop_back_clicked()
 {
     vector_model_.items.pop_back();
     vector_model_.iterator = vector_model_.items.begin();
