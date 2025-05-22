@@ -1,0 +1,31 @@
+#pragma once
+
+#include <QTime>
+#include <QObject>
+#include <QString>
+
+namespace prac {
+
+#ifndef PRAC_TESTS
+
+using QTime = ::QTime;
+
+#else
+
+class QTime : public ::QTime {
+public:
+    using ::QTime::QTime;
+    QTime() = default;
+
+    ~QTime() = default;
+
+    static QTime& currentTime() {
+        static QTime time;
+        return time;
+    }
+};
+
+
+#endif
+
+}  // namespace prac
