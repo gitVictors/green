@@ -22,8 +22,6 @@ struct SignalData {
     double cycle;           // Скважность меандра.
 };
 
-inline void ApplyDecayAndAttack(std::vector<int16_t>& signal,
-                                size_t max_length);
 
 inline void ReplicateSignal(std::vector<int16_t>& signal, size_t desired_length) {
 
