@@ -130,6 +130,14 @@ void MainWindow::CreateSignal() {
     // 3. Постройте сигнал, используя функцию GenerateSignal
     //    из файла signal-processing.h и сохраните его в поле data_.
     // 4. Перерисуйте окно, вызвав repaint().
+
+    auto signal_data = GetSignalData();
+    if (!signal_data) return;
+
+    data_ = GenerateSignal(*signal_data);
+
+    repaint();
+
 }
 
 void MainWindow::on_btn_play_clicked() {
@@ -138,4 +146,24 @@ void MainWindow::on_btn_play_clicked() {
     // 2. Примените к копии ApplyDecayAndAttack с параметром 12000.
     // 3. Добавьте в конец 1200 нулевых отсчётов используя std::fill_n.
     // 4. Проиграйте, используя player_.Play.
+
+    if (data_.empty()) return;
+
+    auto signal_data = GetSignalData();
+    if (!signal_data) return;
+
+    // Создаем копию сигнала
+    std::vector<int16_t> signal_copy = data_;
+
+    // Применяем атаку и затухание
+     ApplyDecayAndAttack(signal_copy, 12000);
+
+    // // Добавляем нулевые отсчеты в конец
+    // std::fill_n(std::back_inserter(signal_copy), 1, 0);
+    // std::fill_n(signal_copy.begin(), 1, 0);
+
+     signal_copy.insert(signal_copy.end(), 12000 , 0);
+
+    // Проигрываем
+    player_.Play(signal_copy);
 }
