@@ -162,7 +162,7 @@ void MainWindow::on_btn_play_clicked() {
     // std::fill_n(std::back_inserter(signal_copy), 1, 0);
     // std::fill_n(signal_copy.begin(), 1, 0);
 
-     signal_copy.insert(signal_copy.end(), 12000 , 0);
+     signal_copy.insert(signal_copy.end(), 1200 , 0);
 
     // Проигрываем
     player_.Play(signal_copy);
