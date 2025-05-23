@@ -1,0 +1,45 @@
+#pragma once
+
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QObject>
+#include <QString>
+#include <iostream>
+
+namespace prac {
+
+#ifndef PRAC_TESTS
+
+using QInputDialog = ::QInputDialog;
+
+#else
+
+class QInputDialog : public ::QInputDialog {
+public:
+    using ::QInputDialog::QInputDialog;
+    QInputDialog() = default;
+
+    ~QInputDialog() override = default;
+
+    static void setInput(const QString& new_input)
+    {
+        input = new_input;
+    }
+
+
+    static QString getText([[maybe_unused]] QWidget *parent,
+                           [[maybe_unused]] const QString &title,
+                           [[maybe_unused]] const QString &label)
+    {
+        return input;
+    }
+
+private:
+    static inline QString input {"default input"};
+
+};
+
+
+#endif
+
+}  // namespace prac

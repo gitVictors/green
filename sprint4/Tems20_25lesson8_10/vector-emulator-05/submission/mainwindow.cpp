@@ -352,6 +352,7 @@ void MainWindow::on_btn_unique_clicked()
     if (std::is_sorted(vector_model_.items.begin(), vector_model_.items.end())) {
         auto last = std::unique(vector_model_.items.begin(), vector_model_.items.end());
         vector_model_.items.erase(last, vector_model_.items.end());
+        vector_model_.iterator = vector_model_.items.begin();
         ApplyModel(); // Обновляем отображение
     } else {
         return;
