@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>339</width>
+    <height>274</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Моя Фильмотека</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="4" column="0">
+     <widget class="QCheckBox" name="chb_is_done">
+      <property name="text">
+       <string>Просмотрен</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Жанр</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="2">
+     <widget class="QComboBox" name="cb_list_done">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Рейтинг</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QLineEdit" name="le_name"/>
+    </item>
+    <item row="1" column="1" rowspan="2" colspan="2">
+     <widget class="QComboBox" name="cb_genre">
+      <item>
+       <property name="text">
+        <string>Комедия</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Боевик</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Драма</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Сказка</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Мультфильм</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Ужасы</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="3">
+     <widget class="QPushButton" name="pb_add">
+      <property name="text">
+       <string>Добавить / Редактировать</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0" colspan="2">
+     <widget class="QLabel" name="label_5">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Уже просмотрен:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Название фильма:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="8" column="2">
+     <widget class="QComboBox" name="cb_list_wait">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1" colspan="2">
+     <widget class="QDoubleSpinBox" name="dsb_rating"/>
+    </item>
+    <item row="8" column="0" colspan="2">
+     <widget class="QLabel" name="label_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Надо посмотреть:</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
