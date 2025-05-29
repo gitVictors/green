@@ -44,6 +44,10 @@ private slots:
 
   //  void on_btn_reserve_clicked();
 
+    // void on_pop_back_clicked(bool checked);
+
+    // void on_pop_back_clicked();
+
     void on_btn_push_back_clicked();
 
     void on_list_widget_currentRowChanged(int currentRow);
@@ -79,9 +83,7 @@ private slots:
 
     void on_btn_push_front_clicked();
 
-    // void on_pop_back_clicked(bool checked);
 
-   // void on_pop_back_clicked();
 
     void on_push_back_clicked();
 

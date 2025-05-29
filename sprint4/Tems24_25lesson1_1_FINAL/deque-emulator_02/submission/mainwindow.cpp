@@ -12,6 +12,7 @@
 #include <random>   // со случайными числами
 #include <QInputDialog> // Для использования QInputDialog в slots
 #include <deque>
+#include <algo.h>
 
 using namespace std::literals ;
 
@@ -128,45 +129,15 @@ void MainWindow::on_btn_push_back_clicked()
 }
 
 
-// void MainWindow::on_clear_clicked()
-// {
-//     deque_model_.items.clear();
-//     deque_model_.iterator = deque_model_.items.begin();
-//     ApplyModel();
-// }
-
-
-// void MainWindow::on_btn_pop_back_clicked()
-// {
-//     vector_model_.items.pop_back();
-//     vector_model_.iterator = vector_model_.items.begin();
-//     ApplyModel();
-// }
-
-
-// void MainWindow::on_days_clicked()
-// {
-//     vector_model_.items = days_of_week;
-//     vector_model_.iterator = vector_model_.items.begin();
-//     ApplyModel();
-
-// }
-
-
-// void MainWindow::on_month_clicked()
-// {
-//     vector_model_.items = months_of_year;
-//     vector_model_.iterator = vector_model_.items.begin();
-//     ApplyModel();
-// }
-
 
 
 void MainWindow::on_list_widget_currentRowChanged(int currentRow)
 {
 
 
-    if (currentRow < 0) return;
+    //if (currentRow < 0) return;
+
+    currentRow = std::clamp(currentRow, 0, (int)deque_model_.items.size());
 
     if (currentRow >= static_cast<int>(deque_model_.items.size())) {
         deque_model_.iterator = deque_model_.items.end();
@@ -187,72 +158,6 @@ void MainWindow::on_btn_edit_clicked()
     ApplyModel();
 }
 
-
-// void MainWindow::on_erase_clicked()
-// {
-//     if (deque_model_.iterator != deque_model_.items.end()) {
-//         deque_model_.items.erase(deque_model_.iterator);
-//         deque_model_.iterator = deque_model_.items.begin();
-//     }
-
-//     ApplyModel(); // Полное обновление, так как изменился контейнер
-// }
-
-
-// void MainWindow::on_insert_clicked()
-// {
-//     std::string new_item = ui->txt_elem_content->text().toStdString();
-//     if (!new_item.empty()) {
-//         deque_model_.items.insert(deque_model_.iterator, new_item);
-//         deque_model_.iterator = deque_model_.items.begin();
-//     }
-//     ApplyModel();
-// }
-
-
-// void MainWindow::on_minus_minus_clicked()
-// {
-//     if (vector_model_.iterator != vector_model_.items.begin()){
-//         --vector_model_.iterator;
-//         ui->txt_elem_content->setText( QString::fromStdString(*vector_model_.iterator) );
-//     }
-//     ApplyIterator();
-// }
-
-
-// void MainWindow::on_plus_plus_clicked()
-// {
-//     if (vector_model_.iterator != vector_model_.items.end() ){
-//         ++vector_model_.iterator;
-//         if (vector_model_.iterator != vector_model_.items.end())
-//             ui->txt_elem_content->setText( QString::fromStdString(*vector_model_.iterator) );
-//     }
-//     ApplyIterator();
-// }
-
-
-// void MainWindow::on_begin_clicked()
-// {
-//     vector_model_.iterator = vector_model_.items.begin();
-//     ApplyIterator();
-// }
-
-
-// void MainWindow::on_end_clicked()
-// {
-//     vector_model_.iterator =  vector_model_.items.end();
-//     ApplyIterator();
-// }
-
-
-// void MainWindow::  on_btn_reserve_clicked()  //on_reserve_clicked()
-// {
-//     QString txt_rsz = ui->txt_capacity->text();
-
-//     deque_model_.items.reserve( txt_rsz.toUInt() );
-//     deque_model_.iterator = deque_model_.items.begin();
-//     ApplyModel();
-// }
 
 
 void MainWindow:: on_btn_resize_clicked() //on_resize_clicked()
@@ -316,17 +221,37 @@ void MainWindow::on_max_element_clicked()
 
 void MainWindow::on_btn_sort_clicked()
 {
-    std::sort (deque_model_.items.begin(), deque_model_.items.end());
-    ApplyModel();
+   // std::sort (deque_model_.items.begin(), deque_model_.items.end());
+    // auto comparator = [](const std::string& s1, const std::string& s2) {
+    //     return QString::compare(QString::fromStdString(s1), QString::fromStdString(s2), Qt::CaseInsensitive) < 0;
+    // };
+
+auto comparator = [](const std::string& a, const std::string& b){
+       return  a < b;
+   } ;
+
+
+deque_model_.items =  MergeSort (deque_model_.items, comparator);
+deque_model_.iterator = deque_model_.items.begin();
+ApplyModel();
+
 }
 
 
 void MainWindow::on_btn_sOrt_clicked()
 {
-    std::sort(deque_model_.items.begin(), deque_model_.items.end(),
-              [](const std::string& s1, const std::string& s2) {
-                  return QString::compare(QString::fromStdString(s1), QString::fromStdString(s2), Qt::CaseInsensitive) < 0;
-              });
+
+    // std::sort(deque_model_.items.begin(), deque_model_.items.end(),
+    //           [](const std::string& s1, const std::string& s2) {
+    //               return QString::compare(QString::fromStdString(s1), QString::fromStdString(s2), Qt::CaseInsensitive) < 0;
+    //           });
+
+    auto comparator = [](const std::string& s1, const std::string& s2) {
+                       return QString::compare(QString::fromStdString(s1), QString::fromStdString(s2), Qt::CaseInsensitive) < 0;
+    };
+
+    deque_model_.items =   MergeSort (deque_model_.items, comparator);
+    deque_model_.iterator = deque_model_.items.begin();
 
     ApplyModel();
 
