@@ -1,11 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <iostream>
+//#include <iostream>
 #include <QString>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QFile>
 #include <QTextStream>
 #include <string.h>
 
@@ -121,7 +120,7 @@ void MainWindow::on_btn_push_back_clicked()
     if(txt.isEmpty()) return ;
 
     deque_model_.items.push_back(txt.toStdString());
-    deque_model_.iterator = deque_model_.items.begin(); //std::prev(vector_model_.items.end());
+    deque_model_.iterator = deque_model_.items.begin();
     ApplyModel();
 
 }
@@ -208,9 +207,7 @@ void MainWindow::on_min_element_clicked()
 void MainWindow::on_max_element_clicked()
 {
     auto itr = std::max_element(deque_model_.items.begin(), deque_model_.items.end());
-
     deque_model_.iterator = itr;
-
     ApplyIterator();
 }
 
@@ -218,19 +215,11 @@ void MainWindow::on_max_element_clicked()
 void MainWindow::on_btn_sort_clicked()
 {
 
-auto comparator = [](const std::string& a, const std::string& b){
-       return  a < b;
-   } ;
-
-std::deque<std::string> tmp  = deque_model_.items;
-
-tmp =  MergeSort ( tmp, comparator);
-
-deque_model_.items.swap(tmp);
-
-deque_model_.iterator = deque_model_.items.begin();
-
-ApplyModel();
+    std::deque<std::string> tmp  = deque_model_.items;
+    tmp =  MergeSort ( tmp, std::less());
+    deque_model_.items.swap(tmp);
+    deque_model_.iterator = deque_model_.items.begin();
+    ApplyModel();
 
 }
 
@@ -317,7 +306,6 @@ void MainWindow::on_btn_push_front_clicked()
 void MainWindow::on_btn_pop_back_clicked()
 {
     deque_model_.items.pop_back();
-    //deque_model_.iterator = deque_model_.items.end();
     deque_model_.iterator = deque_model_.items.begin();
     ApplyModel();
 }
