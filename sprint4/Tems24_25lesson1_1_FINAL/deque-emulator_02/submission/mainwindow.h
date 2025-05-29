@@ -105,9 +105,13 @@ private slots:
 
     void on_btn_erase_clicked();
 
+    void on_lower_bound_clicked();
+
+    void on_upper_bound_clicked();
+
 private:
-    void ApplyModel();
-    void ApplyIterator();
+    void ApplyModel() ;
+    void ApplyIterator() ;
 
 private:
     Model deque_model_;

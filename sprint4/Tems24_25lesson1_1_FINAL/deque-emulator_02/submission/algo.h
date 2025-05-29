@@ -51,24 +51,26 @@ std::deque<T> MergeSort(const std::deque<T>& src, const Comp& comparator) {
     left = MergeSort(left, comparator);
     right = MergeSort(right, comparator);
 
-    // Слияние отсортированных половин
-    std::deque<T> result;
-    auto left_it = left.begin();
-    auto right_it = right.begin();
+    return Merge(left, right, comparator);
 
-    while (left_it != left.end() && right_it != right.end()) {
-        if (comparator(*left_it, *right_it)) {
-            result.push_back(*left_it);
-            ++left_it;
-        } else {
-            result.push_back(*right_it);
-            ++right_it;
-        }
-    }
+    // Слияние отсортированных половин
+  //  std::deque<T> result;
+  //  auto left_it = left.begin();
+  //  auto right_it = right.begin();
+
+    // while (left_it != left.end() && right_it != right.end()) {
+    //     if (comparator(*left_it, *right_it)) {
+    //         result.push_back(*left_it);
+    //         ++left_it;
+    //     } else {
+    //         result.push_back(*right_it);
+    //         ++right_it;
+    //     }
+    // }
 
     // Добавление оставшихся элементов
-    result.insert(result.end(), left_it, left.end());
-    result.insert(result.end(), right_it, right.end());
+    // result.insert(result.end(), left_it, left.end());
+    // result.insert(result.end(), right_it, right.end());
 
-    return result;
+    // return result;
 }

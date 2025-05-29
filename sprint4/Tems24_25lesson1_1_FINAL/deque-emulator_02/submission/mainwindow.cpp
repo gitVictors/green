@@ -68,9 +68,6 @@ void MainWindow::ApplyModel() {
     else
         ui->txt_size->setText("0");
 
-    // if (!deque_model_.items.empty()){
-    //     ui->txt_capacity->setText( QString::number ( deque_model_.items.capacity() ) );
-    // }
 
     ui->list_widget->clear();
 
@@ -93,7 +90,7 @@ void MainWindow::ApplyModel() {
     ApplyIterator();
 }
 
-void MainWindow::ApplyIterator(){
+void MainWindow::ApplyIterator() {
 
 
     int itr = std::distance( deque_model_.items.begin(), deque_model_.iterator);
@@ -221,10 +218,6 @@ void MainWindow::on_max_element_clicked()
 
 void MainWindow::on_btn_sort_clicked()
 {
-   // std::sort (deque_model_.items.begin(), deque_model_.items.end());
-    // auto comparator = [](const std::string& s1, const std::string& s2) {
-    //     return QString::compare(QString::fromStdString(s1), QString::fromStdString(s2), Qt::CaseInsensitive) < 0;
-    // };
 
 auto comparator = [](const std::string& a, const std::string& b){
        return  a < b;
@@ -241,10 +234,6 @@ ApplyModel();
 void MainWindow::on_btn_sOrt_clicked()
 {
 
-    // std::sort(deque_model_.items.begin(), deque_model_.items.end(),
-    //           [](const std::string& s1, const std::string& s2) {
-    //               return QString::compare(QString::fromStdString(s1), QString::fromStdString(s2), Qt::CaseInsensitive) < 0;
-    //           });
 
     auto comparator = [](const std::string& s1, const std::string& s2) {
                        return QString::compare(QString::fromStdString(s1), QString::fromStdString(s2), Qt::CaseInsensitive) < 0;
@@ -417,5 +406,39 @@ void MainWindow::on_btn_erase_clicked()
     }
 
     ApplyModel(); // Полное обновление, так как изменился контейнер
+}
+
+
+void MainWindow::on_lower_bound_clicked()
+{
+
+    if (!std::is_sorted(deque_model_.items.begin(), deque_model_.items.end() ))
+        return ;
+
+    // Получаем строку для поиска из интерфейса
+    std::string search_value = ui->txt_elem_content->text().toStdString();
+
+    auto it = std::lower_bound(deque_model_.items.begin(), deque_model_.items.end(), search_value);
+
+    deque_model_.iterator = it;
+    ApplyIterator();
+
+}
+
+
+void MainWindow::on_upper_bound_clicked()
+{
+
+    if (!std::is_sorted(deque_model_.items.begin(), deque_model_.items.end() ))
+        return ;
+
+    // Получаем строку для поиска из интерфейса
+    std::string search_value = ui->txt_elem_content->text().toStdString();
+
+    auto it = std::upper_bound(deque_model_.items.begin(), deque_model_.items.end(), search_value);
+
+    deque_model_.iterator = it;
+    ApplyIterator();
+
 }
 
