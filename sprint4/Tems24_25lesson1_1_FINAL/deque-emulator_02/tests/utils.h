@@ -1,8 +1,28 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
 #include <QtTest>
+#include <QString>
 
+class Comparator {
+public:
+    Comparator()=default;
+
+    template<class T>
+    bool operator()(T a, T b) const {
+        ++compares;
+        return a < b;
+    }
+
+    [[nodiscard]] int getCompares() const {
+        return compares;
+    }
+    void resetCompares() {
+        compares = 0;
+    }
+
+private:
+    mutable int compares{0};
+};
 
 template<typename T>
 void getChild(T*& dst, QObject* parent, const QString& object_name, const QString& type_name)
@@ -61,5 +81,3 @@ inline void clickWidget(QWidget* widget)
 {
     QTest::mouseClick(widget, Qt::LeftButton);
 }
-
-#endif  // UTILS_H

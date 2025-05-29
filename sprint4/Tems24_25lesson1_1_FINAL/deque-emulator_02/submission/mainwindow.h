@@ -24,29 +24,7 @@ public:
 
 private slots:
 
-    // void on_clear_clicked();
 
-    // void on_days_clicked();
-
-    // void on_month_clicked();
-
-    // void on_erase_clicked();
-
-    // void on_insert_clicked();
-
-    // void on_minus_minus_clicked();
-
-    // void on_plus_plus_clicked();
-
-    // void on_begin_clicked();
-
-    // void on_end_clicked();
-
-  //  void on_btn_reserve_clicked();
-
-    // void on_pop_back_clicked(bool checked);
-
-    // void on_pop_back_clicked();
 
     void on_btn_push_back_clicked();
 
@@ -71,8 +49,6 @@ private slots:
 
     void on_btn_sOrt_clicked();
 
-
-
     void on_btn_unique_clicked();
 
     void on_btn_revers_clicked();
@@ -83,15 +59,11 @@ private slots:
 
     void on_btn_push_front_clicked();
 
-
-
-    void on_push_back_clicked();
-
     void on_btn_insert_clicked();
 
     void on_btn_clear_clicked();
 
-    void on_btn_dec_iterator_clicked();
+    void on_btn_dec_clicked();
 
     void on_btn_inc_iterator_clicked();
 

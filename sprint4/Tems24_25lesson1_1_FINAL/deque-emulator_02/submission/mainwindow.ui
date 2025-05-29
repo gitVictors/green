@@ -215,7 +215,7 @@
         </widget>
        </item>
        <item row="13" column="0">
-        <widget class="QPushButton" name="btn_dec_iterator">
+        <widget class="QPushButton" name="btn_dec">
          <property name="text">
           <string>--</string>
          </property>

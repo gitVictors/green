@@ -61,7 +61,7 @@ MainWindow::~MainWindow() {
 void MainWindow::ApplyModel() {
 
 
-    ui->btn_pop_back->setDisabled(deque_model_.items.size() == 0);
+    ui->btn_pop_back->setDisabled(/*deque_model_.items.size() == 0*/deque_model_.items.empty());
 
     if (!deque_model_.items.empty())
         ui->txt_size->setText( QString::number( deque_model_.items.size() ) );
@@ -96,13 +96,14 @@ void MainWindow::ApplyIterator() {
     int itr = std::distance( deque_model_.items.begin(), deque_model_.iterator);
     ui->list_widget->setCurrentRow(itr); //выделение
 
+    ui->btn_pop_front->setDisabled(  deque_model_.items.empty() );
     ui->btn_edit->setDisabled(deque_model_.iterator == deque_model_.items.end() );
-    ui->btn_pop_back->setDisabled( deque_model_.iterator == deque_model_.items.end());
+    ui->btn_pop_back->setDisabled(  deque_model_.items.empty());
     ui->btn_erase->setDisabled(deque_model_.iterator == deque_model_.items.end() );
-    ui->btn_pop_front->setDisabled(deque_model_.iterator == deque_model_.items.end());
+
 
     ui->btn_inc_iterator->setDisabled(deque_model_.iterator == deque_model_.items.end() );
-    ui->btn_dec_iterator->setDisabled( deque_model_.iterator == deque_model_.items.begin() );
+    ui->btn_dec->setDisabled( deque_model_.iterator == deque_model_.items.begin() );
 
 
     if (deque_model_.iterator == deque_model_.items.end()) {
@@ -131,10 +132,8 @@ void MainWindow::on_btn_push_back_clicked()
 void MainWindow::on_list_widget_currentRowChanged(int currentRow)
 {
 
+    if (currentRow < 0) return;
 
-    //if (currentRow < 0) return;
-
-    currentRow = std::clamp(currentRow, 0, (int)deque_model_.items.size());
 
     if (currentRow >= static_cast<int>(deque_model_.items.size())) {
         deque_model_.iterator = deque_model_.items.end();
@@ -150,8 +149,8 @@ void MainWindow::on_btn_edit_clicked()
 {
     QString txt_str =  ui->txt_elem_content->text();
 
-    auto iter = deque_model_.iterator;
-    *iter = txt_str.toStdString();
+    *deque_model_.iterator = txt_str.toStdString();
+
     ApplyModel();
 }
 
@@ -223,9 +222,14 @@ auto comparator = [](const std::string& a, const std::string& b){
        return  a < b;
    } ;
 
+std::deque<std::string> tmp  = deque_model_.items;
 
-deque_model_.items =  MergeSort (deque_model_.items, comparator);
+tmp =  MergeSort ( tmp, comparator);
+
+deque_model_.items.swap(tmp);
+
 deque_model_.iterator = deque_model_.items.begin();
+
 ApplyModel();
 
 }
@@ -239,7 +243,12 @@ void MainWindow::on_btn_sOrt_clicked()
                        return QString::compare(QString::fromStdString(s1), QString::fromStdString(s2), Qt::CaseInsensitive) < 0;
     };
 
-    deque_model_.items =   MergeSort (deque_model_.items, comparator);
+    std::deque<std::string> tmp = deque_model_.items;
+
+    tmp  =   MergeSort (tmp, comparator);
+
+    deque_model_.items.swap(tmp);
+
     deque_model_.iterator = deque_model_.items.begin();
 
     ApplyModel();
@@ -268,7 +277,7 @@ void MainWindow::on_btn_unique_clicked()
 void MainWindow::on_btn_revers_clicked()
 {
 
-   // std::reverse(deque_model_.items.begin(), deque_model_.items.end());
+    std::reverse(deque_model_.items.begin(), deque_model_.items.end());
     ApplyModel(); // Обновляем отображение
 }
 
@@ -308,22 +317,12 @@ void MainWindow::on_btn_push_front_clicked()
 void MainWindow::on_btn_pop_back_clicked()
 {
     deque_model_.items.pop_back();
-    deque_model_.iterator = deque_model_.items.end();
+    //deque_model_.iterator = deque_model_.items.end();
+    deque_model_.iterator = deque_model_.items.begin();
     ApplyModel();
 }
 
 
-void MainWindow::on_push_back_clicked()
-{
-    QString txt = ui->txt_elem_content->text();
-
-    if(txt.isEmpty()) return ;
-
-    deque_model_.items.push_back(txt.toStdString());  //добавление в конец дека
-    deque_model_.iterator = deque_model_.items.end();
-
-    ApplyModel();
-}
 
 
 void MainWindow::on_btn_insert_clicked()
@@ -346,7 +345,7 @@ void MainWindow::on_btn_clear_clicked()
 }
 
 
-void MainWindow::on_btn_dec_iterator_clicked()
+void MainWindow::on_btn_dec_clicked()
 {
     if (deque_model_.iterator != deque_model_.items.begin()){
         --deque_model_.iterator;
