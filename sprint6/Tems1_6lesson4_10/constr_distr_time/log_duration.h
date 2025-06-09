@@ -9,7 +9,7 @@ public:
     // с помощью using для удобства
     using Clock = std::chrono::steady_clock;
 
-    LogDuration(std::string name): name_(name)
+    LogDuration(const std::string& name = ""): name_(name)
     {
     }
 
