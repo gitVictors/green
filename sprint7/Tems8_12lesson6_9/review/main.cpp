@@ -187,8 +187,6 @@ public:
         // Инкремент итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         BasicIterator operator++(int) noexcept {
-            //assert(false);
-            // Заглушка. Реализуйте оператор самостоятельно
             auto old = *this;
             ++ (*this);
             return old;
@@ -198,9 +196,6 @@ public:
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] reference operator*() const noexcept {
-            // assert(false);
-            // Не реализовано
-            // Заглушка. Реализуйте оператор самостоятельно
             return  node_->value;
         }
 
@@ -208,8 +203,6 @@ public:
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] pointer operator->() const noexcept {
-            // assert(false);
-            // Заглушка. Реализуйте оператор самостоятельно
             return &node_->value;
         }
 
@@ -230,7 +223,6 @@ public:
     // Возвращает итератор, ссылающийся на первый элемент
     // Если список пустой, возвращённый итератор будет равен end()
     [[nodiscard]] Iterator begin() noexcept {
-
         return Iterator{head_.next_node};
     }
 
@@ -244,7 +236,6 @@ public:
     // Если список пустой, возвращённый итератор будет равен end()
     // Результат вызова эквивалентен вызову метода cbegin()
     [[nodiscard]] ConstIterator begin() const noexcept {
-
         return ConstIterator {head_.next_node};
     }
 
@@ -345,7 +336,6 @@ private:
 
 template <typename Type>
 void swap(SingleLinkedList<Type>& lhs, SingleLinkedList<Type>& rhs) noexcept {
-    // Реализуйте обмен самостоятельно
     lhs.swap(rhs);
 }
 
