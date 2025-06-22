@@ -311,10 +311,6 @@ public:
      */
     Iterator EraseAfter(ConstIterator pos) noexcept {
         // Если pos невалиден или указывает на последний элемент - ничего не делаем
-        // if (pos.node_ == nullptr || pos.node_->next_node == nullptr) {
-        //     assert(false && "EraseAfter called with invalid iterator or no element to erase");
-        //     return end();
-        // }
         assert(pos.node_ != nullptr && "EraseAfter called with invalid iterator (nullptr)");
         assert(pos.node_->next_node != nullptr && "EraseAfter called with no element to erase");
 
