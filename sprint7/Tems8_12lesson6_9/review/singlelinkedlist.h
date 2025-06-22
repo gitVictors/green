@@ -48,12 +48,6 @@ public:
 
     SingleLinkedList(std::initializer_list<Type> values) : SingleLinkedList() {
         // Создаем узлы и связываем их в правильном порядке
-        // Node** last_next_ptr = &head_.next_node;
-        // for (const auto& value : values) {
-        //     *last_next_ptr = new Node(value, nullptr);
-        //     last_next_ptr = &((*last_next_ptr)->next_node);
-        //     ++size_;
-        // }
        CopyValues(values.begin(), values.end());
     }
 
@@ -62,20 +56,7 @@ public:
         // Сначала создаем временный список
         SingleLinkedList tmp;
 
-        // Копируем элементы из other в tmp
-        // Node** last_next_ptr = &tmp.head_.next_node;
-        // for (const auto& value : other) {
-        //     try {
-        //         *last_next_ptr = new Node(value, nullptr);
-        //         last_next_ptr = &((*last_next_ptr)->next_node);
-        //         ++tmp.size_;
-        //     } catch (...) {
-        //         tmp.Clear();
-        //         throw;
-        //     }
-        // }
-
-       tmp.CopyValues(other.begin(), other.end());
+        tmp.CopyValues(other.begin(), other.end());
 
         // Если копирование прошло успешно, обмениваем содержимое
         swap(tmp);
@@ -330,10 +311,12 @@ public:
      */
     Iterator EraseAfter(ConstIterator pos) noexcept {
         // Если pos невалиден или указывает на последний элемент - ничего не делаем
-        if (pos.node_ == nullptr || pos.node_->next_node == nullptr) {
-            assert(false && "EraseAfter called with invalid iterator or no element to erase");
-            return end();
-        }
+        // if (pos.node_ == nullptr || pos.node_->next_node == nullptr) {
+        //     assert(false && "EraseAfter called with invalid iterator or no element to erase");
+        //     return end();
+        // }
+        assert(pos.node_ != nullptr && "EraseAfter called with invalid iterator (nullptr)");
+        assert(pos.node_->next_node != nullptr && "EraseAfter called with no element to erase");
 
         Node* node_to_delete = pos.node_->next_node;
         pos.node_->next_node = node_to_delete->next_node;
