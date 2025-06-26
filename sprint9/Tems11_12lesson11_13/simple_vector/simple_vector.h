@@ -47,28 +47,21 @@ public:
     }
 
     //---next ----------------------------------------------
-    SimpleVector(const SimpleVector& other) {
-        if (*this == other){
-            return;
-        }
-        size_ =  other.size_;
-        capacity_ =  other.capacity_;
-        items_ = ArrayPtr<Type> (other.size_);
+    SimpleVector(const SimpleVector& other)
+        : items_(other.size_),
+          size_(other.size_),
+          capacity_(other.size_)
+    {
 
-        copy(other.begin(), other.end(), items_.Get());
+        std::copy(other.begin(), other.end(), items_.Get());
 
     }
 
     //операция присваивания
     SimpleVector& operator=(const SimpleVector& rhs) {
-        if (*this != rhs){
-            if(rhs.IsEmpty()){
-                Clear();
-            }else {
-                //copy - and -swap
-                SimpleVector rhs_copy(rhs);
-                swap(rhs_copy);
-            }
+        if (this != &rhs) {  // Сравниваем адреса напрямую
+            SimpleVector rhs_copy(rhs);
+            swap(rhs_copy);
         }
         return *this;
     }
@@ -84,7 +77,7 @@ public:
             ArrayPtr<Type> item_copy(new_capacity);
 
             //copy and swap
-            copy (items_.Get(), items_.Get() + size_, item_copy.Get() );
+            std::copy (items_.Get(), items_.Get() + size_, item_copy.Get() );
             items_.swap(item_copy);
             capacity_ = new_capacity;
         }
@@ -97,23 +90,102 @@ public:
     // Возвращает итератор на вставленное значение
     // Если перед вставкой значения вектор был заполнен полностью,
     // вместимость вектора должна увеличиться вдвое, а для вектора вместимостью 0 стать равной 1
+    // Iterator Insert(ConstIterator pos, const Type& value) {
+
+    //     if (size_ == capacity_){
+
+    //         size_t new_capacity = capacity_ == 0 ? 1 : capacity_ * 2;
+
+    //         ArrayPtr<Type> item_copy(new_capacity);
+
+    //         //copy and swap
+    //         std::copy (items_.Get(), items_.Get() + size_, item_copy.Get() );
+    //         items_.swap(item_copy);
+    //         capacity_ = new_capacity;
+    //     }
+    //     // Находим позицию для вставки относительно начала массива
+    //     size_t pos_offset = pos - cbegin();
+
+    //     // Сдвигаем элементы вправо, чтобы освободить место для вставки
+    //     std::copy_backward(items_.Get() + pos_offset, items_.Get() + size_, items_.Get() + size_ + 1);
+
+    //     // Вставляем значение в нужную позицию
+    //     items_[pos_offset] = value;
+
+    //     // Увеличиваем размер вектора
+    //     ++size_;
+
+    //     return begin() + pos_offset;
+    // }
+
     Iterator Insert(ConstIterator pos, const Type& value) {
-        // Напишите тело самостоятельно
+        // Проверка валидности позиции
+        if (pos < begin() || pos > end()) {
+            throw std::out_of_range("Invalid iterator position");
+        }
+
+        const size_t offset = pos - begin();
+
+        if (size_ == capacity_) {
+            // Увеличиваем capacity
+            const size_t new_capacity = std::max(capacity_ * 2, static_cast<size_t>(1));
+            ArrayPtr<Type> new_items(new_capacity);
+
+            // Копируем элементы до позиции вставки (используем const_cast)
+            std::copy(begin(), const_cast<Iterator>(pos), new_items.Get());
+
+            // Вставляем новый элемент
+            new_items[offset] = value;
+
+            // Копируем оставшиеся элементы (используем const_cast)
+            std::copy(const_cast<Iterator>(pos), end(), new_items.Get() + offset + 1);
+
+            // Обмениваем буферы
+            items_.swap(new_items);
+            capacity_ = new_capacity;
+        } else {
+            // Сдвигаем элементы вправо
+            std::copy_backward(begin() + offset, end(), end() + 1);
+
+            // Вставляем элемент
+            items_[offset] = value;
+        }
+
+        ++size_;
+        return begin() + offset;
     }
+
 
     // "Удаляет" последний элемент вектора. Вектор не должен быть пустым
     void PopBack() noexcept {
-        // Напишите тело самостоятельно
+        if (size_ > 0) {
+            --size_;
+        }
     }
 
     // Удаляет элемент вектора в указанной позиции
     Iterator Erase(ConstIterator pos) {
-        // Напишите тело самостоятельно
+        // Проверяем, что позиция находится в допустимых пределах
+        assert(pos >= begin() && pos < end());
+
+        // Вычисляем смещение удаляемого элемента
+        const size_t offset = pos - begin();
+
+        // Сдвигаем все элементы после pos влево
+        std::move(begin() + offset + 1, end(), begin() + offset);
+
+        // Уменьшаем размер вектора
+        --size_;
+
+        // Возвращаем итератор на элемент, следующий за удаленным
+        return begin() + offset;
     }
 
     // Обменивает значение с другим вектором
     void swap(SimpleVector& other) noexcept {
-        // Напишите тело самостоятельно
+        items_.swap(other.items_);
+        std::swap(size_, other.size_);
+        std::swap(capacity_, other.capacity_);
     }
 
     //------------------------------------------------------
@@ -232,3 +304,42 @@ private:
      size_t size_ = 0;
      size_t capacity_ = 0;
 };
+
+template <typename Type>
+inline bool operator==(const SimpleVector<Type>& lhs, const SimpleVector<Type>& rhs) {
+    // Сначала проверяем размеры
+    if (lhs.GetSize() != rhs.GetSize()) {
+        return false;
+    }
+    // Затем сравниваем элементы
+    return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+template <typename Type>
+inline bool operator!=(const SimpleVector<Type>& lhs, const SimpleVector<Type>& rhs) {
+    return !(lhs == rhs);  // Используем уже реализованный operator==
+}
+
+template <typename Type>
+inline bool operator<(const SimpleVector<Type>& lhs, const SimpleVector<Type>& rhs) {
+    return std::lexicographical_compare(
+        lhs.begin(), lhs.end(),
+        rhs.begin(), rhs.end()
+        );
+}
+
+template <typename Type>
+inline bool operator<=(const SimpleVector<Type>& lhs, const SimpleVector<Type>& rhs) {
+    return !(rhs < lhs);  // Выражаем через operator<
+}
+
+template <typename Type>
+inline bool operator>(const SimpleVector<Type>& lhs, const SimpleVector<Type>& rhs) {
+    return rhs < lhs;  // Выражаем через operator<
+}
+
+template <typename Type>
+inline bool operator>=(const SimpleVector<Type>& lhs, const SimpleVector<Type>& rhs) {
+    return !(lhs < rhs);  // Выражаем через operator<
+}
+
