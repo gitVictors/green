@@ -7,20 +7,25 @@
 
 #include "array_ptr.h"
 
+// Класс-обертка для резервирования памяти
+struct ReserveProxyObj {
+    size_t capacity;
+    explicit ReserveProxyObj(size_t cap) : capacity(cap) {}
+};
+
+ReserveProxyObj Reserve(size_t capacity_to_reserve) {
+    return ReserveProxyObj(capacity_to_reserve);
+};
+
 template <typename Type>
 class SimpleVector {
 public:
     using Iterator = Type*;
     using ConstIterator = const Type*;
 
-    // Класс-обертка для резервирования памяти
-    struct ReserveProxy {
-        size_t capacity;
-        explicit ReserveProxy(size_t cap) : capacity(cap) {}
-    };
 
     // Конструктор с резервированием памяти
-    explicit SimpleVector(ReserveProxy proxy)
+    explicit SimpleVector(ReserveProxyObj proxy)
         : items_(proxy.capacity)
         , size_(0)
         , capacity_(proxy.capacity)
