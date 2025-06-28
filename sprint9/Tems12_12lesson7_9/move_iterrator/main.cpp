@@ -1,84 +1,139 @@
-#include <algorithm>
 #include <cassert>
-#include <string>
+#include <cstdint>
+#include <iostream>
+#include <numeric>
 #include <vector>
-
-#include <iostream>  // Для std::ostream
-#include <string>    // Для std::string
+#include <utility>
 
 using namespace std;
 
-// Объявляем Sentence<Token> для произвольного типа Token
-// синонимом vector<Token>.
-// Благодаря этому в качестве возвращаемого значения
-// функции можно указать не малопонятный вектор векторов,
-// а вектор предложений — vector<Sentence<Token>>.
-template <typename Token>
-using Sentence = vector<Token>;
 
-template <typename TokenForwardIt>
-TokenForwardIt FindSentenceEnd(TokenForwardIt tokens_begin, TokenForwardIt tokens_end) {
-    const TokenForwardIt before_sentence_end
-        = adjacent_find(tokens_begin, tokens_end, [](const auto& left_token, const auto& right_token) {
-              return left_token.IsEndSentencePunctuation() && !right_token.IsEndSentencePunctuation();
-          });
-    return before_sentence_end == tokens_end ? tokens_end : next(before_sentence_end);
-}
+#include <vector>
+#include <utility>
+#include <list>
 
-// Класс Token имеет метод bool IsEndSentencePunctuation() const
-template <typename Token>
-vector<Sentence<Token>> SplitIntoSentences(vector<Token> tokens) {
-    // Напишите реализацию функции, не копируя объекты типа Token
-    vector<Sentence<Token>> sentences_res;
-    auto token_begin = tokens.begin();
-    auto token_end = tokens.end();
-    while (token_begin != token_end){
-        auto it = FindSentenceEnd(token_begin, token_end);
-        vector<Token> sentence;
-        for (; token_begin != it ; ++token_begin) {
-            sentence.push_back(std::move(*token_begin));
+#include <list>
+#include <iterator> // Для std::make_move_iterator
+
+template <typename RandomIt>
+void MakeJosephusPermutation(RandomIt range_begin, RandomIt range_end, uint32_t step_size) {
+    // Инициализируем список с помощью move-итераторов
+    std::list<typename RandomIt::value_type> pool(
+        std::make_move_iterator(range_begin),
+        std::make_move_iterator(range_end)
+        );
+
+    auto current = pool.begin();
+    while (!pool.empty()) {
+        // Перемещаем текущий элемент в результирующую позицию
+        *(range_begin++) = std::move(*current);
+
+        // Удаляем текущий элемент и получаем следующий валидный итератор
+        current = pool.erase(current);
+
+        if (pool.empty()) {
+            break;
         }
-        sentences_res.push_back(std::move(sentence));
+
+        // Перемещаем итератор на (step_size - 1) позиций вперед
+        for (uint32_t i = 0; i < (step_size - 1); ++i) {
+            if (current == pool.end()) {
+                current = pool.begin();
+            }
+            ++current;
+            if (current == pool.end()) {  // Дополнительная проверка после инкремента
+                current = pool.begin();
+            }
+        }
     }
-
-
-    return sentences_res;
 }
 
-struct TestToken {
-    string data;
-    bool is_end_sentence_punctuation = false;
 
-    bool IsEndSentencePunctuation() const {
-        return is_end_sentence_punctuation;
+vector<int> MakeTestVector() {
+    vector<int> numbers(10);
+    iota(begin(numbers), end(numbers), 0);
+    return numbers;
+}
+
+void TestIntVector() {
+    const vector<int> numbers = MakeTestVector();
+    {
+        vector<int> numbers_copy = numbers;
+        MakeJosephusPermutation(begin(numbers_copy), end(numbers_copy), 1);
+        assert(numbers_copy == numbers);
     }
-    bool operator==(const TestToken& other) const {
-        return data == other.data && is_end_sentence_punctuation == other.is_end_sentence_punctuation;
+    {
+        vector<int> numbers_copy = numbers;
+        MakeJosephusPermutation(begin(numbers_copy), end(numbers_copy), 3);
+        assert(numbers_copy == vector<int>({0, 3, 6, 9, 4, 8, 5, 2, 7, 1}));
     }
+}
+
+// Это специальный тип, который поможет вам убедиться, что ваша реализация
+// функции MakeJosephusPermutation не выполняет копирование объектов.
+// То, как работает этот класс, мы расскажем далее в нашем курсе
+
+struct CopyTrackingInt {
+    int value;
+
+    CopyTrackingInt(int value) noexcept
+        : value(value) {
+    }
+
+    CopyTrackingInt(const CopyTrackingInt& other) noexcept
+        : value(other.value) {
+        ++kAmountOfCopies;
+    }
+
+    CopyTrackingInt& operator=(const CopyTrackingInt& other) noexcept {
+        ++kAmountOfCopies;
+
+        if (&other == this) {
+            return *this;
+        }
+
+        value = other.value;
+
+        return *this;
+    }
+
+    CopyTrackingInt(CopyTrackingInt&&) = default;
+    CopyTrackingInt& operator=(CopyTrackingInt&&) = default;
+
+    inline static size_t kAmountOfCopies = 0;
 };
 
-ostream& operator<<(ostream& stream, const TestToken& token) {
-    return stream << token.data;
+bool operator==(const CopyTrackingInt& lhs, const CopyTrackingInt& rhs) {
+    return lhs.value == rhs.value;
 }
 
-// Тест содержит копирования объектов класса TestToken.
-// Для проверки отсутствия копирований в функции SplitIntoSentences
-// необходимо написать отдельный тест.
-void TestSplitting() {
-    assert(SplitIntoSentences(vector<TestToken>({{"Split"s}, {"into"s}, {"sentences"s}, {"!"s}}))
-           == vector<Sentence<TestToken>>({{{"Split"s}, {"into"s}, {"sentences"s}, {"!"s}}}));
+ostream& operator<<(ostream& os, const CopyTrackingInt& v) {
+    return os << v.value;
+}
 
-    assert(SplitIntoSentences(vector<TestToken>({{"Split"s}, {"into"s}, {"sentences"s}, {"!"s, true}}))
-           == vector<Sentence<TestToken>>({{{"Split"s}, {"into"s}, {"sentences"s}, {"!"s, true}}}));
+void TestAvoidsCopying() {
+    vector<CopyTrackingInt> numbers;
+    numbers.push_back({1});
+    numbers.push_back({2});
+    numbers.push_back({3});
+    numbers.push_back({4});
+    numbers.push_back({5});
 
-    assert(SplitIntoSentences(vector<TestToken>(
-               {{"Split"s}, {"into"s}, {"sentences"s}, {"!"s, true}, {"!"s, true}, {"Without"s}, {"copies"s}, {"."s, true}}))
-           == vector<Sentence<TestToken>>({
-                                           {{"Split"s}, {"into"s}, {"sentences"s}, {"!"s, true}, {"!"s, true}},
-                                           {{"Without"s}, {"copies"s}, {"."s, true}},
-                                           }));
+    MakeJosephusPermutation(begin(numbers), end(numbers), 2);
+
+    vector<CopyTrackingInt> expected;
+    expected.push_back({1});
+    expected.push_back({3});
+    expected.push_back({5});
+    expected.push_back({4});
+    expected.push_back({2});
+
+    assert(numbers == expected);
+    assert(CopyTrackingInt::kAmountOfCopies == 0);
 }
 
 int main() {
-    TestSplitting();
+    TestIntVector();
+    TestAvoidsCopying();
+    return 0;
 }
