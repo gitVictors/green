@@ -15,7 +15,7 @@ struct ReserveProxyObj {
 
 ReserveProxyObj Reserve(size_t capacity_to_reserve) {
     return ReserveProxyObj(capacity_to_reserve);
-};
+}
 
 template <typename Type>
 class SimpleVector {
@@ -49,8 +49,7 @@ public:
         , capacity_(size) // Установка текущей вместимости вектора
     {
 
-        for (size_t i = 0; i < size; ++i )
-            items_[i] = value;
+       std::generate(items_.begin(), items_.end(), [&value]() { return value; });
     }
 
     // Создаёт вектор из std::initializer_list
@@ -59,9 +58,9 @@ public:
         size_( init.size()),
         capacity_ (init.size())
     {
-        if (init.size() > 0) {
-            std::copy(init.begin(), init.end(), items_.Get());
-        }
+
+        std::copy(init.begin(), init.end(), items_.Get());
+
     }
     //-- функции перемещения -------------------------------------
 
@@ -72,12 +71,6 @@ public:
        , capacity_(std::exchange(other.capacity_,0))
     {}
 
-    // SimpleVector& operator=(SimpleVector&& rhl){
-    //     items_ = std::move(rhl.items_);
-    //     size_ = std::exchange(rhl.size_, 0);
-    //     capacity_ = std::exchange(rhl.capacity_, 0);
-    //     return *this;
-    // }
 
     SimpleVector& operator=(SimpleVector&& rhs) noexcept {
         if (this != &rhs) {
@@ -88,6 +81,17 @@ public:
         return *this;
     }
 
+    void Reserve(size_t new_capacity) {
+        if (new_capacity <= capacity_) {
+            return;  // Уже достаточно места
+        }
+
+        ArrayPtr<Type> new_items(new_capacity);
+        std::move(items_.Get(), items_.Get() + size_, new_items.Get());
+        items_.swap(new_items);
+        capacity_ = new_capacity;
+    }
+
     void PushBack(Type&& item) {
         if (size_ == capacity_) {
             Reserve(capacity_ == 0 ? 1 : capacity_ * 2);
@@ -96,6 +100,20 @@ public:
         ++size_;
     }
 
+    // Добавляет элемент в конец вектора
+    // При нехватке места увеличивает вдвое вместимость вектора
+    void PushBack(const Type& item) {
+
+        if (size_ == capacity_){
+            Reserve(capacity_ == 0 ? 1 : capacity_ * 2);
+        }
+
+        items_[size_] =  item;
+        size_++;
+    }
+
+
+    //перемещающий insert
     Iterator Insert(ConstIterator pos, Type&& value) {
         // Проверка валидности позиции
         if (pos < begin() || pos > end()) {
@@ -133,24 +151,46 @@ public:
         return begin() + offset;
     }
 
+    //Копирующий Insert
+    Iterator Insert(ConstIterator pos, const Type& value) {
+        // Проверка валидности позиции
+        if (pos < begin() || pos > end()) {
+            throw std::out_of_range("Invalid iterator position");
+        }
+
+        const size_t offset = pos - begin();
+
+        if (size_ == capacity_) {
+            // Увеличиваем capacity
+            const size_t new_capacity = std::max(capacity_ * 2, static_cast<size_t>(1));
+            ArrayPtr<Type> new_items(new_capacity);
+
+            // Копируем элементы до позиции вставки (используем const_cast)
+            std::copy(begin(), const_cast<Iterator>(pos), new_items.Get());
+
+            // Вставляем новый элемент
+            new_items[offset] = value;
+
+            // Копируем оставшиеся элементы (используем const_cast)
+            std::copy(const_cast<Iterator>(pos), end(), new_items.Get() + offset + 1);
+
+            // Обмениваем буферы
+            items_.swap(new_items);
+            capacity_ = new_capacity;
+        } else {
+            // Сдвигаем элементы вправо
+            std::copy_backward(begin() + offset, end(), end() + 1);
+
+            // Вставляем элемент
+            items_[offset] = value;
+        }
+
+        ++size_;
+        return begin() + offset;
+    }
+
     //------------------------------------------------------
 
-    // Резервирование памяти
-    void Reserve(size_t new_capacity) {
-        if (new_capacity <= capacity_) {
-            return;
-        }
-
-        ArrayPtr<Type> new_items(new_capacity);
-
-        if constexpr (std::is_copy_constructible_v<Type>) {
-            std::copy(begin(), end(), new_items.Get());  // Для копируемых типов
-        } else {
-            std::move(begin(), end(), new_items.Get());  // Для некопируемых типов
-        }
-        items_.swap(new_items);
-        capacity_ = new_capacity;
-    }
 
 
 
@@ -175,36 +215,13 @@ public:
         return *this;
     }
 
-    // Добавляет элемент в конец вектора
-    // При нехватке места увеличивает вдвое вместимость вектора
-    void PushBack(const Type& item) {
-
-        if (size_ == capacity_){
-
-            size_t new_capacity = capacity_ == 0 ? 1 : capacity_ * 2;
-
-            ArrayPtr<Type> item_copy(new_capacity);
-
-            //copy and swap
-            std::copy (items_.Get(), items_.Get() + size_, item_copy.Get() );
-            items_.swap(item_copy);
-            capacity_ = new_capacity;
-        }
-
-        items_[size_] =  item;
-        size_++;
-    }
-
-
-
-
-
 
     // "Удаляет" последний элемент вектора. Вектор не должен быть пустым
     void PopBack() noexcept {
-        if (size_ > 0) {
-            --size_;
-        }
+        //if (size_ > 0) {
+        //}
+        assert(size_ > 0);
+          --size_;
     }
 
     // Удаляет элемент вектора в указанной позиции
@@ -266,8 +283,9 @@ public:
     // Выбрасывает исключение std::out_of_range, если index >= size
     Type& At(size_t index) {
         // Напишите тело самостоятельно
-        if (index >= size_)
+        if (index >= size_){
             throw std::out_of_range("Index out of range");
+        }
 
         return items_[index];
     }
@@ -276,8 +294,9 @@ public:
     // Выбрасывает исключение std::out_of_range, если index >= size
     const Type& At(size_t index) const {
         // Напишите тело самостоятельно
-        if (index >= size_)
+        if (index >= size_){
             throw std::out_of_range("Index out of range");
+        }
 
         return items_[index];
     }
@@ -297,12 +316,18 @@ public:
             ArrayPtr<Type> new_items(new_capacity);
 
             std::move(items_.Get(), items_.Get() + size_, new_items.Get());
-            std::fill(new_items.Get() + size_, new_items.Get() + new_size, Type{});
+
+            for (size_t i = size_; i < new_size; ++i) {
+                new_items[i] = Type{};  // Используем конструктор по умолчанию
+            }
             items_.swap(new_items);
             capacity_ = new_capacity;
 
         } else if (new_size > size_) {
-            std::fill(items_.Get() + size_, items_.Get() + new_size, Type{});
+
+            for (size_t i = size_; i < new_size; ++i) {
+                items_[i] = Type{};  // Используем конструктор по умолчанию
+            }
         }
         size_ = new_size;
     }
