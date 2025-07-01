@@ -63,39 +63,56 @@ template <typename T>
 class HashableContainer {
 public:
 
-    void Insert(T elem) {
-        int index = elem.Hash();
+    // void Insert(T elem) {
+    //     int index = elem.Hash();
 
-        // если вектор недостаточно велик для этого индекса,
-        // то увеличим его, выделив место с запасом
-        if (index >= int(elements_.size())) {
-            elements_.resize(index * 2 + 1);
-        }
-
-        auto& elm = elements_[index]; //.push_bask (elem); //= move(elem);
-        if (std::find(elm.begin(), elm.end(), elem  ) == elm.end()){
-            elm.push_back(elem);
-        }
-    }
-
-    // void Insert(const T& elem) {
-    //     size_t index = elem.Hash() % elements_.size();
-
-    //     // Если вектор пуст, инициализируем его
-    //     if (elements_.empty()) {
-    //         elements_.resize(1);
-    //         index = 0;
-    //     }
-    //     // Если индекс выходит за границы, увеличиваем размер
-    //     else if (index >= elements_.size()) {
-    //         elements_.resize(index + 1);
+    //     // если вектор недостаточно велик для этого индекса,
+    //     // то увеличим его, выделив место с запасом
+    //     if (index >= int(elements_.size())) {
+    //         elements_.resize(index * 2 + 1);
     //     }
 
-    //     // Вставка в unordered_set (автоматически проверяет дубликаты)
-    //     elements_[index].insert(elem);
+    //     auto& elm = elements_[index]; //.push_bask (elem); //= move(elem);
+    //     if (std::find(elm.begin(), elm.end(), elem  ) == elm.end()){
+    //         elm.push_back(elem);
+    //     }
     // }
 
+    // void Insert(T elem) {
+    //   //  unordered_map<int> counts_map;
+    //     int index = elem.Hash();
 
+    //     // если вектор недостаточно велик для этого индекса,
+    //     // то увеличим его, выделив место с запасом
+    //     if (index >= int(elements_.size())) {
+    //         elements_.resize(index * 2 + 1);
+    //     }
+
+    //     for (auto& ind : elements_){
+
+    //     }
+    // }
+
+    void Insert(const T& elem) {
+        size_t hash = elem.Hash();
+
+        // Ищем группу с таким хешем
+        for (auto& group : elements_) {
+            if (!group.empty() && group[0].Hash() == hash) {
+                // Быстрая проверка дубликатов (сначала по хешу, потом полное сравнение)
+                for (const auto& e : group) {
+                    if (e == elem) {
+                        return; // Дубликат найден
+                    }
+                }
+                group.push_back(elem);
+                return;
+            }
+        }
+
+        // Если группа не найдена - создаем новую
+        elements_.push_back({elem});
+    }
 
     void PrintAll(ostream& out) const {
         for (const auto& bag : elements_) {
