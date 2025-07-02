@@ -32,15 +32,19 @@ public:
         return out.str();
     }
 
-    int Hash() const {
-        // Преобразуем массив букв в числовое значение
-        int letters_hash = 0;
-        for (char letter : letters_) {
-            letters_hash = letters_hash * 128 + letter;
-        }
+    // int Hash() const {
+    //     // Преобразуем массив букв в числовое значение
+    //     int letters_hash = 0;
+    //     for (char letter : letters_) {
+    //         letters_hash = letters_hash * 128 + letter;
+    //     }
 
-        // Объединяем все значения в одно хеш-значение
-        return letters_hash ^ digits_ ^ region_;
+    //     // Объединяем все значения в одно хеш-значение
+    //     return letters_hash ^ digits_ ^ region_;
+    // }
+
+    int Hash() const {
+        return digits_;
     }
 
     bool operator==(const VehiclePlate& other) const {
@@ -63,56 +67,33 @@ template <typename T>
 class HashableContainer {
 public:
 
-    // void Insert(T elem) {
-    //     int index = elem.Hash();
+    void Insert(T elem) {
 
-    //     // если вектор недостаточно велик для этого индекса,
-    //     // то увеличим его, выделив место с запасом
-    //     if (index >= int(elements_.size())) {
-    //         elements_.resize(index * 2 + 1);
-    //     }
+        //int index = elem.Hash();
+        //int index = abs(elem.Hash());
+        // const size_t TABLE_SIZE = 100000;
+        size_t index = abs(elem.Hash()); //% TABLE_SIZE;
 
-    //     auto& elm = elements_[index]; //.push_bask (elem); //= move(elem);
-    //     if (std::find(elm.begin(), elm.end(), elem  ) == elm.end()){
-    //         elm.push_back(elem);
-    //     }
-    // }
 
-    // void Insert(T elem) {
-    //   //  unordered_map<int> counts_map;
-    //     int index = elem.Hash();
 
-    //     // если вектор недостаточно велик для этого индекса,
-    //     // то увеличим его, выделив место с запасом
-    //     if (index >= int(elements_.size())) {
-    //         elements_.resize(index * 2 + 1);
-    //     }
-
-    //     for (auto& ind : elements_){
-
-    //     }
-    // }
-
-    void Insert(const T& elem) {
-        size_t hash = elem.Hash();
-
-        // Ищем группу с таким хешем
-        for (auto& group : elements_) {
-            if (!group.empty() && group[0].Hash() == hash) {
-                // Быстрая проверка дубликатов (сначала по хешу, потом полное сравнение)
-                for (const auto& e : group) {
-                    if (e == elem) {
-                        return; // Дубликат найден
-                    }
-                }
-                group.push_back(elem);
-                return;
-            }
+        // если вектор недостаточно велик для этого индекса,
+        // то увеличим его, выделив место с запасом
+        if (index >= int(elements_.size())) {
+            elements_.resize(index * 2 + 1);
         }
 
-        // Если группа не найдена - создаем новую
-        elements_.push_back({elem});
-    }
+
+        // for ( const auto& element : elements_[index] ){
+        //     if (elem == element)
+        //         return;
+        // }
+        // elements_[index].push_back(elem);
+
+        auto it = find(elements_[index].begin(), elements_[index].end(), elem);
+        if (it == elements_[index].end()) elements_[index].push_back(elem);
+     }
+
+
 
     void PrintAll(ostream& out) const {
         for (const auto& bag : elements_) {
@@ -134,20 +115,25 @@ private:
 };
 
 int main() {
+
     HashableContainer<VehiclePlate> plate_base;
-    plate_base.Insert({'B', 'H', 840, 'E', 99});
-    plate_base.Insert({'O', 'K', 942, 'K', 78});
-    plate_base.Insert({'O', 'K', 942, 'K', 78});
-    plate_base.Insert({'O', 'K', 942, 'K', 78});
-    plate_base.Insert({'O', 'K', 942, 'K', 78});
-    plate_base.Insert({'H', 'E', 968, 'C', 79});
-    plate_base.Insert({'T', 'A', 326, 'X', 83});
-    plate_base.Insert({'H', 'H', 831, 'P', 116});
-    plate_base.Insert({'P', 'M', 884, 'K', 23});
-    plate_base.Insert({'O', 'C', 34, 'P', 24});
-    plate_base.Insert({'M', 'Y', 831, 'M', 43});
-    plate_base.Insert({'K', 'T', 478, 'P', 49});
-    plate_base.Insert({'X', 'P', 850, 'A', 50});
+    plate_base.Insert({'B','H', 840, 'E', 99});
+    plate_base.Insert({'O','K', 942, 'K', 78});
+    plate_base.Insert({'O','K', 942, 'K', 78});
+    plate_base.Insert({'O','K', 942, 'K', 78});
+    plate_base.Insert({'O','K', 942, 'K', 78});
+    plate_base.Insert({'H','E', 968, 'C', 79});
+    plate_base.Insert({'T','A', 326, 'X', 83});
+    plate_base.Insert({'H','H', 831, 'P', 116});
+    plate_base.Insert({'A','P', 831, 'Y', 99});
+    plate_base.Insert({'P','M', 884, 'K', 23});
+    plate_base.Insert({'O','C', 34, 'P', 24});
+    plate_base.Insert({'M','Y', 831, 'M', 43});
+    plate_base.Insert({'B','P', 831, 'M', 79});
+    plate_base.Insert({'K','T', 478, 'P', 49});
+    plate_base.Insert({'X','P', 850, 'A', 50});
 
     plate_base.PrintAll(cout);
 }
+
+
