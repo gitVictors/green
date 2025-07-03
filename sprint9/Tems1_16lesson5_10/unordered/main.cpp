@@ -7,6 +7,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
+#include <hash_map>
 
 using namespace std;
 
@@ -63,8 +64,10 @@ public:
         // измените эту функцию, чтобы она учитывала все данные номера
         // рекомендуется использовать метод ToString() и существующий
         // класс hash<string>
-        return static_cast<size_t>(plate.Hash());
+        return static_cast<size_t>(hash_(plate.ToString()));
     }
+private:
+    hash<string> hash_;
 };
 
 class ParkingCounter {
@@ -72,6 +75,7 @@ public:
     // зарегистрировать парковку автомобиля
     void Park(VehiclePlate car) {
         // место для вашей реализации
+        ++car_to_parks_[car];
 
     }
 
@@ -79,6 +83,9 @@ public:
     // парковок автомобиля
     int GetCount(const VehiclePlate& car) const {
         // место для вашей реализации
+        auto search = car_to_parks_.find(car);
+        if (search == car_to_parks_.end()) return {};
+        return car_to_parks_.at(car);
     }
 
     auto& GetAllData() const {
@@ -88,7 +95,7 @@ public:
 private:
          // для хранения данных используйте контейнер unordered_map
          // назовите поле класса car_to_parks_
-    unordered_map<VehiclePlateHasher, VehiclePlate>  car_to_parks_;
+    unordered_map<VehiclePlate, int, VehiclePlateHasher>  car_to_parks_;
 
 };
 
