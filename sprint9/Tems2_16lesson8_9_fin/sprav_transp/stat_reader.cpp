@@ -1,6 +1,7 @@
 // stat_reader.cpp
 #include <iomanip>
 #include <cmath>
+#include <QDebug>
 #include "transport_catalogue.h"
 
 void ParseAndPrintStat(const TransportCatalogue& catalogue, std::string_view request,
@@ -31,9 +32,12 @@ void ParseAndPrintStat(const TransportCatalogue& catalogue, std::string_view req
         for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
             auto stop1 = catalogue.GetStop(bus->stops[i]);
             auto stop2 = catalogue.GetStop(bus->stops[i+1]);
+            if (stop1 == std::nullopt)
+                qDebug() << "err stop 1" << "\n";
             if (stop1 && stop2) {
                 route_length += ComputeDistance(stop1->coordinates, stop2->coordinates);
             }
+
         }
 
         output << "Bus " << name << ": " << bus->stops.size() << " stops on route, "

@@ -23,7 +23,7 @@ class TransportCatalogue {
 public:
 
 
-    void AddStop(std::string name, Coordinates coordinates);
+    void AddStop(const std::string& name, Coordinates& coordinates);
     void AddBus(std::string name, std::vector<std::string> stops, bool is_roundtrip);
 
     std::optional<Bus> GetBus(std::string& name) const;

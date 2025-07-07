@@ -3,8 +3,8 @@
 // transport_catalogue.cpp
 #include "transport_catalogue.h"
 
-void TransportCatalogue::AddStop(std::string name, Coordinates coordinates) {
-    stops_[name] = Stop{std::move(name), coordinates};
+void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinates) {
+    stops_[name] = Stop{std::move(name), std::move(coordinates)};
 }
 
 void TransportCatalogue::AddBus(std::string name, std::vector<std::string> stops, bool is_roundtrip) {
@@ -14,7 +14,6 @@ void TransportCatalogue::AddBus(std::string name, std::vector<std::string> stops
     for (const auto& stop_name : buses_[bus.name].stops) {
         stop_to_buses_[stop_name].insert(buses_[bus.name].name);
     }
-  //  qDebug() <<  buses_[bus.name]. << "\n";
 }
 
 std::optional<Bus> TransportCatalogue::GetBus(std::string& name) const {
