@@ -1,4 +1,5 @@
 
+#include <QDebug>
 // transport_catalogue.cpp
 #include "transport_catalogue.h"
 
@@ -13,16 +14,17 @@ void TransportCatalogue::AddBus(std::string name, std::vector<std::string> stops
     for (const auto& stop_name : buses_[bus.name].stops) {
         stop_to_buses_[stop_name].insert(buses_[bus.name].name);
     }
+  //  qDebug() <<  buses_[bus.name]. << "\n";
 }
 
-std::optional<Bus> TransportCatalogue::GetBus(std::string_view name) const {
+std::optional<Bus> TransportCatalogue::GetBus(std::string& name) const {
     if (buses_.count(name)) {
         return buses_.at(name);
     }
     return std::nullopt;
 }
 
-std::optional<Stop> TransportCatalogue::GetStop(std::string_view name) const {
+std::optional<Stop> TransportCatalogue::GetStop(std::string& name) const {
     if (stops_.count(name)) {
         return stops_.at(name);
     }

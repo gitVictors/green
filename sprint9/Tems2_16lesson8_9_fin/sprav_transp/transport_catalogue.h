@@ -26,11 +26,11 @@ public:
     void AddStop(std::string name, Coordinates coordinates);
     void AddBus(std::string name, std::vector<std::string> stops, bool is_roundtrip);
 
-    std::optional<Bus> GetBus(std::string_view name) const;
-    std::optional<Stop> GetStop(std::string_view name) const;
+    std::optional<Bus> GetBus(std::string& name) const;
+    std::optional<Stop> GetStop(std::string& name) const;
 
 private:
-    std::unordered_map<std::string_view, Stop> stops_;
-    std::unordered_map<std::string_view, Bus> buses_;
+    std::unordered_map<std::string, Stop> stops_;
+    std::unordered_map<std::string, Bus> buses_;
     std::unordered_map<std::string_view, std::unordered_set<std::string_view>> stop_to_buses_;
 };

@@ -10,8 +10,8 @@ void ParseAndPrintStat(const TransportCatalogue& catalogue, std::string_view req
         return;
     }
 
-    std::string_view command = request.substr(0, space_pos);
-    std::string_view name = request.substr(space_pos + 1);
+    std::string command ( request.substr(0, space_pos));
+    std::string name( request.substr(space_pos + 1));
 
     if (command == "Bus") {
         auto bus = catalogue.GetBus(name);

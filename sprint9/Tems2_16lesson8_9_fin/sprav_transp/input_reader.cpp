@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
+#include <QDebug>
 
 /**
  * Парсит строку вида "10.123,  -30.1837" и возвращает пару координат (широта, долгота)
@@ -123,8 +124,3 @@ void InputReader::ApplyCommands(TransportCatalogue& catalogue) const {
     }
 }
 
-// void InputReader::ApplyCommands([[maybe_unused]] TransportCatalogue& catalogue) const {
-//     // Реализуйте метод самостоятельно
-
-
-// }
