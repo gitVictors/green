@@ -102,8 +102,29 @@ void InputReader::ParseLine(std::string_view line) {
     }
 }
 
-void InputReader::ApplyCommands([[maybe_unused]] TransportCatalogue& catalogue) const {
-    // Реализуйте метод самостоятельно
+// input_reader.cpp
+void InputReader::ApplyCommands(TransportCatalogue& catalogue) const {
+    for (const auto& command : commands_) {
+        if (command.command == "Stop") {
+            auto coords = ParseCoordinates(command.description);
+            catalogue.AddStop(command.id, coords);
+        } else if (command.command == "Bus") {
+            auto stops = ParseRoute(command.description);
+            bool is_roundtrip = command.description.find('>') != std::string::npos;
 
+            std::vector<std::string> stop_names;
+            stop_names.reserve(stops.size());
+            for (auto stop : stops) {
+                stop_names.emplace_back(stop);
+            }
 
+            catalogue.AddBus(command.id, std::move(stop_names), is_roundtrip);
+        }
+    }
 }
+
+// void InputReader::ApplyCommands([[maybe_unused]] TransportCatalogue& catalogue) const {
+//     // Реализуйте метод самостоятельно
+
+
+// }
