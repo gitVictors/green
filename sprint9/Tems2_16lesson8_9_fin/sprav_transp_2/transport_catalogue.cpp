@@ -14,10 +14,18 @@ void TransportCatalogue::AddBus(const std::string& name_number, const std::vecto
 
     all_buses_.push_back({name_number, stops, is_roundtrip});
 
-    //обновление остановок
-    for (const auto& stop : stops) {
-        for (auto& stop_ : all_stops_) {
-            if (stop_.name == stop) stop_.buses.insert(name_number);
+    // //обновление остановок
+    // for (const auto& stop : stops) {
+    //     for (auto& stop_ : all_stops_) {
+    //         if (stop_.name == stop) stop_.buses.insert(name_number);
+    //     }
+    // }
+
+    // Эффективное обновление информации об автобусах для каждой остановки
+    for (const auto& stop_name : stops) {
+        if (auto it = stopname_to_stop_.find(stop_name); it != stopname_to_stop_.end()) {
+            // it->second->buses.insert(name_number);  // Добавляем автобус в остановку
+            const_cast<std::set<std::string>&>(it->second->buses).insert(name_number);
         }
     }
 
@@ -47,7 +55,7 @@ std::optional<Stop> TransportCatalogue::GetStop(std::string_view name) const {
 
 
 
-std::vector<std::string_view>TransportCatalogue::GetBusesForStop(const std::string& stop_name) const {
+std::vector<std::string_view>TransportCatalogue::GetBusesForStop(std::string_view stop_name) const {
 
     std::vector<std::string_view> result;
 

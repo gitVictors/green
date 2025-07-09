@@ -40,7 +40,7 @@ public:
 
     //std::unordered_set<std::string_view> GetBusesForStop(const std::string& stop_name) const;
 
-    std::vector<std::string_view> GetBusesForStop(const std::string& stop_name) const;
+    std::vector<std::string_view> GetBusesForStop(std::string_view stop_name) const;
 
 private:
     // std::unordered_map<std::string, Stop> stops_;

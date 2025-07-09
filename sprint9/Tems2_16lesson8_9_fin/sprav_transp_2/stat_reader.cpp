@@ -47,13 +47,13 @@ void ParseAndPrintStat(const TransportCatalogue& catalogue, std::string_view req
     else if (command == "Stop"){
 
 
-        auto stop = catalogue.GetStop(name);
+        auto stop = catalogue.GetStop(std::string_view(name));
         if (!stop) {
             output << "Stop " << name << ": not found\n";
             return;
         }
 
-        auto buses = catalogue.GetBusesForStop(name);
+        auto buses = catalogue.GetBusesForStop(std::string_view(name));
         if (buses.empty()) {
             output << "Stop " << name << ": no buses\n";
         } else {
