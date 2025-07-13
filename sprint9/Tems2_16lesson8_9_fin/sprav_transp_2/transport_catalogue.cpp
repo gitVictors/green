@@ -6,26 +6,29 @@ namespace transport_catalogue {
 
 void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinates) {
 
-    all_stops_.push_back({name, coordinates, {} });
+    all_stops_.push_back({name, coordinates});
     stopname_to_stop_[all_stops_.back().name] = &all_stops_.back();
+    stop_to_buses_[all_stops_.back().name]; // Инициализируем пустое множество
 
 }
 
 //добавление маршрута
 void TransportCatalogue::AddBus(const std::string& name_number, const std::vector<std::string>& stops, bool is_roundtrip) {
 
-    all_buses_.push_back({name_number, stops, is_roundtrip});
+    //all_buses_.push_back({name_number, stops, is_roundtrip});
+    std::vector<const Stop*> bus_stops;
+    bus_stops.reserve(stops.size());
 
     // Эффективное обновление информации об автобусах для каждой остановки
     for (const auto& stop_name : stops) {
         if (auto it = stopname_to_stop_.find(stop_name); it != stopname_to_stop_.end()) {
-            // it->second->buses.insert(name_number);  // Добавляем автобус в остановку
-            const_cast<std::set<std::string>&>(it->second->buses).insert(name_number);
+            bus_stops.push_back(it->second);
+            stop_to_buses_[stop_name].insert(name_number);
         }
     }
 
+    all_buses_.push_back({name_number, std::move(bus_stops), is_roundtrip});
     busname_to_bus_[all_buses_.back().name] = &all_buses_.back();
-
 }
 
 std::optional<Bus> TransportCatalogue::GetBus(std::string_view name_number) const {
@@ -52,8 +55,8 @@ std::optional<Stop> TransportCatalogue::GetStop(std::string_view name) const {
 
 std::vector<std::string_view>TransportCatalogue::GetBusesForStop(std::string_view stop_name) const {
 
-    if (auto it = stopname_to_stop_.find(stop_name); it != stopname_to_stop_.end()) {
-        return {it->second->buses.begin(), it->second->buses.end()};
+    if (auto it = stop_to_buses_.find(stop_name); it != stop_to_buses_.end()) {
+        return {it->second.begin(), it->second.end()};
     }
     return {};
 }
@@ -61,16 +64,3 @@ std::vector<std::string_view>TransportCatalogue::GetBusesForStop(std::string_vie
 } //transport_catalogue
 
 
-// std::vector<std::string_view> result;
-
-// auto stop_it = stopname_to_stop_.find(stop_name);
-// if (stop_it != stopname_to_stop_.end()) {
-//     const auto& buses = stop_it->second->buses;
-//     result.reserve(buses.size());
-//     for (const auto& bus : buses) {
-//         result.push_back(bus);
-//     }
-//     std::sort(result.begin(), result.end());
-// }
-
-// return result;

@@ -15,12 +15,12 @@ namespace transport_catalogue {
 struct Stop {
     std::string name;
     Coordinates coordinates;
-    std::set<std::string> buses;
+    //std::set<std::string> buses;
 };
 
 struct Bus {
     std::string name;
-    std::vector<std::string> stops;
+    std::vector<const Stop*> stops;
     bool is_roundtrip;
 };
 
