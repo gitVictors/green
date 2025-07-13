@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 #include "transport_catalogue.h"
 
 namespace transport_catalogue {
@@ -18,6 +19,7 @@ void TransportCatalogue::AddBus(const std::string& name_number, const std::vecto
     //all_buses_.push_back({name_number, stops, is_roundtrip});
     std::vector<const Stop*> bus_stops;
     bus_stops.reserve(stops.size());
+
 
     // Эффективное обновление информации об автобусах для каждой остановки
     for (const auto& stop_name : stops) {
@@ -55,9 +57,11 @@ std::optional<Stop> TransportCatalogue::GetStop(std::string_view name) const {
 
 std::vector<std::string_view>TransportCatalogue::GetBusesForStop(std::string_view stop_name) const {
 
+
     if (auto it = stop_to_buses_.find(stop_name); it != stop_to_buses_.end()) {
         return {it->second.begin(), it->second.end()};
     }
+
     return {};
 }
 

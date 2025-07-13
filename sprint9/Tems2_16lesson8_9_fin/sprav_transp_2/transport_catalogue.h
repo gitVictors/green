@@ -47,11 +47,11 @@ private:
     std::deque<Bus> all_buses_;
     std::deque<Stop> all_stops_;
 
-    std::unordered_map<std::string_view, const Stop*> stopname_to_stop_;
-    std::unordered_map<std::string_view, const Bus*> busname_to_bus_;
+    std::unordered_map<std::string_view, const Stop*> stopname_to_stop_; //список остановок
+    std::unordered_map<std::string_view, const Bus*> busname_to_bus_; //маршрут
 
     // Новое поле для хранения автобусов по остановкам
-    std::unordered_map<std::string_view, std::set<std::string_view>> stop_to_buses_;
+    std::unordered_map<std::string_view, std::set<std::string>> stop_to_buses_;
 };
 
 

@@ -37,20 +37,3 @@ int main() {
     return 0;
 }
 
-
-
-// {
-//     input::Reader reader;
-//     std::vector<std::string> all_string;
-//     for (int i = 0; i < base_request_count; ++i){
-//         string line;
-//         getline(cin, line);
-//         all_string.push_back(line);
-//     }
-//     sort (all_string.begin(), all_string.end(), greater<string>());
-
-//     for (int i = 0; i < base_request_count; ++i) {
-//         reader.ParseLine(all_string[i]);
-//     }
-//     reader.ApplyCommands(catalogue);
-// }

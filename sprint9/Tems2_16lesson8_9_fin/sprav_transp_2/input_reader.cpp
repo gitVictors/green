@@ -106,7 +106,7 @@ void input::Reader::ParseLine(std::string_view line) {
 void input::Reader::ApplyCommands(transport_catalogue::TransportCatalogue& catalogue)  {
 
     std::ranges::partition(commands_, [](CommandDescription const& cmd)
-                            {
+                    {
                             return cmd.command.starts_with("Stop");
                     });
 
