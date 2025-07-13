@@ -3,6 +3,7 @@
 #include <iterator>
 #include <algorithm>
 
+namespace input {
 
 /**
  * Парсит строку вида "10.123,  -30.1837" и возвращает пару координат (широта, долгота)
@@ -130,3 +131,4 @@ void input::Reader::ApplyCommands(transport_catalogue::TransportCatalogue& catal
     }
 }
 
+}// input
