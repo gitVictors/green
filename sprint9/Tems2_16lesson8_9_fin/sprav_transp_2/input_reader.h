@@ -2,9 +2,10 @@
 #include <string>
 #include <string_view>
 #include <vector>
-
-#include "geo.h"
 #include "transport_catalogue.h"
+
+
+namespace input {
 
 struct CommandDescription {
     // Определяет, задана ли команда (поле command непустое)
@@ -21,7 +22,7 @@ struct CommandDescription {
     std::string description;  // Параметры команды
 };
 
-class InputReader {
+class Reader {
 public:
     /**
      * Парсит строку в структуру CommandDescription и сохраняет результат в commands_
@@ -31,8 +32,11 @@ public:
     /**
      * Наполняет данными транспортный справочник, используя команды из commands_
      */
-    void ApplyCommands(TransportCatalogue& catalogue) const;
+    void ApplyCommands(transport_catalogue::TransportCatalogue& catalogue) ;
 
 private:
     std::vector<CommandDescription> commands_;
 };
+
+
+} //namespace input

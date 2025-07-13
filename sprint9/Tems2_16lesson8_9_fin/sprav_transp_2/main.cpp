@@ -1,19 +1,23 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <functional>
 
 #include "input_reader.h"
 #include "stat_reader.h"
 
+
 using namespace std;
+using namespace stat_p;
 
 int main() {
-    TransportCatalogue catalogue;
+    transport_catalogue::TransportCatalogue catalogue;
 
     int base_request_count;
     cin >> base_request_count >> ws;
 
     {
-        InputReader reader;
+        input::Reader reader;
         for (int i = 0; i < base_request_count; ++i) {
             string line;
             getline(cin, line);
@@ -27,6 +31,26 @@ int main() {
     for (int i = 0; i < stat_request_count; ++i) {
         string line;
         getline(cin, line);
-        ParseAndPrintStat(catalogue, line, cout);
+        stat_p::ParseAndPrintStat(catalogue, line, cout);
     }
+
+    return 0;
 }
+
+
+
+// {
+//     input::Reader reader;
+//     std::vector<std::string> all_string;
+//     for (int i = 0; i < base_request_count; ++i){
+//         string line;
+//         getline(cin, line);
+//         all_string.push_back(line);
+//     }
+//     sort (all_string.begin(), all_string.end(), greater<string>());
+
+//     for (int i = 0; i < base_request_count; ++i) {
+//         reader.ParseLine(all_string[i]);
+//     }
+//     reader.ApplyCommands(catalogue);
+// }

@@ -1,9 +1,8 @@
 #include "input_reader.h"
-
-#include <algorithm>
 #include <cassert>
 #include <iterator>
-#include <QDebug>
+#include <algorithm>
+
 
 /**
  * Парсит строку вида "10.123,  -30.1837" и возвращает пару координат (широта, долгота)
@@ -75,7 +74,7 @@ std::vector<std::string_view> ParseRoute(std::string_view route) {
     return results;
 }
 
-CommandDescription ParseCommandDescription(std::string_view line) {
+input::CommandDescription ParseCommandDescription(std::string_view line) {
     auto colon_pos = line.find(':');
     if (colon_pos == line.npos) {
         return {};
@@ -96,7 +95,7 @@ CommandDescription ParseCommandDescription(std::string_view line) {
             std::string(line.substr(colon_pos + 1))};
 }
 
-void InputReader::ParseLine(std::string_view line) {
+void input::Reader::ParseLine(std::string_view line) {
     auto command_description = ParseCommandDescription(line);
     if (command_description) {
         commands_.push_back(std::move(command_description));
@@ -104,7 +103,14 @@ void InputReader::ParseLine(std::string_view line) {
 }
 
 // input_reader.cpp
-void InputReader::ApplyCommands(TransportCatalogue& catalogue) const {
+void input::Reader::ApplyCommands(transport_catalogue::TransportCatalogue& catalogue)  {
+
+    std::ranges::partition(commands_, [](CommandDescription const& cmd)
+                            {
+                            return cmd.command.starts_with("Stop");
+                    });
+
+
     for (const auto& command : commands_) {
         if (command.command == "Stop") {
             auto coords = ParseCoordinates(command.description);

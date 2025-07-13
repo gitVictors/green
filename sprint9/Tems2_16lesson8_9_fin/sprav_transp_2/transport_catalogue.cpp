@@ -1,7 +1,8 @@
-
-#include <QDebug>
-// transport_catalogue.cpp
+#include <algorithm>
 #include "transport_catalogue.h"
+
+namespace transport_catalogue {
+
 
 void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinates) {
 
@@ -10,16 +11,10 @@ void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinat
 
 }
 
+//добавление маршрута
 void TransportCatalogue::AddBus(const std::string& name_number, const std::vector<std::string>& stops, bool is_roundtrip) {
 
     all_buses_.push_back({name_number, stops, is_roundtrip});
-
-    // //обновление остановок
-    // for (const auto& stop : stops) {
-    //     for (auto& stop_ : all_stops_) {
-    //         if (stop_.name == stop) stop_.buses.insert(name_number);
-    //     }
-    // }
 
     // Эффективное обновление информации об автобусах для каждой остановки
     for (const auto& stop_name : stops) {
@@ -57,30 +52,25 @@ std::optional<Stop> TransportCatalogue::GetStop(std::string_view name) const {
 
 std::vector<std::string_view>TransportCatalogue::GetBusesForStop(std::string_view stop_name) const {
 
-    std::vector<std::string_view> result;
-
-    auto stop_it = stopname_to_stop_.find(stop_name);
-    if (stop_it != stopname_to_stop_.end()) {
-        const auto& buses = stop_it->second->buses;
-        result.reserve(buses.size());
-        for (const auto& bus : buses) {
-            result.push_back(bus);
-        }
-        std::sort(result.begin(), result.end());
+    if (auto it = stopname_to_stop_.find(stop_name); it != stopname_to_stop_.end()) {
+        return {it->second->buses.begin(), it->second->buses.end()};
     }
-
-    return result;
+    return {};
 }
 
-// if (stop_to_buses_.count(stop_name)) {
-//     const auto& buses = stop_to_buses_.at(stop_name);
-//     result.assign(buses.begin(), buses.end());
+} //transport_catalogue
+
+
+// std::vector<std::string_view> result;
+
+// auto stop_it = stopname_to_stop_.find(stop_name);
+// if (stop_it != stopname_to_stop_.end()) {
+//     const auto& buses = stop_it->second->buses;
+//     result.reserve(buses.size());
+//     for (const auto& bus : buses) {
+//         result.push_back(bus);
+//     }
 //     std::sort(result.begin(), result.end());
 // }
 
-// Bus bus{std::move(name), std::move(stops), is_roundtrip};
-// buses_[bus.name] = std::move(bus);
-
-// for (const auto& stop_name : buses_[bus.name].stops) {
-//     busname_to_bus_ [stop_name].insert(buses_[bus.name].name);
-// }
+// return result;

@@ -1,10 +1,17 @@
-// stat_reader.cpp
+
 #include <iomanip>
 #include <cmath>
-#include <QDebug>
+#include <unordered_set>
+#include "stat_reader.h"
+
 #include "transport_catalogue.h"
 
-void ParseAndPrintStat(const TransportCatalogue& catalogue, std::string_view request,
+using namespace std;
+
+namespace stat_p{
+
+
+void ParseAndPrintStat(const transport_catalogue::TransportCatalogue& catalogue, std::string_view request,
                        std::ostream& output) {
 
     auto space_pos = request.find(' ');
@@ -21,7 +28,7 @@ void ParseAndPrintStat(const TransportCatalogue& catalogue, std::string_view req
             output << "Bus " << name << ": not found\n";
             return;
         }
-        qDebug() << "bus name = " << bus->name << "\n";
+
         // Calculate unique stops
         std::unordered_set<std::string_view> unique_stops;
         for (const auto& stop : bus->stops) {
@@ -34,7 +41,7 @@ void ParseAndPrintStat(const TransportCatalogue& catalogue, std::string_view req
             auto stop1 = catalogue.GetStop(std::string_view(bus->stops[i]));
             auto stop2 = catalogue.GetStop(std::string_view(bus->stops[i+1]));
             if (stop1 == std::nullopt)
-                qDebug() << "err stop1 = " << bus->stops[i] << "\n";
+                output << "err stop1 = " << bus->stops[i] << "\n";
             if (stop1 && stop2) {
                 route_length += ComputeDistance(stop1->coordinates, stop2->coordinates);
             }
@@ -63,10 +70,8 @@ void ParseAndPrintStat(const TransportCatalogue& catalogue, std::string_view req
             }
             output << "\n";
         }
-    }else {
-        qDebug() << "(get command ...)" << "\n";
-
     }
 
-
 }
+
+} //stat_p
