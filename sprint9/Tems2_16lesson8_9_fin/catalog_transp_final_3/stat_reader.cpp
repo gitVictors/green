@@ -11,6 +11,38 @@ using namespace std;
 namespace stat_p{
 
 
+// void PrintBusInfo(const transport_catalogue::Bus* bus,
+//                   string_view bus_name,
+//                   ostream& output) {
+
+//     if (!bus) {
+//         output << "Bus " << bus_name << ": not found\n";
+//         return;
+//     }
+
+//     // Подсчет уникальных остановок
+//     unordered_set<string_view> unique_stops;
+//     for (const auto* stop : bus->stops) {
+//         if (stop) unique_stops.insert(stop->name);
+//     }
+
+//     // Расчет длины маршрута
+//     double route_length = 0.0;
+//     for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
+//         const auto* stop1 = bus->stops[i];
+//         const auto* stop2 = bus->stops[i+1];
+//         if (stop1 && stop2) {
+//             route_length += ComputeDistance(stop1->coordinates, stop2->coordinates);
+//         }
+//     }
+
+//     output << "Bus " << bus_name << ": "
+//            << bus->stops.size() << " stops on route, "
+//            << unique_stops.size() << " unique stops, "
+//            << setprecision(6) << route_length << " route length\n";
+// }
+
+
 void PrintBusInfo(string_view bus_name, const transport_catalogue::RouteInfo route_info,
                   ostream& output) {
 
