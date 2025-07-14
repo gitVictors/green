@@ -57,7 +57,8 @@ public:
 
      Witch& operator=(const Witch& other)  //оператор копирующего присваивани
     {
-         if ( this == &other ) {
+         if ( this != &other ) {
+             name_ = other.name_;
             if (other.cat_)
                 cat_ = make_unique<Cat>(*other.cat_);
             else
