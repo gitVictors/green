@@ -37,14 +37,10 @@ bool CheckTreeProperty(const TreeNode<T>* node, const T* min, const T* max) noex
 // Измененная версия функции
 template <class T>
 bool CheckTreeProperty(const TreeNodePtr<T>& node) noexcept {
-    return CheckTreeProperty(node.get(), nullptr, nullptr);
+    return CheckTreeProperty(node , nullptr, nullptr);
 }
 
-// Альтернативная версия для сырых указателей
-// template <class T>
-// bool CheckTreeProperty(const TreeNode<T>* node) noexcept {
-//     return CheckTreeProperty(node, nullptr, nullptr);
-// }
+
 
 template <typename T>
 TreeNode<T>* begin(TreeNode<T>* node) noexcept {
@@ -71,7 +67,7 @@ TreeNode<T>* next(TreeNode<T>* node) noexcept {
     return nullptr;
 }
 
-template <typename T>
+// template <typename T>
 TreeNodePtr<int> N(int val, TreeNodePtr<int>&& left = {}, TreeNodePtr<int>&& right = {}) {
     auto node = std::make_unique<TreeNode<int>>(std::move(val), std::move(left), std::move(right));
 
