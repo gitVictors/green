@@ -5,6 +5,11 @@
 #include <string_view>
 #include <unordered_map>
 
+
+
+using namespace std::literals;
+
+
 template <typename Key, typename Value, typename ValueFactoryFn>
 class Cache {
 public:
@@ -16,7 +21,9 @@ public:
     // Фабрика должна вернуть shared_ptr<Value> либо unique_ptr<Value>.
     // Пример использования:
     // shared_ptr<Value> value = value_factory(key);
-    explicit Cache(ValueFactoryFn value_factory) {
+    explicit Cache(ValueFactoryFn value_factory):
+        value_factory_(std::move(value_factory))
+    {
         // Реализуйте конструктор самостоятельно
     }
 
@@ -24,10 +31,31 @@ public:
     // оно должно быть создано с помощью фабрики и сохранено в кеше.
     // Если на объект нет внешних ссылок, он должен быть удалён из кеша
     std::shared_ptr<Value> GetValue(const Key& key) {
-        (void) key;
+        //(void) key;
         // Заглушка. Реализуйте метод самостоятельно
-        return nullptr;
+        //return nullptr;
+        auto it = objects_.find(key);
+
+        if (it != objects_.end()) {
+            auto itm = it->second.lock ();
+            if (itm){
+                return itm;
+            }
+
+            objects_.erase(it);
+        }
+
+        //если нет ресурса в кеши сосдаем новый
+        //auto resource = std::make_shared<Object>(key);
+        auto new_object = value_factory_(key);
+        objects_[key] = new_object;
+        return new_object;
+
     }
+
+private:
+    std::unordered_map<Key, std::weak_ptr<Value>> objects_;
+    ValueFactoryFn value_factory_;
 };
 
 // Пример объекта, находящегося в кеше
@@ -111,8 +139,11 @@ public:
     using BookStore = std::unordered_map<std::string, std::string>;
 
     // Принимает константную ссылку на хранилище книг и ссылку на переменную-счётчик загрузок
-    explicit BookLoader(const BookStore& store, size_t& load_count) {
-        // Реализуйте конструктор самостоятельно
+    explicit BookLoader(const BookStore& store, size_t& load_count):
+        store_(store)
+        , load_count_(load_count)
+    {
+
     }
 
     // Загружает книгу из хранилища по её названию и возвращает указатель
@@ -122,12 +153,23 @@ public:
     // а счётчик не увеличивать
     std::shared_ptr<Book> operator()(const std::string& title) const {
         // Заглушка, реализуйте метод самостоятельно
-        (void) title;
-        throw std::out_of_range("Not implemented"s);
+        // (void) title;
+        try {
+            auto it = store_.find(title);
+            if (it == store_.end()) {
+                throw std::out_of_range("Book not found");
+            }
+            ++load_count_;
+            return std::make_shared<Book>(title, it->second);
+        } catch (...) {
+            throw std::out_of_range("Not implemented"s);
+        }
     }
 
 private:
          // Добавьте необходимые данные и/или методы
+    const BookStore& store_;
+    size_t& load_count_;
 };
 
 void Test2() {
