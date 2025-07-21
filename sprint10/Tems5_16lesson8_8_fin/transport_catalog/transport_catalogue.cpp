@@ -1,5 +1,7 @@
 #include <unordered_map>
 #include <unordered_set>
+#include <sstream>
+#include <QDebug>
 #include "transport_catalogue.h"
 
 namespace transport_catalogue {
@@ -7,6 +9,7 @@ namespace transport_catalogue {
 using namespace std;
 
 vector<pair<int, string>> ParseStopDistances(const string& input) {
+
     vector<pair<int, string>> result;
 
     // Находим начало списка расстояний (после координат)
@@ -65,17 +68,24 @@ vector<pair<int, string>> ParseStopDistances(const string& input) {
 }
 
 
-//Добавление дистанции между остановками
-void TransportCatalogue::SetDistance(std::string_view from, std::string_view to, int meters) {
 
+//Добавление дистанции между остановками
+void TransportCatalogue::SetDistance(std::string from, std::string to, int meters) {
+
+    // distances_[{from, to}] = meters;
+    // Добавляем расстояние в обе стороны (если маршрут двусторонний)
     distances_[{from, to}] = meters;
+  //  distances_[{to, from}] = meters; // Раскомментировать для двустороннего добавления
 }
 
-int TransportCatalogue::GetDistance(std::string_view from, std::string_view to) const {
-    auto iter = distances_.find({from, to});
-    if (iter == distances_.end()) {
-        iter = distances_.find({to, from});
+int TransportCatalogue::GetDistance(const std::string& from, const std::string& to) const {
 
+    auto iter = distances_.find({from, to});
+    qDebug() << "find = " << from << " " << to << "\n";
+
+    if (iter == distances_.end()) {
+
+        iter = distances_.find({to, from});
         if (iter == distances_.end()) {
             return -1; // Расстояние не найдено
         }
@@ -84,7 +94,23 @@ int TransportCatalogue::GetDistance(std::string_view from, std::string_view to) 
     return iter->second; // Возвращаем расстояние
 }
 
-void TransportCatalogue::AddDistance (vector<pair<int, string>>& pvc ){
+void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, string>>& pvc ){
+    // Находим указатель на текущую остановку
+    const Stop* from_stop = GetStop(name);
+    if (!from_stop) {
+        return; // Остановка не найдена
+    }
+
+    // Добавляем все расстояния из вектора pvc
+    for (const auto& [distance, to_stop_name] : pvc) {
+        //const Stop* to_stop = GetStop(to_stop_name);
+        // if (!to_stop) {
+        //     qDebug() << "Остановка назначения не найдена\n";
+        //     continue; // Остановка назначения не найдена
+        // }
+        SetDistance(from_stop->name, to_stop_name, distance );
+    }
+
 
 }
 
@@ -161,14 +187,52 @@ std::set<const Bus*> TransportCatalogue::GetBusesForStop(std::string_view stop_n
 
 
 
-const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& number_name) const {
+// const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& number_name) const {
 
+//     RouteInfo info{0, 0, 0.0};
+
+//     // Находим автобус по имени
+//     const Bus* bus = GetBus(number_name);
+//     if (!bus || bus->stops.empty()) {
+//         return info; // Возвращаем нулевые значения, если автобус не найден или нет остановок
+//     }
+
+//     // Вычисляем общее количество остановок
+//     info.stops_count = bus->is_roundtrip ? bus->stops.size() : bus->stops.size() * 2 - 1;
+
+//     // Вычисляем количество уникальных остановок
+//     std::unordered_set<const Stop*> unique_stops(bus->stops.begin(), bus->stops.end());
+//     info.unique_stops_count = unique_stops.size();
+
+//     // Вычисляем географическое расстояние
+//     double length = 0.0;
+//     for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
+//         length += ComputeDistance(bus->stops[i]->coordinates,
+//                                   bus->stops[i + 1]->coordinates);
+//     }
+
+//     //подсчет фактичкской длинны маршрута
+
+//     // отношение фактической длины маршрута к географическому расстоянию
+
+//     // Для некольцевого маршрута удваиваем расстояние (туда и обратно)
+//     if (!bus->is_roundtrip) {
+//         length *= 2;
+//     }
+
+//     info.route_length = length;
+
+//     return info;
+// }
+
+
+const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& number_name) const {
     RouteInfo info{0, 0, 0.0};
 
     // Находим автобус по имени
     const Bus* bus = GetBus(number_name);
     if (!bus || bus->stops.empty()) {
-        return info; // Возвращаем нулевые значения, если автобус не найден или нет остановок
+        return info;
     }
 
     // Вычисляем общее количество остановок
@@ -178,23 +242,54 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
     std::unordered_set<const Stop*> unique_stops(bus->stops.begin(), bus->stops.end());
     info.unique_stops_count = unique_stops.size();
 
-    // Вычисляем длину маршрута
-    double length = 0.0;
+    // Вычисляем географическое расстояние
+    double geo_length = 0.0;
+    // Вычисляем фактическое расстояние
+    double real_length = 0.0;
+
     for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
-        length += ComputeDistance(bus->stops[i]->coordinates,
-                                  bus->stops[i + 1]->coordinates);
+        const Stop* from = bus->stops[i];
+        const Stop* to = bus->stops[i + 1];
+
+        // Добавляем географическое расстояние
+        geo_length += ComputeDistance(from->coordinates, to->coordinates);
+
+        // Добавляем фактическое расстояние
+        int distance = GetDistance(from->name, to->name);
+        if (distance != -1) {
+            real_length += distance;
+        }
     }
 
-    // Для некольцевого маршрута удваиваем расстояние (туда и обратно)
+    // Для некольцевого маршрута удваиваем расстояния (туда и обратно)
     if (!bus->is_roundtrip) {
-        length *= 2;
+        geo_length *= 2;
+
+        // Добавляем обратный путь для фактического расстояния
+        for (size_t i = bus->stops.size() - 1; i > 0; --i) {
+            const Stop* from = bus->stops[i];
+            const Stop* to = bus->stops[i - 1];
+
+            int distance = GetDistance(from->name, to->name);
+            if (distance != -1) {
+                real_length += distance;
+            }
+        }
     }
 
-    info.route_length = length;
+    // Сохраняем фактическую длину маршрута
+    info.route_length = real_length;
+
+
+    // Вычисляем отношение фактической длины к географическому расстоянию
+    if (geo_length > 0) {
+        info.curvature = real_length / geo_length;
+    } else {
+        info.curvature = 0.0;
+    }
 
     return info;
 }
-
 
 
 } //transport_catalogue

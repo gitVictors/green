@@ -30,7 +30,8 @@ struct Bus {
 struct RouteInfo {
     size_t stops_count;
     size_t unique_stops_count;
-    double route_length;
+    double route_length; //длинна маршрута
+    double curvature;  // отношение фактической длины маршрута к географическому расстоянию
 };
 
 struct PairHasher {
@@ -40,6 +41,8 @@ struct PairHasher {
         return h1 ^ (h2 << 1);
     }
 };
+
+vector<pair<int, string>> ParseStopDistances(const string& input);
 
 class TransportCatalogue {
 public:
@@ -56,9 +59,9 @@ public:
     const RouteInfo RouteInformation(const std::string_view& number_name) const;
 
     //дистанция между остановками
-    void AddDistance (vector<pair<int, string>>& pvc );
-    void SetDistance(std::string_view from,  std::string_view to, int meters);
-    int GetDistance(std::string_view from, std::string_view to) const;
+    void AddDistance (const std::string& name, vector<pair<int, string>>& pvc );
+    void SetDistance(std::string from,  std::string to, int meters);
+    int GetDistance(const string &from, const string &to) const;
 
 private:
     void UpdateStopToBus (const std::string& name_number, const std::vector<std::string>& stops);

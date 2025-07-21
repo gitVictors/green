@@ -15,7 +15,8 @@ void PrintBusInfo(string_view bus_name, const transport_catalogue::RouteInfo rou
     output << "Bus " << bus_name << ": "
            << route_info.stops_count << " stops on route, "
            << route_info.unique_stops_count << " unique stops, "
-           << setprecision(6) << route_info.route_length << " route length\n";
+           << setprecision(6) << route_info.route_length << " route length, "
+           << route_info.curvature << " curvature\n";
 
 }
 
