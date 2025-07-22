@@ -74,7 +74,7 @@ void TransportCatalogue::SetDistance(std::string_view from, std::string_view to,
 
     pair<string_view, string_view> var = {from, to};
 
-    distances_[move(var)] = meters;
+    distances_[var] = meters;
 
 }
 
