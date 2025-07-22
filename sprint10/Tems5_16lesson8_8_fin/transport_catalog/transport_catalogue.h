@@ -63,6 +63,8 @@ public:
     void SetDistance(std::string_view from,  std::string_view to, int meters);
     int GetDistance(const string &from, const string &to) const;
 
+    vector<pair<int, string>> ParseStopDistances(const string& input);
+
 private:
     void UpdateStopToBus (const std::string& name_number, const std::vector<std::string>& stops);
 
@@ -76,7 +78,7 @@ private:
     std::unordered_map<std::string_view, std::set<const Bus*>> stop_to_buses_;
 
     //дистанция между остановками
-    std::unordered_map<std::pair<std::string_view, std::string_view>, int,  PairHasher> distances_;
+    std::unordered_map<std::pair<std::string_view, std::string_view>, int,  PairHasher> distances_;  //
 };
 
 

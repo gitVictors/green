@@ -8,7 +8,7 @@ namespace transport_catalogue {
 
 using namespace std;
 
-vector<pair<int, string>> ParseStopDistances(const string& input) {
+vector<pair<int, string>> TransportCatalogue::ParseStopDistances(const string& input) {
 
     vector<pair<int, string>> result;
 
@@ -64,6 +64,22 @@ vector<pair<int, string>> ParseStopDistances(const string& input) {
         result.emplace_back(distance, stop_name);
     }
 
+    // {
+    //     size_t count = 0;
+    //     const size_t max_show = result.size();
+    //     for (const auto& [dist, to] : result) {
+    //         if (count >= max_show) break;
+
+    //         qDebug() << "  Entry" << count + 1 << ":"
+    //                  << "\n    To:" << to
+    //                  << "\n    Distance:" << dist;
+    //         ++count;
+    //     }
+    //     qDebug() << "-------\n";
+
+    // }
+
+
     return result;
 }
 
@@ -76,6 +92,12 @@ void TransportCatalogue::SetDistance(std::string_view from, std::string_view to,
 
     distances_[var] = meters;
 
+    // auto [iterator, inserted] = distances_.insert({var, meters});
+    // if (inserted) {
+    //     qDebug () << "susseful insert \n";
+    // } else {
+    //     qDebug() << "error insert \n";
+    // }
 }
 
 int TransportCatalogue::GetDistance(const std::string& from, const std::string& to) const {
@@ -84,17 +106,7 @@ int TransportCatalogue::GetDistance(const std::string& from, const std::string& 
     else return -1;
 }
 
-// auto iter = distances_.find({from, to});
-// // qDebug() << "find = " << from << " " << to << "\n";
 
-// if (iter == distances_.end()) {
-
-//     iter = distances_.find({to, from});
-//     if (iter == distances_.end()) {
-//         return -1; // Расстояние не найдено
-//     }
-// }
-// return iter->second; // Возвращаем расстояние
 
 void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, string>>& pvc ){
 
@@ -103,27 +115,25 @@ void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, 
 
     if (!from_stop) {
         return; // Остановка не найдена
+        qDebug() << "from_stop ERR = " << from_stop->name << "\n";
     }
 
     // Добавляем все расстояния из вектора pvc
     for (const auto& [distance, to_stop_name] : pvc) {
 
         const Stop* p_to_stop = GetStop(to_stop_name);
-        // if (!p_to_stop){
-        //     continue;
-        // }
+        if (!p_to_stop){
+            continue;
+            qDebug() << "p_to_stop ERR = " << p_to_stop->name << "\n";
+        }
 
         SetDistance( string_view(from_stop->name),  string_view(p_to_stop->name), distance );
-        // qDebug() << "add from " << from_stop->name << "to " << to_stop_name << "distance" << distance << "\n";
+        qDebug() << "add from " << from_stop->name << "to " << to_stop_name << "distance" << distance << "\n";
     }
 
 }
 
-//const Stop* to_stop = GetStop(to_stop_name);
-// if (!to_stop) {
-//     qDebug() << "Остановка назначения не найдена\n";
-//     continue; // Остановка назначения не найдена
-// }
+
 
 void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinates) {
 
@@ -236,21 +246,22 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
         return info;
     }
 
-    {
 
-        size_t count = 0;
-        const size_t max_show = distances_.size();
-        for (const auto& [stops, distance] : distances_) {
-            if (count >= max_show) break;
+    // {
 
-            qDebug() << "  Entry" << count + 1 << ":"
-                     << "\n    From:" << stops.first.data()
-                     << "\n    To:" << stops.second.data()
-                     << "\n    Distance:" << distance;
-            ++count;
-        }
+    //     size_t count = 0;
+    //     const size_t max_show = distances_.size();
+    //     for (const auto& [stops, distance] : distances_) {
+    //         if (count >= max_show) break;
 
-    }
+    //         qDebug() << "  Entry" << count + 1 << ":"
+    //                  << "\n    From:" << stops.first.data()
+    //                  << "\n    To:" << stops.second.data()
+    //                  << "\n    Distance:" << distance;
+    //         ++count;
+    //     }
+
+    // }
 
     // Вычисляем общее количество остановок
     info.stops_count = bus->is_roundtrip ? bus->stops.size() : bus->stops.size() * 2 - 1;
@@ -281,7 +292,7 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
         const Stop* to = bus->stops[i - 1];
 
         int distance = GetDistance(from->name, to->name);
-        //qDebug () << "\n from " << from->name << "to" << to->name << "distance " << distance <<"\n";
+        // qDebug () << "\n from " << from->name << "to" << to->name << "distance " << distance ;
         if (distance != -1) {
             real_length += distance;
 
@@ -316,6 +327,21 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
 } //transport_catalogue
 
 
+//const Stop* to_stop = GetStop(to_stop_name);
+// if (!to_stop) {
+//     qDebug() << "Остановка назначения не найдена\n";
+//     continue; // Остановка назначения не найдена
+// }
+// auto iter = distances_.find({from, to});
+// // qDebug() << "find = " << from << " " << to << "\n";
 
+// if (iter == distances_.end()) {
+
+//     iter = distances_.find({to, from});
+//     if (iter == distances_.end()) {
+//         return -1; // Расстояние не найдено
+//     }
+// }
+// return iter->second; // Возвращаем расстояние
 
 

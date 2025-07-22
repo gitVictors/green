@@ -119,7 +119,7 @@ void input::Reader::ApplyCommands(transport_catalogue::TransportCatalogue& catal
             auto coords = ParseCoordinates(command.description);
             catalogue.AddStop(command.id, coords);
 
-            auto result = transport_catalogue::ParseStopDistances(command.description);
+            auto result = catalogue.ParseStopDistances(command.description);
             catalogue.AddDistance (command.id, result);
 
         } else if (command.command == "Bus") {
