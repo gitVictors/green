@@ -38,7 +38,7 @@ struct PairHasher {
     size_t operator()(const std::pair<std::string_view, std::string_view> pr) const{
         auto h1 = std::hash<std::string_view>{}(pr.first);
         auto h2 = std::hash<std::string_view>{}(pr.second);
-        return h1 ^ (h2 << 1);
+        return h1 + h2 * 37;
     }
 };
 
