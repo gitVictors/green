@@ -60,7 +60,7 @@ public:
 
     //дистанция между остановками
     void AddDistance (const std::string& name, vector<pair<int, string>>& pvc );
-    void SetDistance(std::string from,  std::string to, int meters);
+    void SetDistance(std::string_view from,  std::string_view to, int meters);
     int GetDistance(const string &from, const string &to) const;
 
 private:

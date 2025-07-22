@@ -70,49 +70,60 @@ vector<pair<int, string>> ParseStopDistances(const string& input) {
 
 
 //Добавление дистанции между остановками
-void TransportCatalogue::SetDistance(std::string from, std::string to, int meters) {
+void TransportCatalogue::SetDistance(std::string_view from, std::string_view to, int meters) {
 
-    // distances_[{from, to}] = meters;
-    // Добавляем расстояние в обе стороны (если маршрут двусторонний)
-    distances_[{from, to}] = meters;
-  //  distances_[{to, from}] = meters; // Раскомментировать для двустороннего добавления
+    pair<string_view, string_view> var = {from, to};
+
+    distances_[move(var)] = meters;
+
 }
 
 int TransportCatalogue::GetDistance(const std::string& from, const std::string& to) const {
-
-    auto iter = distances_.find({from, to});
-    qDebug() << "find = " << from << " " << to << "\n";
-
-    if (iter == distances_.end()) {
-
-        iter = distances_.find({to, from});
-        if (iter == distances_.end()) {
-            return -1; // Расстояние не найдено
-        }
-    }
-
-    return iter->second; // Возвращаем расстояние
+    if (distances_.count({from, to})) return distances_.at({from, to});
+    if (distances_.count({to,from})) return distances_.at({to, from});
+    else return -1;
 }
 
+// auto iter = distances_.find({from, to});
+// // qDebug() << "find = " << from << " " << to << "\n";
+
+// if (iter == distances_.end()) {
+
+//     iter = distances_.find({to, from});
+//     if (iter == distances_.end()) {
+//         return -1; // Расстояние не найдено
+//     }
+// }
+// return iter->second; // Возвращаем расстояние
+
 void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, string>>& pvc ){
+
     // Находим указатель на текущую остановку
     const Stop* from_stop = GetStop(name);
+
     if (!from_stop) {
         return; // Остановка не найдена
     }
 
     // Добавляем все расстояния из вектора pvc
     for (const auto& [distance, to_stop_name] : pvc) {
-        //const Stop* to_stop = GetStop(to_stop_name);
-        // if (!to_stop) {
-        //     qDebug() << "Остановка назначения не найдена\n";
-        //     continue; // Остановка назначения не найдена
+
+        const Stop* p_to_stop = GetStop(to_stop_name);
+        // if (!p_to_stop){
+        //     continue;
         // }
-        SetDistance(from_stop->name, to_stop_name, distance );
+
+        SetDistance( string_view(from_stop->name),  string_view(p_to_stop->name), distance );
+        // qDebug() << "add from " << from_stop->name << "to " << to_stop_name << "distance" << distance << "\n";
     }
 
-
 }
+
+//const Stop* to_stop = GetStop(to_stop_name);
+// if (!to_stop) {
+//     qDebug() << "Остановка назначения не найдена\n";
+//     continue; // Остановка назначения не найдена
+// }
 
 void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinates) {
 
@@ -188,51 +199,57 @@ std::set<const Bus*> TransportCatalogue::GetBusesForStop(std::string_view stop_n
 
 
 // const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& number_name) const {
-
 //     RouteInfo info{0, 0, 0.0};
-
 //     // Находим автобус по имени
 //     const Bus* bus = GetBus(number_name);
 //     if (!bus || bus->stops.empty()) {
 //         return info; // Возвращаем нулевые значения, если автобус не найден или нет остановок
 //     }
-
 //     // Вычисляем общее количество остановок
 //     info.stops_count = bus->is_roundtrip ? bus->stops.size() : bus->stops.size() * 2 - 1;
-
 //     // Вычисляем количество уникальных остановок
 //     std::unordered_set<const Stop*> unique_stops(bus->stops.begin(), bus->stops.end());
 //     info.unique_stops_count = unique_stops.size();
-
 //     // Вычисляем географическое расстояние
 //     double length = 0.0;
 //     for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
 //         length += ComputeDistance(bus->stops[i]->coordinates,
 //                                   bus->stops[i + 1]->coordinates);
 //     }
-
 //     //подсчет фактичкской длинны маршрута
-
 //     // отношение фактической длины маршрута к географическому расстоянию
-
 //     // Для некольцевого маршрута удваиваем расстояние (туда и обратно)
 //     if (!bus->is_roundtrip) {
 //         length *= 2;
 //     }
-
 //     info.route_length = length;
-
 //     return info;
 // }
 
 
 const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& number_name) const {
-    RouteInfo info{0, 0, 0.0};
+    RouteInfo info{0, 0, 0.0, 0.0};
 
     // Находим автобус по имени
     const Bus* bus = GetBus(number_name);
     if (!bus || bus->stops.empty()) {
         return info;
+    }
+
+    {
+
+        size_t count = 0;
+        const size_t max_show = distances_.size();
+        for (const auto& [stops, distance] : distances_) {
+            if (count >= max_show) break;
+
+            qDebug() << "  Entry" << count + 1 << ":"
+                     << "\n    From:" << stops.first.data()
+                     << "\n    To:" << stops.second.data()
+                     << "\n    Distance:" << distance;
+            ++count;
+        }
+
     }
 
     // Вычисляем общее количество остановок
@@ -254,27 +271,30 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
         // Добавляем географическое расстояние
         geo_length += ComputeDistance(from->coordinates, to->coordinates);
 
-        // Добавляем фактическое расстояние
+    }
+
+
+    //Подсчет фактический путь
+    for (size_t i = bus->stops.size() - 1; i > 0; --i) {
+
+        const Stop* from = bus->stops[i];
+        const Stop* to = bus->stops[i - 1];
+
         int distance = GetDistance(from->name, to->name);
+        //qDebug () << "\n from " << from->name << "to" << to->name << "distance " << distance <<"\n";
         if (distance != -1) {
             real_length += distance;
+
         }
     }
+
+
+
 
     // Для некольцевого маршрута удваиваем расстояния (туда и обратно)
     if (!bus->is_roundtrip) {
         geo_length *= 2;
-
-        // Добавляем обратный путь для фактического расстояния
-        for (size_t i = bus->stops.size() - 1; i > 0; --i) {
-            const Stop* from = bus->stops[i];
-            const Stop* to = bus->stops[i - 1];
-
-            int distance = GetDistance(from->name, to->name);
-            if (distance != -1) {
-                real_length += distance;
-            }
-        }
+        real_length *= 2;
     }
 
     // Сохраняем фактическую длину маршрута
@@ -288,11 +308,14 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
         info.curvature = 0.0;
     }
 
+
     return info;
 }
 
 
 } //transport_catalogue
+
+
 
 
 
