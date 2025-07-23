@@ -42,7 +42,7 @@ struct PairHasher {
     }
 };
 
-vector<pair<int, string>> ParseStopDistances(const string& input);
+//vector<pair<int, string>> ParseStopDistances(const string& input);
 
 class TransportCatalogue {
 public:
