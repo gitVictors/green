@@ -119,8 +119,7 @@ void input::Reader::ApplyCommands(transport_catalogue::TransportCatalogue& catal
             auto coords = ParseCoordinates(command.description);
             catalogue.AddStop(command.id, coords);
 
-           // auto result = catalogue.ParseStopDistances(command.id, command.description);
-           // catalogue.AddDistance (command.id, result);
+   
 
         } else if (command.command == "Bus") {
             auto stops = ParseRoute(command.description);
@@ -134,11 +133,6 @@ void input::Reader::ApplyCommands(transport_catalogue::TransportCatalogue& catal
 
             catalogue.AddBus(command.id, std::move(stop_names), is_roundtrip);
         }
-    }
-
-    for (const auto& command : commands_) {
-        auto result = catalogue.ParseStopDistances(command.id, command.description);
-        catalogue.AddDistance (command.id, result);
     }
 }
 

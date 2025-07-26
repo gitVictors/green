@@ -8,7 +8,7 @@ namespace transport_catalogue {
 
 using namespace std;
 
-vector<pair<int, string>> TransportCatalogue::ParseStopDistances(const string& input) {
+vector<pair<int, string>> TransportCatalogue::ParseStopDistances(std::string id, const string& input) {
 
     vector<pair<int, string>> result;
 
@@ -64,20 +64,22 @@ vector<pair<int, string>> TransportCatalogue::ParseStopDistances(const string& i
         result.emplace_back(distance, stop_name);
     }
 
-    // {
-    //     size_t count = 0;
-    //     const size_t max_show = result.size();
-    //     for (const auto& [dist, to] : result) {
-    //         if (count >= max_show) break;
+    //for debug
+    {
+        size_t count = 0;
+        const size_t max_show = result.size();
+        qDebug () << "Name Bus " << id << "\n";
+        for (const auto& [dist, to] : result) {
+            if (count >= max_show) break;
 
-    //         qDebug() << "  Entry" << count + 1 << ":"
-    //                  << "\n    To:" << to
-    //                  << "\n    Distance:" << dist;
-    //         ++count;
-    //     }
-    //     qDebug() << "-------\n";
+            qDebug() << "  Entry" << count + 1 << ":"
+                     << "\n    To:" << to
+                     << "\n    Distance:" << dist;
+            ++count;
+        }
+        qDebug() << "-------\n";
 
-    // }
+    }
 
 
     return result;
@@ -92,12 +94,6 @@ void TransportCatalogue::SetDistance(std::string_view from, std::string_view to,
 
     distances_[var] = meters;
 
-    // auto [iterator, inserted] = distances_.insert({var, meters});
-    // if (inserted) {
-    //     qDebug () << "susseful insert \n";
-    // } else {
-    //     qDebug() << "error insert \n";
-    // }
 }
 
 int TransportCatalogue::GetDistance(const std::string& from, const std::string& to) const {
@@ -114,8 +110,8 @@ void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, 
     const Stop* from_stop = GetStop(name);
 
     if (!from_stop) {
+        qDebug() << "from_stop ERR \n" ;
         return; // Остановка не найдена
-        qDebug() << "from_stop ERR = " << from_stop->name << "\n";
     }
 
     // Добавляем все расстояния из вектора pvc
@@ -123,17 +119,19 @@ void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, 
 
         const Stop* to_stop = GetStop(to_stop_name);
         if (!to_stop){
+            qDebug() << "p_to_stop ERR = \n" ;
             continue;
-            qDebug() << "p_to_stop ERR = " << to_stop->name << "\n";
+
         }
 
         SetDistance( string_view(from_stop->name),  string_view(to_stop->name), distance );
 
-        //qDebug() << "add from " << from_stop->name << "to " << to_stop_name << "distance" << distance << "\n";
+        qDebug() << "ADD route from " << from_stop->name << "to " << to_stop_name << "distance" << distance << "\n";
     }
 
-}
 
+
+}
 
 
 void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinates) {
@@ -141,7 +139,7 @@ void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinat
     all_stops_.push_back({name, coordinates});
     stopname_to_stop_[all_stops_.back().name] = &all_stops_.back();
     stop_to_buses_[all_stops_.back().name]; // Инициализируем пустое множество
-
+    qDebug () << "Add all_stop " << all_stops_.back().name << "\n";
 }
 
 //добавление маршрута
@@ -315,6 +313,21 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
     if (!bus || bus->stops.empty()) {
         return info;
     }
+
+    // {
+    //     size_t count = 0;
+    //     const size_t max_show = distances_.size();
+    //     for (const auto& [stops, distance] : distances_) {
+    //         if (count >= max_show) break;
+
+    //         qDebug() << "  Entry" << count + 1 << ":"
+    //                  << "\n    From:" << stops.first.data()
+    //                  << "\n    To:" << stops.second.data()
+    //                  << "\n    Distance:" << distance;
+    //         ++count;
+    //     }
+
+    // }
 
     // Вычисляем количество остановок и уникальных остановок
     info.stops_count = bus->is_roundtrip ? bus->stops.size() : bus->stops.size() * 2 - 1;
