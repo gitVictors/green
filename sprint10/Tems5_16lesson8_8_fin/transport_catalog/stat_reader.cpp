@@ -21,7 +21,7 @@ void PrintBusInfo(string_view bus_name, const transport_catalogue::RouteInfo rou
 }
 
 void PrintStopInfo(const transport_catalogue::Stop* stop,
-                   std::set<const transport_catalogue::Bus*> buses,
+                   std::set<const transport_catalogue::Bus*, transport_catalogue::BusPtrCompare> buses,
                    ostream& output) {
 
     if (buses.empty()) {

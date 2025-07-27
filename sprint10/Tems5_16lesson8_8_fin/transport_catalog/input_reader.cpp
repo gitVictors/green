@@ -137,8 +137,10 @@ void input::Reader::ApplyCommands(transport_catalogue::TransportCatalogue& catal
     }
 
     for (const auto& command : commands_) {
-        auto result = catalogue.ParseStopDistances(command.id, command.description);
-        catalogue.AddDistance (command.id, result);
+        if (command.command == "Stop"){
+            auto result = catalogue.ParseStopDistances(command.description);
+            catalogue.AddDistance (command.id, result);
+        }
     }
 }
 

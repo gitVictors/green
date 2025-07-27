@@ -18,7 +18,7 @@ using namespace std;
 struct Stop {
     std::string name;
     Coordinates coordinates;
-    //std::set<std::string> buses;
+
 };
 
 struct Bus {
@@ -42,6 +42,12 @@ struct PairHasher {
     }
 };
 
+struct BusPtrCompare {
+    bool operator()(const Bus* lhs, const Bus* rhs) const {
+        return lhs->name < rhs->name;
+    }
+};
+
 //vector<pair<int, string>> ParseStopDistances(const string& input);
 
 class TransportCatalogue {
@@ -54,7 +60,7 @@ public:
     const Bus* GetBus( std::string_view name) const;
     const Stop* GetStop(std::string_view name) const;
 
-    std::set<const Bus*> GetBusesForStop(std::string_view stop_name) const;
+    std::set<const Bus*, BusPtrCompare> GetBusesForStop(std::string_view stop_name) const;
 
     const RouteInfo RouteInformation(const std::string_view& number_name) const;
 
@@ -63,7 +69,7 @@ public:
     void SetDistance(std::string_view from,  std::string_view to, int meters);
     int GetDistance(const string &from, const string &to) const;
 
-    vector<pair<int, string>>ParseStopDistances(std::string id, const string& input);
+    vector<pair<int, string>>ParseStopDistances(const string& input);
 
 private:
     void UpdateStopToBus (const std::string& name_number, const std::vector<std::string>& stops);
@@ -75,7 +81,7 @@ private:
     std::unordered_map<std::string_view, const Bus*> busname_to_bus_; //маршрут
 
     // Новое поле для хранения автобусов по остановкам
-    std::unordered_map<std::string_view, std::set<const Bus*>> stop_to_buses_;
+    std::unordered_map<std::string_view, std::set<const Bus*, BusPtrCompare>> stop_to_buses_;
 
     //дистанция между остановками
     std::unordered_map<std::pair<std::string_view, std::string_view>, int,  PairHasher> distances_;  //
