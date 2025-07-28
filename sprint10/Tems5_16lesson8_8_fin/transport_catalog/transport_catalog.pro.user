@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 13.0.0, 2025-07-28T15:04:31. -->
+<!-- Written by QtCreator 13.0.0, 2025-07-28T15:38:06. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -160,11 +160,13 @@
     <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
     <value type="QString" key="PerfRecordArgsId">-e cpu-cycles --call-graph dwarf,4096 -F 250</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.CustomExecutableRunConfiguration</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey"></value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/media/veracrypt1/green/sprint10/Tems5_16lesson8_8_fin/transport_catalog/transport_catalog.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/media/veracrypt1/green/sprint10/Tems5_16lesson8_8_fin/transport_catalog/transport_catalog.pro</value>
     <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/media/veracrypt1/green/sprint10/Tems5_16lesson8_8_fin/transport_catalog/build/Qt_6_5_0_gcc_64-Debug</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

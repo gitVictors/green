@@ -1,7 +1,5 @@
 #include <iostream>
 #include <string>
-// #include <algorithm>
-// #include <functional>
 
 #include "input_reader.h"
 #include "stat_reader.h"

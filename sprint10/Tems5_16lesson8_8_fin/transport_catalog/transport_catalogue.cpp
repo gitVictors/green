@@ -1,7 +1,6 @@
  #include <unordered_map>
 #include <unordered_set>
 #include <sstream>
-#include <QDebug>
 #include "transport_catalogue.h"
 
 namespace transport_catalogue {
@@ -93,7 +92,6 @@ void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, 
     const Stop* from_stop = GetStop(name);
 
     if (!from_stop) {
-        qDebug() << "from_stop ERR \n" ;
         return; // Остановка не найдена
     }
 
@@ -102,7 +100,7 @@ void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, 
 
         const Stop* to_stop = GetStop(to_stop_name);
         if (!to_stop){
-            qDebug() << "p_to_stop ERR = \n" ;
+
             continue;
 
         }
@@ -247,16 +245,6 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
 
     info.route_length = real_length;
 
-    // Извилистость (гарантированно >= 1.0)
-    /*if (geo_length > 0) {
-        info.curvature = real_length / geo_length;
-        // Обеспечиваем выполнение условия задачи (curvature >= 1)
-        if (info.curvature < 1.0) {
-            info.curvature = 1.0;
-        }
-    } else {
-        info.curvature = 1.0;
-    }*/
 
     info.curvature = real_length / geo_length;
 
