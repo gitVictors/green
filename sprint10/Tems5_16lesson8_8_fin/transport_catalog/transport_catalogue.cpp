@@ -248,7 +248,7 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
     info.route_length = real_length;
 
     // Извилистость (гарантированно >= 1.0)
-    if (geo_length > 0) {
+    /*if (geo_length > 0) {
         info.curvature = real_length / geo_length;
         // Обеспечиваем выполнение условия задачи (curvature >= 1)
         if (info.curvature < 1.0) {
@@ -256,7 +256,9 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
         }
     } else {
         info.curvature = 1.0;
-    }
+    }*/
+
+    info.curvature = real_length / geo_length;
 
     return info;
 }
