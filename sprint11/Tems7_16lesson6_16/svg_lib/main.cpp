@@ -45,23 +45,59 @@ void DrawPicture() {
 }  // namespace
 
 
+void Polymorph() {
+    using namespace std;
+    {
+        Circle c;
+        Object& obj = c;
+
+        obj.Render(cout);
+        cout << endl;
+    } {
+        Polyline p;
+        Object& obj = p;
+
+        obj.Render(cout);
+        cout << endl;
+    } {
+        Text t;
+        Object& obj = t;
+
+        obj.Render(cout);
+    }
+}
+
+
 int main() {
     /*
        Это пример для иллюстрации работы класса Circle, данного в заготовке решения.
        После того как вы реализуете реализуете класс Document, аналогичного результата
        можно будет достичь так:
     */
-       Document doc;
-       doc.Add(Circle().SetCenter({20, 20}).SetRadius(10));
-       doc.Render(std::cout);
+    //    Document doc;
+    //    doc.Add(Circle().SetCenter({20, 20}).SetRadius(10));
+    //    doc.Render(std::cout);
 
-    std::cout << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"sv << std::endl;
-    std::cout << "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">"sv << std::endl;
+    // // std::cout << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"sv << std::endl;
+    // // std::cout << "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">"sv << std::endl;
 
-    Circle c;
-    c.SetCenter({20, 20}).SetRadius(10);
-    RenderContext ctx(std::cout, 2, 2);
-    c.Render(ctx);
+    // Circle c;
+    // c.SetCenter({20, 20}).SetRadius(10);
+    // RenderContext ctx(std::cout, 2, 2);
+    // c.Render(ctx);
 
-    std::cout << "</svg>"sv;
+    // std::cout << "</svg>"sv;
+
+    // DrawPicture();
+    // {
+    //     Document doc;
+    //     doc.Add(Text()
+    //                 .SetPosition({ 35, 20 })
+    //                 .SetOffset({ 0, 6 })
+    //                 .SetFontSize(12)
+    //                 .SetData("Hello C++"s));
+    //     doc.Render(std::cout);
+    // }
+
+    Polymorph();
 }

@@ -58,7 +58,7 @@ struct RenderContext {
 class Object {
 public:
 
-    virtual void Render(const RenderContext& context) const;
+    virtual void Render(const RenderContext& context) const ;
 
     virtual ~Object() = default;
 
@@ -154,9 +154,9 @@ private:
     void RenderObject(const RenderContext& context) const override;
 
     std::string data_;
-    std::string font_weight_;
-    std::string font_family_;
-    uint32_t font_size_;
+    std::string font_weight_= {};
+    std::string font_family_={};
+    uint32_t font_size_ = 1;
     Point position_;
     Point offset_;
 };

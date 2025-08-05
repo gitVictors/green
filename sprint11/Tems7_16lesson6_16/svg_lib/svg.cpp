@@ -144,17 +144,20 @@ std::string Text::GetData() const{
 //     auto& out = context.out;
 
 //     out << "<text ";
-//     out << "x=\"" << GetPosition().x << "\" ";
-//     out << "y=\"" << GetPosition().y << "\" ";
-//     out << "dx=\"" << GetOffset().x << "\" ";
-//     out << "dy=\"" << GetOffset().y << "\" ";
-//     out << "font-size=\"" << GetFontSize() << "\" ";
-//     out << "font-family=\"" << GetFontFamily() << "\" ";
-//     out << "font-weight=\"" << GetFontWeight() << "\">";
+//     out << " x=\"" << GetPosition().x << "\" ";
+//     out << " y=\"" << GetPosition().y << "\" ";
+//     out << " dx=\"" << GetOffset().x << "\" ";
+//     out << " dy=\"" << GetOffset().y << "\" ";
+//     out << " font-size=\"" << GetFontSize() << "\" ";
 
-//     HtmlEncodeString(out, GetData());
+//     if (!font_family_.empty())
+//         out << " font-family=\"" << GetFontFamily() << "\" ";
+//     if (!font_weight_.empty())
+//         out << " font-weight=\"" << GetFontWeight() << "\">";
 
-//     out << "</text>" << std::endl;
+//     out << ">";
+//     HtmlEncodeString(out, data_);
+//     out << "</text>";
 // }
 
 void Text::RenderObject(const RenderContext& context) const {
@@ -162,13 +165,19 @@ void Text::RenderObject(const RenderContext& context) const {
     out << "<text";
 
     // Вывод атрибутов
-    RenderAttr(out, "x", position_.x);
-    RenderAttr(out, "y", position_.y);
-    RenderAttr(out, "dx", offset_.x);
-    RenderAttr(out, "dy", offset_.y);
-    RenderAttr(out, "font-size", font_size_);
-    RenderAttr(out, "font-family", font_family_);
-    RenderAttr(out, "font-weight", font_weight_);
+    RenderAttr(out, " x", position_.x);
+    RenderAttr(out, " y", position_.y);
+    RenderAttr(out, " dx", offset_.x);
+    RenderAttr(out, " dy", offset_.y);
+    RenderAttr(out, " font-size", font_size_);
+
+    // Условные атрибуты (выводятся только если не пустые)
+    if (!font_family_.empty()) {
+        RenderAttr(out, " font-family", font_family_);
+    }
+    if (!font_weight_.empty()) {
+        RenderAttr(out, " font-weight", font_weight_);
+    }
 
     // Закрывающий тег и содержимое
     out << ">";
