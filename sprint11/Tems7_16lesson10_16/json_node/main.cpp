@@ -256,6 +256,8 @@ void Benchmark() {
 
 int main() {
 
+  //  LoadJSON("truestory"s);
+ //   LoadJSON("nullmeansmothing"s);
     TestNull();
     TestNumbers();
     TestStrings();

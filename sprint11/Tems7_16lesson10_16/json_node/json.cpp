@@ -23,6 +23,12 @@ Node LoadNull(istream& input) {
         if (nameNull.at(i) == input.get()) continue;
         else throw ParsingError("Null parsing error");
     }
+
+    // Проверяем, что после "null" нет буквенно-цифровых символов
+    if (isalnum(input.peek())) {
+        throw ParsingError("Invalid null value: extra characters after literal");
+    }
+
     return {};
 }
 
@@ -158,75 +164,75 @@ std::string LoadString(std::istream& input) {
 }
 
 
-// Node LoadArray(istream& input) {
-
-//     Array result;
-
-//     if (input.peek() == -1) throw ParsingError("Array parsing error");
-
-//     for (char c; input >> c && c != ']';) {
-//         if (c != ',') {
-//             input.putback(c);
-//         }
-//         result.push_back(LoadNode(input));
-//     }
-
-//     return Node(std::move(result));
-// }
-
 Node LoadArray(istream& input) {
+
     Array result;
 
-    // Пропускаем пробелы после '['
-    char c;
-    while (input >> c && c == ' ') {}
+    if (input.peek() == -1) throw ParsingError("Array parsing error");
 
-    if (!input) {
-        throw ParsingError("Array parsing error 1");
-    }
-
-    if (c == ']') {
-         return Node(std::move(result));
-    }
-
-    input.putback(c);
-
-    while (true) {
-        try {
-            result.push_back(LoadNode(input));
-        } catch (const ParsingError&) {
-            throw ParsingError("Array parsing error 2");
+    for (char c; input >> c && c != ']';) {
+        if (c != ',') {
+            input.putback(c);
         }
-
-        // Пропускаем пробелы после элемента
-        while (input >> c && c == ' ') {}
-
-        if (!input) {
-            throw ParsingError("Array parsing error 3");
-        }
-
-        if (c == ']') {
-            break;
-        } else if (c != ',') {
-            throw ParsingError("Array parsing error 4");
-        }
-
-        // Пропускаем пробелы после запятой
-        while (input >> c && c == ' ') {}
-
-        if (!input) {
-            throw ParsingError("Array parsing error 5");
-        }
-
-        if (c == ']') {
-            throw ParsingError("Array parsing error 6");
-        }
-
-        input.putback(c);
+        result.push_back(LoadNode(input));
     }
 
     return Node(std::move(result));
 }
+
+// Node LoadArray(istream& input) {
+//     Array result;
+
+//     // Пропускаем пробелы после '['
+//     char c;
+//     while (input >> c && c == ' ') {}
+
+//     if (!input) {
+//         throw ParsingError("Array parsing error 1");
+//     }
+
+//     if (c == ']') {
+//          return Node(std::move(result));
+//     }
+
+//     input.putback(c);
+
+//     while (true) {
+//         try {
+//             result.push_back(LoadNode(input));
+//         } catch (const ParsingError&) {
+//             throw ParsingError("Array parsing error 2");
+//         }
+
+//         // Пропускаем пробелы после элемента
+//         while (input >> c && c == ' ') {}
+
+//         if (!input) {
+//             throw ParsingError("Array parsing error 3");
+//         }
+
+//         if (c == ']') {
+//             break;
+//         } else if (c != ',') {
+//             throw ParsingError("Array parsing error 4");
+//         }
+
+//         // Пропускаем пробелы после запятой
+//         while (input >> c && c == ' ') {}
+
+//         if (!input) {
+//             throw ParsingError("Array parsing error 5");
+//         }
+
+//         if (c == ']') {
+//             throw ParsingError("Array parsing error 6");
+//         }
+
+//         input.putback(c);
+//     }
+
+//     return Node(std::move(result));
+// }
 
 
 
@@ -277,29 +283,47 @@ Node LoadDict(istream& input) {
 // }
 
 Node LoadBool(istream& input) {
-    char c = input.peek();
-    if (c == 't') {
-        // Проверяем, что дальше идет "true"
-        const string expected = "true";
-        for (char expected_char : expected) {
-            if (input.get() != expected_char) {
-                throw ParsingError("Failed to parse 'true'");
-            }
-        }
-        return Node(true);
-    } else if (c == 'f') {
-        // Проверяем, что дальше идет "false"
-        const string expected = "false";
-        for (char expected_char : expected) {
-            if (input.get() != expected_char) {
-                throw ParsingError("Failed to parse 'false'");
-            }
-        }
-        return Node(false);
-    } else {
-        throw ParsingError("Unexpected character when trying to parse bool");
+    const string nameFalse = "false";
+    const string nameTrue = "true";
+    char c = input.get();
+    bool value = (c == 't');
+    std::string const* name = value ? &nameTrue : &nameFalse;
+    for (size_t i = 1; i < name->size(); i++) {
+        if (name->at(i) == input.get()) continue;
+        else throw ParsingError("Bool parsing error");
     }
+    // Проверяем, что после "true"/"false" нет буквенно-цифровых символов
+    if (isalnum(input.peek())) {
+        throw ParsingError("Invalid bool value: extra characters after literal");
+    }
+
+    return Node(value);
 }
+
+// Node LoadBool(istream& input) {
+//     char c = input.peek();
+//     if (c == 't') {
+//         // Проверяем, что дальше идет "true"
+//         const string expected = "true";
+//         for (char expected_char : expected) {
+//             if (input.get() != expected_char) {
+//                 throw ParsingError("Failed to parse 'true'");
+//             }
+//         }
+//         return Node(true);
+//     } else if (c == 'f') {
+//         // Проверяем, что дальше идет "false"
+//         const string expected = "false";
+//         for (char expected_char : expected) {
+//             if (input.get() != expected_char) {
+//                 throw ParsingError("Failed to parse 'false'");
+//             }
+//         }
+//         return Node(false);
+//     } else {
+//         throw ParsingError("Unexpected character when trying to parse bool");
+//     }
+// }
 
 
 Node LoadNode(istream& input) {
@@ -503,11 +527,11 @@ template <typename Number>
 void PrintNumber(Number value, std::ostream& out) {
     out << value;
     // Для double проверяем, нужно ли добавлять .0
-    if constexpr (std::is_same_v<Number, double>) {
-        if (value == std::floor(value)) {
-            out << ".0";
-        }
-    }
+    // if constexpr (std::is_same_v<Number, double>) {
+    //     if (value == std::floor(value)) {
+    //         out << ".0";
+    //     }
+    // }
 }
 
 void PrintValue(const Array& array, std::ostream& out) {
