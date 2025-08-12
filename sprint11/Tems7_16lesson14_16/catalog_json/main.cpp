@@ -1,4 +1,11 @@
 #include <sstream>
+#include <string>
+#include <sstream>
+// #include <iomanip>
+// #include <vector>
+#include <sstream>
+#include <iomanip>
+
 #include "json_reader.h"
 #include "request_handler.h"
 #include "transport_catalogue.h"
@@ -32,11 +39,91 @@ std::string test_data = R"({
             }
         ],
         "stat_requests": [
+
+            { "id": 2, "type": "Bus", "name": "114" },
             { "id": 1, "type": "Stop", "name": "Ривьерский мост" },
-            { "id": 2, "type": "Bus", "name": "114" }
+            { "id": 3, "type": "Stop", "name": "A" },
+            { "id": 4, "type": "Stop", "name": "И" }
         ]
     })";
 
+
+/*
+
+ *  Ожидаемый вывод:
+
+ [
+     {
+         "buses": [
+             "114"
+         ],
+         "request_id": 1
+     },
+     {
+         "curvature": 1.23199,
+         "request_id": 2,
+         "route_length": 1700,
+         "stop_count": 3,
+         "unique_stop_count": 2
+     }
+ ]
+
+----------------------
+--------------------------------------
+
+ Bus 256: 6 stops on route, 5 unique stops, 5950 route length, 1.36124 curvature
+ Bus 750: 7 stops on route, 3 unique stops, 27400 route length, 1.30853 curvature
+ Bus 751: not found
+ Stop Samara: not found
+ Stop Prazhskaya: no buses
+ Stop Biryulyovo Zapadnoye: buses 256 828
+
+ */
+
+
+
+
+std::string formatJson(const std::string& compactJson) {
+    std::stringstream result;
+    int indent_level = 0;
+    bool in_string = false;
+
+    result << std::fixed << std::setprecision(0); // Без дробной части
+
+    for (char c : compactJson) {
+        if (c == '"' && (result.str().empty() || result.str().back() != '\\')) {
+            in_string = !in_string;
+        }
+
+        if (!in_string) {
+            if (c == '{' || c == '[') {
+                result << c << '\n';
+                indent_level++;
+                result << std::string(indent_level * 4, ' ');
+                continue;
+            }
+            else if (c == '}' || c == ']') {
+                result << '\n';
+                indent_level--;
+                result << std::string(indent_level * 4, ' ') << c;
+                continue;
+            }
+            else if (c == ',') {
+                result << c << '\n';
+                result << std::string(indent_level * 4, ' ');
+                continue;
+            }
+            else if (c == ':') {
+                result << c << ' ';
+                continue;
+            }
+        }
+
+        result << c;
+    }
+
+    return result.str();
+}
 
 int main() {
     /*
@@ -54,7 +141,7 @@ int main() {
     // 1. Инициализация компонентов
     std::string json_input_request;
     transport_catalogue::TransportCatalogue catalogue;
-    json_reader::JsonReader json_reader(std::cin ); //std::cin test_stream  загрузаем данные в формате Json
+    json_reader::JsonReader json_reader(test_stream); //std::cin test_stream  загрузаем данные в формате Json
 
     RequestHandler request_handler(catalogue, json_reader); //создаем обработчик
 
@@ -78,7 +165,7 @@ int main() {
     // 4. Обработка запросов из "stat_requests" и формирование ответа
     try {
         std::string json_response = request_handler.HandleJsonRequest(json_input_request);
-        std::cout << json_response << std::endl;
+        std::cout << formatJson ( json_response ) << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error processing requests: " << e.what() << std::endl;
         return 1;

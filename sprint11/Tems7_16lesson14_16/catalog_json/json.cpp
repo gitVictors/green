@@ -1,4 +1,7 @@
 #include <cmath>
+#include <sstream>
+#include <iomanip>
+
 #include "json.h"
 
 using namespace std;
@@ -180,70 +183,7 @@ Node LoadArray(istream& input) {
     return Node(std::move(result));
 }
 
-// Node LoadArray(istream& input) {
-//     Array result;
 
-//     // Пропускаем пробелы после '['
-//     char c;
-//     while (input >> c && c == ' ') {}
-
-//     if (!input) {
-//         throw ParsingError("Array parsing error 1");
-//     }
-
-//     if (c == ']') {
-//          return Node(std::move(result));
-//     }
-
-//     input.putback(c);
-
-//     while (true) {
-//         try {
-//             result.push_back(LoadNode(input));
-//         } catch (const ParsingError&) {
-//             throw ParsingError("Array parsing error 2");
-//         }
-
-//         // Пропускаем пробелы после элемента
-//         while (input >> c && c == ' ') {}
-
-//         if (!input) {
-//             throw ParsingError("Array parsing error 3");
-//         }
-
-//         if (c == ']') {
-//             break;
-//         } else if (c != ',') {
-//             throw ParsingError("Array parsing error 4");
-//         }
-
-//         // Пропускаем пробелы после запятой
-//         while (input >> c && c == ' ') {}
-
-//         if (!input) {
-//             throw ParsingError("Array parsing error 5");
-//         }
-
-//         if (c == ']') {
-//             throw ParsingError("Array parsing error 6");
-//         }
-
-//         input.putback(c);
-//     }
-
-//     return Node(std::move(result));
-// }
-
-
-
-// Node LoadInt(istream& input) {
-//     int result = 0;
-//     while (isdigit(input.peek())) {
-//         result *= 10;
-//         result += input.get() - '0';
-//     }
-//     return Node(result);
-// }
 
 
 
@@ -266,21 +206,7 @@ Node LoadDict(istream& input) {
     return Node(std::move(result));
 }
 
-// Node LoadNode(istream& input) {
-//     char c;
-//     input >> c;
 
-//     if (c == '[') {
-//         return LoadArray(input);
-//     } else if (c == '{') {
-//         return LoadDict(input);
-//     } else if (c == '"') {
-//         return LoadString(input);
-//     } else {
-//         input.putback(c);
-//         return LoadInt(input);
-//     }
-// }
 
 Node LoadBool(istream& input) {
     const string nameFalse = "false";
@@ -300,30 +226,7 @@ Node LoadBool(istream& input) {
     return Node(value);
 }
 
-// Node LoadBool(istream& input) {
-//     char c = input.peek();
-//     if (c == 't') {
-//         // Проверяем, что дальше идет "true"
-//         const string expected = "true";
-//         for (char expected_char : expected) {
-//             if (input.get() != expected_char) {
-//                 throw ParsingError("Failed to parse 'true'");
-//             }
-//         }
-//         return Node(true);
-//     } else if (c == 'f') {
-//         // Проверяем, что дальше идет "false"
-//         const string expected = "false";
-//         for (char expected_char : expected) {
-//             if (input.get() != expected_char) {
-//                 throw ParsingError("Failed to parse 'false'");
-//             }
-//         }
-//         return Node(false);
-//     } else {
-//         throw ParsingError("Unexpected character when trying to parse bool");
-//     }
-// }
+
 
 
 Node LoadNode(istream& input) {
@@ -526,12 +429,7 @@ void PrintValue(bool value, std::ostream& out) {
 template <typename Number>
 void PrintNumber(Number value, std::ostream& out) {
     out << value;
-    // Для double проверяем, нужно ли добавлять .0
-    // if constexpr (std::is_same_v<Number, double>) {
-    //     if (value == std::floor(value)) {
-    //         out << ".0";
-    //     }
-    // }
+
 }
 
 void PrintValue(const Array& array, std::ostream& out) {
@@ -569,15 +467,16 @@ void PrintNode(const Node& node, std::ostream& out) {
         PrintNumber(node.AsInt(), out);
     } else if (node.IsPureDouble()) {
         PrintNumber(node.AsDouble(), out);
-    } else if (node.IsBool()) {
-        PrintValue(node.AsBool(), out);
     } else if (node.IsString()) {
         PrintValue(node.AsString(), out);
+    } else if (node.IsBool())  {
+        PrintValue(node.AsBool(), out);
     } else if (node.IsArray()) {
         PrintValue(node.AsArray(), out);
     } else if (node.IsMap()) {
         PrintValue(node.AsMap(), out);
     }
+
 }
 
 void Print(const Document& doc, std::ostream& output) {

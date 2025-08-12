@@ -1,5 +1,5 @@
 #include <sstream>
-#include <istream>
+//#include <istream>
 #include "request_handler.h"
 
 /*
@@ -112,6 +112,7 @@ std::string RequestHandler::HandleJsonRequest(const std::string& json_request) {
     const Array& requests = root.AsArray();
 
     for (const Node& request_node : requests) {
+
         const Dict& request = request_node.AsMap();
         int id = request.at("id").AsInt();
         string type = request.at("type").AsString();
@@ -125,10 +126,11 @@ std::string RequestHandler::HandleJsonRequest(const std::string& json_request) {
                 const Bus* bus = catalogue_.GetBus(name);
 
                 if (!bus) {
-                    response["error_message"] = "not found";
+                    string str = "not found";
+                    response["error_message"] = Node(str);
                 } else {
                     RouteInfo info = catalogue_.RouteInformation(name);
-                    response["route_length"] = info.route_length;
+                    response["route_length"] = static_cast<int>(info.route_length);
                     response["curvature"] = info.curvature;
                     response["stop_count"] = static_cast<int>(info.stops_count);
                     response["unique_stop_count"] = static_cast<int>(info.unique_stops_count);
@@ -139,7 +141,8 @@ std::string RequestHandler::HandleJsonRequest(const std::string& json_request) {
                 const Stop* stop = catalogue_.GetStop(name);
 
                 if (!stop) {
-                    response["error_message"] = "not found";
+                    string str = "not found";
+                    response["error_message"] =  Node(str);
                 } else {
                     set<const Bus*, BusPtrCompare> buses = catalogue_.GetBusesForStop(name);
                     Array bus_names;

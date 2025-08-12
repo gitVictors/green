@@ -22,7 +22,7 @@ public:
 class Node {
 public:
     /* Реализуйте Node, используя std::variant */
-    using var = std::variant<std::nullptr_t, bool, double, Array, Dict, int, std::string>;
+    using var = std::variant<std::nullptr_t, std::string,int, double, bool,  Array, Dict >;
 
     Node () = default;
     Node(std::nullptr_t);
