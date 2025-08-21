@@ -223,9 +223,14 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
 
 
 const std::map<std::string_view, const Bus*> TransportCatalogue::GetSortedAllBuses() const {
+
     std::map<std::string_view, const Bus*> result;
+
     for (const auto& bus : busname_to_bus_) {
-        result.emplace(bus);
+        // Проверка на валидность указателя
+        if (bus.second != nullptr) {
+            result.emplace(bus.first, bus.second);
+        }
     }
     return result;
 }

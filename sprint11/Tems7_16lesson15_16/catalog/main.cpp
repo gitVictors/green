@@ -141,7 +141,7 @@ int main() {
     // 1. Инициализация компонентов
     std::string json_input_request;
     transport_catalogue::TransportCatalogue catalogue;
-    json_reader::JsonReader json_reader(test_stream); //std::cin test_stream  загрузаем данные в формате Json
+    json_reader::JsonReader json_reader(std::cin); //std::cin test_stream  загрузаем данные в формате Json
     //MapRenderer renderer;
     RequestHandler request_handler(catalogue, json_reader); //создаем обработчик
 
