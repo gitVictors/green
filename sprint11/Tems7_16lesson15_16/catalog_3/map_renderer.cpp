@@ -223,7 +223,7 @@ svg::Document MapRenderer::GetSVG(const std::map<std::string_view, const transpo
 
     svg::Document result;
     std::vector<geo::Coordinates> route_stops_coord;
-    std::map<std::string_view, const transport_catalogue::Stop*> all_stops;
+    std::map<std::string_view, const transport_catalogue::Stop*> all_stops; //отсортированые остановки
 
     //сортировка
     for (const auto& [bus_number, bus] : buses) {

@@ -165,7 +165,7 @@ int main() {
 
     //5 Обработка "render_settings"
     request_handler.HandRenderSettings();
-    request_handler.RenderMap().Render(std::cout);
+
 
     return 0;
 }
