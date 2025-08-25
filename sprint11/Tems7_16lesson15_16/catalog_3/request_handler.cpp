@@ -221,7 +221,7 @@ json::Document RequestHandler::HandleJsonRequest(const json::Node& json_request)
                     }
                     response["buses"] = std::move(bus_names);
                 }
-            }else if ( type == "map"){
+            }else if ( type == "Map"){
                 std::ostringstream out;
                 RenderMap().Render(out);
                 response["map"] = Node(out.str());

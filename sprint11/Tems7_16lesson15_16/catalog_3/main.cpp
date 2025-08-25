@@ -164,6 +164,3 @@ int main() {
 
     return 0;
 }
-
-    // const auto& renderer = json_doc.FillRenderSettings(render_settings);
-

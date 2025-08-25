@@ -54,9 +54,7 @@ void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, 
 
         SetDistance( from_stop,  to_stop, distance );
 
-
     }
-
 
 
 }
