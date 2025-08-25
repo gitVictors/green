@@ -17,7 +17,7 @@ RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalog
 {
 }
 
-std::string RequestHandler::LoadDataFromJson() {
+json::Node RequestHandler::LoadDataFromJson() {
     using namespace json;
     using namespace std;
 
@@ -155,29 +155,25 @@ std::string RequestHandler::LoadDataFromJson() {
 
     // 3. Возвращаем stat_requests в формате JSON
     if (root_dict.count("stat_requests")) {
-        const Node& stat_requests_node = root_dict.at("stat_requests");
-        Document doc(stat_requests_node);
-        ostringstream out;
-        Print(doc, out);
-        return out.str();
+        const Node stat_requests_node = root_dict.at("stat_requests");
+        return stat_requests_node;
     }
 
 
 
-
-
-    return "[]"; // Если stat_requests нет, возвращаем пустой массив
+    return Node(); // Если stat_requests нет, возвращаем пустой
 }
 
 
 
-std::string RequestHandler::HandleJsonRequest(const std::string& json_request) {
+json::Document RequestHandler::HandleJsonRequest(const json::Node& json_request) {
     using namespace json;
     using namespace std;
 
-    istringstream input_stream(json_request);
-    Document request_doc = json::Load(input_stream);
-    const Node& root = request_doc.GetRoot();
+    //istringstream input_stream(json_request);
+    //Document request_doc = json::Load(input_stream);
+    const Node& root = json_request; //request_doc.GetRoot();
+
     if (!root.IsArray()) {
         throw invalid_argument("Invalid JSON format: stat_requests should be an array");
     }
@@ -225,8 +221,10 @@ std::string RequestHandler::HandleJsonRequest(const std::string& json_request) {
                     }
                     response["buses"] = std::move(bus_names);
                 }
-            }else if ( type == "mpa"){
-                response["map"] = {};
+            }else if ( type == "map"){
+                std::ostringstream out;
+                RenderMap().Render(out);
+                response["map"] = Node(out.str());
             }
             else {
                 response["error_message"] = "unknown request type: " + type;
@@ -238,10 +236,9 @@ std::string RequestHandler::HandleJsonRequest(const std::string& json_request) {
         responses.push_back(std::move(response));
     }
 
-    Document doc(std::move(responses));
-    ostringstream out;
-    Print(doc, out);
-    return out.str();
+    json::Document doc(std::move(responses));
+    return doc;
+
 }
 
 void RequestHandler::HandRenderSettings () {
@@ -250,20 +247,31 @@ void RequestHandler::HandRenderSettings () {
     //выделяем "render_settings"
     const json::Node rnd_sttng = json_reader_.GetRenderSettings();
 
-    if (rnd_sttng == nullptr)
-        return ;
+    if (rnd_sttng != nullptr){
 
-    const json::Dict& render_settings_dict = rnd_sttng.AsMap();
+        const json::Dict& render_settings_dict = rnd_sttng.AsMap();
 
-    renderer::RenderSettings render_var = json_reader_.ParsRenderSettings(render_settings_dict);   
+        renderer::RenderSettings render_var = json_reader_.ParsRenderSettings(render_settings_dict);
 
-    render_.SetRenderSettings( std::move(render_var));
+        render_.SetRenderSettings( std::move(render_var));
 
-    if (render_settings_dict.count("map")){
-        RenderMap().Render(out_map);
     }
 
+
 }
+
+// json::Node RequestHandler::HandStatRequests (){
+
+//     std::iostream out_map;
+
+//     const auto& start_requests = json_reader_.GetStartRequests();
+
+//     if ( start_requests != nullptr ){
+
+//         RenderMap().Render(out_map);
+//     }
+
+// }
 
 svg::Document RequestHandler::RenderMap() const {
 

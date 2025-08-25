@@ -66,10 +66,10 @@ public:
         ) const;
 
     // 4. Обработка входящего JSON-запроса
-    std::string HandleJsonRequest(const std::string& json_request);
+    json::Document HandleJsonRequest(const json::Node& json_request);
 
     // 5. Загрузка данных из JSON (если конфигурация хранится в JSON)
-    std::string LoadDataFromJson(); //const std::string& json_path
+    json::Node LoadDataFromJson();
 
     //     // Возвращает информацию о маршруте (запрос Bus)
     //     std::optional<BusStat> GetBusStat(const std::string_view& bus_name) const;
@@ -78,8 +78,10 @@ public:
     //     const std::unordered_set<BusPtr>* GetBusesByStop(const std::string_view& stop_name) const;
 
     void HandRenderSettings(); //RequestHandler
+    json::Node HandStatRequests ();
 
     svg::Document RenderMap() const;
+
 
 private:
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных

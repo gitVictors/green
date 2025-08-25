@@ -139,7 +139,7 @@ int main() {
     std::istringstream test_stream(test_data);
 
     // 1. Инициализация компонентов
-    std::string json_input_request;
+    json::Node json_input_request;
     transport_catalogue::TransportCatalogue catalogue;
     json_reader::JsonReader json_reader(std::cin); //std::cin test_stream  загрузаем данные в формате Json
     //MapRenderer renderer;
@@ -154,18 +154,13 @@ int main() {
         return 1;
     }
 
-    // 4. Обработка запросов из "stat_requests" и формирование ответа
-    try {
-        std::string json_response = request_handler.HandleJsonRequest(json_input_request);
-        // std::cout << formatJson ( json_response ) << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Error processing requests: " << e.what() << std::endl;
-        return 1;
-    }
 
     //5 Обработка "render_settings"
     request_handler.HandRenderSettings();
 
+    json::Document doc = request_handler.HandleJsonRequest(json_input_request);
+
+    Print(doc, std::cout);
 
     return 0;
 }

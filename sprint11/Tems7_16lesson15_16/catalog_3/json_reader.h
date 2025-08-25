@@ -24,6 +24,7 @@ public:
 
     const json::Node& GetRenderSettings() const;
 
+    const json::Node& GetStartRequests() const;
 
 
     // Другие потенциальные методы, которые могут понадобиться на основе использования в RequestHandler:

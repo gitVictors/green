@@ -34,6 +34,16 @@ const json::Node& JsonReader::GetRenderSettings() const
     return doc_input_.GetRoot().AsMap().at("render_settings");
 }
 
+const json::Node& JsonReader::GetStartRequests() const
+{
+    if (!doc_input_.GetRoot().AsMap().count("stat_requests")){
+        return null_node_;
+    }
+
+    return doc_input_.GetRoot().AsMap().at("stat_requests");
+}
+
+
  renderer::RenderSettings JsonReader::ParsRenderSettings(const json::Dict& request_map) const {
 
     renderer::RenderSettings render_settings;
