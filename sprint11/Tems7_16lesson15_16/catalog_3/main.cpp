@@ -138,7 +138,7 @@ int main() {
     // Используем строковый поток вместо std::cin
     std::istringstream test_stream(test_data);
 
-    // 1. Инициализация компонентов
+    //  Инициализация компонентов
     json::Node json_input_request;
     transport_catalogue::TransportCatalogue catalogue;
     json_reader::JsonReader json_reader(std::cin); //std::cin test_stream  загрузаем данные в формате Json
@@ -146,7 +146,7 @@ int main() {
     RequestHandler request_handler(catalogue, json_reader); //создаем обработчик
 
 
-    // 3. Загрузка данных в транспортный каталог
+    //  Загрузка данных в транспортный каталог
     try {
         json_input_request = request_handler.LoadDataFromJson();
     } catch (const std::exception& e) {
@@ -155,7 +155,7 @@ int main() {
     }
 
 
-    //5 Обработка "render_settings"
+    // Обработка "render_settings"
     request_handler.HandRenderSettings();
 
     json::Document doc = request_handler.HandleJsonRequest(json_input_request);

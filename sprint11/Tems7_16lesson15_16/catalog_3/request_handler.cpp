@@ -260,18 +260,7 @@ void RequestHandler::HandRenderSettings () {
 
 }
 
-// json::Node RequestHandler::HandStatRequests (){
 
-//     std::iostream out_map;
-
-//     const auto& start_requests = json_reader_.GetStartRequests();
-
-//     if ( start_requests != nullptr ){
-
-//         RenderMap().Render(out_map);
-//     }
-
-// }
 
 svg::Document RequestHandler::RenderMap() const {
 
