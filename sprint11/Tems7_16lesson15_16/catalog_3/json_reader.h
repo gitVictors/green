@@ -26,17 +26,8 @@ public:
 
     const json::Node& GetStartRequests() const;
 
-
-    // Другие потенциальные методы, которые могут понадобиться на основе использования в RequestHandler:
-    // - Методы для разбора различных типов запросов
-    // - Методы для формирования ответов
-    // - Методы для доступа к распарсенным данным
-
 private:
-         // Приватные методы для внутреннего парсинга JSON
-         // void ParseBaseRequests(const /* соответствующий json тип */& json_data);
-         // void ParseStatRequests(const /* соответствующий json тип */& json_data);
-         // void ParseRoutingSettings(const /* соответствующий json тип */& json_data);
+
 
     // Приватные члены данных
    // std::istream& input_;
