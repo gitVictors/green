@@ -10,15 +10,11 @@
 #include "geo.h"
 #include "domain.h"
 
-
 namespace transport_catalogue {
 
 using namespace geo;
 using namespace std;
 using namespace domain;
-
-
-
 
 struct PairHasher {
     size_t operator()(const std::pair<const Stop*, const Stop*> pr) const {

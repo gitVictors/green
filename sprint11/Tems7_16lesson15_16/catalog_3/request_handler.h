@@ -49,6 +49,7 @@ public:
 
 
 private:
+    svg::Color ParseColor(const json::Node& color_node);
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных
     JsonReader& json_reader_; // Внешний парсер JSON (если требуется)
     renderer::MapRenderer render_;

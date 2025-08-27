@@ -185,19 +185,16 @@ Node LoadArray(istream& input) {
 
 
 
-
-
 Node LoadDict(istream& input) {
     Dict result;
 
-    if (input.peek() == -1) throw ParsingError("Array parsing error");
+    if (input.peek() == -1) throw ParsingError("Dict parsing error");
 
     for (char c; input >> c && c != '}';) {
         if (c == ',') {
             input >> c;
         }
 
-        // string key = LoadString(input).AsString();
         string key = LoadString(input);
         input >> c;
         result.insert({std::move(key), LoadNode(input)});
@@ -268,114 +265,119 @@ Node LoadNode(istream& input) {
 
 //--------------- NODE  ---------------------------------------------------------
 
-Node::Node(std::nullptr_t) : var_(nullptr)
-{}
+// Node::Node(std::nullptr_t) : var_(nullptr)
+// {}
 
-Node::Node(Array array)
-    : var_(std::move(array)) //as_array_(move(array))
-{
-}
+// Node::Node(Array array)
+//     : var_(std::move(array)) //as_array_(move(array))
+// {
+// }
 
-Node::Node(Dict map)
-    : var_(std::move(map)) //as_map_(move(map))
-{
-}
+// Node::Node(Dict map)
+//     : var_(std::move(map)) //as_map_(move(map))
+// {
+// }
 
-Node::Node(int value)
-    : var_(value) //as_int_(value)
-{
-}
+// Node::Node(int value)
+//     : var_(value) //as_int_(value)
+// {
+// }
 
-Node::Node(string value)
-    : var_( std::move(value)) // as_string_(move(value))
-{
-}
+// Node::Node(string value)
+//     : var_( std::move(value)) // as_string_(move(value))
+// {
+// }
 
-Node::Node (bool value)
-    : var_(value)
-{}
+// Node::Node (bool value)
+//     : var_(value)
+// {}
 
-Node::Node (double value)
-    : var_(value)
-{}
+// Node::Node (double value)
+//     : var_(value)
+// {}
+
+//конструктор для const char*
+Node::Node(const char* value) : Var(std::string(value)) {}
 
 const Array& Node::AsArray() const {
-    if (!std::holds_alternative<Array>(var_)) {
-        throw std::logic_error("Узел не содержит целого числа");
+    if (!std::holds_alternative<Array>(*this)) {
+        throw std::logic_error("Узел не содержит массива");
     }
-    return std::get<Array>(var_);
+    return std::get<Array>(*this);
 }
 
 const Dict& Node::AsMap() const {
-    if (!std::holds_alternative<Dict>(var_)){
-        throw std::logic_error("Узел не содержит целого числа");
+    if (!std::holds_alternative<Dict>(*this)){
+        throw std::logic_error("Узел не содержит map");
     }
-    return std::get<Dict>(var_);
+    return std::get<Dict>(*this);
 }
 
 int Node::AsInt() const {
-    if (!std::holds_alternative<int>(var_)) {
+    if (!std::holds_alternative<int>(*this)) {
         throw std::logic_error("Узел не содержит целого числа");
     }
-    return std::get<int>(var_);
+    return std::get<int>(*this);
 
 }
 
 const string& Node::AsString() const {
-    if (!std::holds_alternative<string>(var_)) {
-        throw std::logic_error("Узел не содержит целого числа");
+    if (!std::holds_alternative<string>(*this)) {
+        throw std::logic_error("Узел не содержит строки");
     }
-    return std::get<string>(var_);
+    return std::get<string>(*this);
 }
 
 bool Node::AsBool() const{
-    if (!std::holds_alternative<bool>(var_)) {
-        throw std::logic_error("Узел не содержит целого числа");
+    if (!std::holds_alternative<bool>(*this)) {
+        throw std::logic_error("Узел не содержит bool");
     }
-    return std::get<bool>(var_);
+    return std::get<bool>(*this);
 }
 
 double Node::AsDouble() const{
     if (!IsDouble()) throw std::logic_error("wrong type");
-    if (IsInt()) return static_cast<double>(std::get<int>(var_));
-    return std::get<double>(var_);
+    if (IsInt()) return static_cast<double>(std::get<int>(*this));
+    return std::get<double>(*this);
 }
 
 bool Node::IsInt() const {
-    return std::holds_alternative<int>(var_);
+    return std::holds_alternative<int>(*this);
 }
 bool Node::IsDouble() const{
-    return std::holds_alternative<int>(var_) || std::holds_alternative<double>(var_);
+    return std::holds_alternative<int>(*this) || std::holds_alternative<double>(*this);
 }
 bool Node::IsPureDouble() const{
-    return std::holds_alternative<double>(var_);
+    return std::holds_alternative<double>(*this);
 }
 bool Node::IsBool() const {
-    return std::holds_alternative<bool>(var_);
+    return std::holds_alternative<bool>(*this);
 }
 bool Node::IsString() const{
-    return std::holds_alternative<string>(var_);
+    return std::holds_alternative<string>(*this);
 }
 bool Node::IsNull() const{
-    return std::holds_alternative<std::nullptr_t>(var_);
+    return std::holds_alternative<std::nullptr_t>(*this);
 }
 bool Node::IsArray() const{
-    return std::holds_alternative<Array>(var_);
+    return std::holds_alternative<Array>(*this);
 
 }
 bool Node::IsMap() const{
-    return std::holds_alternative<Dict>(var_);
+    return std::holds_alternative<Dict>(*this);
 }
 
-bool Node::operator==(const Node& rhs) const {
-    return var_ == rhs.var_;
-}
+ bool Node::operator==(const Node& rhs) const {
+     return  static_cast<const Var&>(*this) == static_cast<const Var&>(rhs);
+ }
 
 bool Node::operator!=(const Node& rhs) const {
     return !(*this == rhs);
 }
 
-const Node::var& Node::GetVariant() const { return var_; }
+const Node::Var& Node::GetVariant() const {
+    return *this;
+}
 //-----------------------------------------------------------------------------------
 
 Document::Document(Node root)

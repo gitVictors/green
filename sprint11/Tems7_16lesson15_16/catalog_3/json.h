@@ -19,20 +19,14 @@ public:
     using runtime_error::runtime_error;
 };
 
-class Node {
+class Node final : private std::variant<std::nullptr_t, std::string,int, double, bool,  Array, Dict > {
 public:
-    /* Реализуйте Node, используя std::variant */
-    using var = std::variant<std::nullptr_t, std::string,int, double, bool,  Array, Dict >;
 
-    Node () = default;
-    Node(std::nullptr_t);
-    Node(Array array);
-    Node(Dict map);
-    Node(int value);
-    Node(std::string value);
-    Node (bool value);
-    Node (double value);
+    using Var = std::variant<std::nullptr_t, std::string, int, double, bool, Array, Dict>;
+    // Делаем доступными все конструкторы родительского класса variant
+    using variant::variant;
 
+    Node(const char* value) ;
 
     bool IsInt() const;
     bool IsDouble() const;
@@ -50,13 +44,11 @@ public:
     bool AsBool() const;
     double AsDouble() const;
 
-    const var& GetVariant() const;// { return var_; }
+    const Var& GetVariant() const;
 
     bool operator==(const Node& rhs) const;
     bool operator!=(const Node& rhs) const;
 
-private:
-    var var_;
 
 };
 
