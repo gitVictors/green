@@ -18,19 +18,30 @@ public:
     // Заполняет транспортный каталог данными из JSON
     void FillCatalogue(TransportCatalogue& catalogue);
 
-     renderer::RenderSettings ParsRenderSettings(const json::Dict& request_map) const;
+    // Новые методы для парсинга данных
+    void ParseBaseRequests(TransportCatalogue& catalogue) const;
+
+   // renderer::RenderSettings ParseRenderSettings(const json::Dict& request_map) const;
 
     const json::Document& GetDocument() const;
 
     const json::Node& GetRenderSettings() const;
 
-    const json::Node& GetStartRequests() const;
+    const json::Node& GetStatRequests() const;
+
+    renderer::RenderSettings ParseRenderSettings(const json::Node& root) const;
 
 private:
 
+    // Вспомогательный метод для обработки цвета
+    svg::Color ParseColor(const json::Node& color_node) const;
 
-    // Приватные члены данных
-   // std::istream& input_;
+    // Вспомогательные методы
+    void ParseStops(TransportCatalogue& catalogue, const json::Array& base_requests) const;
+    void ParseBuses(TransportCatalogue& catalogue, const json::Array& base_requests) const;
+    void ParseDistances(TransportCatalogue& catalogue, const json::Array& base_requests) const;
+
+
     // Хранилище распарсенных данных
     json::Document doc_input_;
     json::Node null_node_ = nullptr;

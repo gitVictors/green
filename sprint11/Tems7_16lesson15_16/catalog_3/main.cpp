@@ -136,7 +136,7 @@ int main() {
      */
 
     // Используем строковый поток вместо std::cin
-    std::istringstream test_stream(test_data);
+    //std::istringstream test_stream(test_data);
 
     //  Инициализация компонентов
     json::Node json_input_request;
