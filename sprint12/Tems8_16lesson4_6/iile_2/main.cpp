@@ -82,8 +82,8 @@ int main() {
                              return lhs.income > rhs.income;
                          });
 
-            int total_income = accumulate(head.begin(), head.end(), 0, [](int cur, Person& p) {
-                return p.income += cur;
+            int total_income = accumulate(head.begin(), head.end(), 0, [](const int cur, const Person& p) {
+                return p.income + cur;
             });
             cout << "Top-"s << count << " people have total income "s << total_income << '\n';
         } else if (command == "POPULAR_NAME"s) {
@@ -91,8 +91,8 @@ int main() {
             cin >> gender;
 
             IteratorRange range{people.begin(), partition(people.begin(), people.end(),
-                                                          [gender](Person& p) {
-                                                              return p.is_male = (gender == 'M');
+                                                          [gender](const Person& p) {
+                                                              return p.is_male == (gender == 'M');
                                                           })};
             if (range.begin() == range.end()) {
                 cout << "No people of gender "s << gender << '\n';
@@ -109,7 +109,8 @@ int main() {
                                                          return p.name == i->name;
                                                      });
                     auto cur_name_count = distance(i, same_name_end);
-                    if (cur_name_count > count) {
+                    if (cur_name_count >= count ||
+                                        (cur_name_count == count && i->name < *most_popular_name) ) {
                         count = cur_name_count;
                         most_popular_name = &i->name;
                     }
