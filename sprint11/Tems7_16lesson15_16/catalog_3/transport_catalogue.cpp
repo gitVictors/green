@@ -177,23 +177,6 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
     // Для некольцевого маршрута
     else {
         // Прямое направление
-        // for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
-        //     const Stop* from = bus->stops[i];
-        //     const Stop* to = bus->stops[i + 1];
-
-        //     double segment_geo = ComputeDistance(from->coordinates, to->coordinates);
-        //     geo_length += segment_geo;
-
-        //     int distance = GetDistance( from, to );
-        //     if (distance != 0) {
-        //         real_length += distance;
-        //     } else {
-        //         // Если расстояние не найдено, используем географическое расстояние
-        //         real_length += segment_geo;
-        //     }
-        // }
-
-        // Прямое направление
         for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
             const Stop* from = bus->stops[i];
             const Stop* to = bus->stops[i + 1];

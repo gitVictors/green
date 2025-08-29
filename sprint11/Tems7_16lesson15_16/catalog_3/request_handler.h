@@ -36,13 +36,9 @@ public:
     // 5. Загрузка данных из JSON (если конфигурация хранится в JSON)
     json::Node LoadDataFromJson();
 
-    //     // Возвращает информацию о маршруте (запрос Bus)
-    //     std::optional<BusStat> GetBusStat(const std::string_view& bus_name) const;
-
-    //     // Возвращает маршруты, проходящие через
-    //     const std::unordered_set<BusPtr>* GetBusesByStop(const std::string_view& stop_name) const;
 
     void HandRenderSettings(); //RequestHandler
+
     json::Node HandStatRequests ();
 
     svg::Document RenderMap() const;
