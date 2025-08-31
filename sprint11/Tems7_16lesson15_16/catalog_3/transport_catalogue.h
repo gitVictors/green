@@ -50,8 +50,10 @@ public:
     void SetDistance(const Stop* from, const Stop* to, int meters);
     int GetDistance(const Stop* from, const Stop* to) const;
 
-    const std::map<std::string_view, const Bus*> GetSortedAllBuses() const;
 
+    const  std::unordered_map<std::string_view, const Bus*>& GetBusnameToBus () const {
+        return busname_to_bus_;
+    }
 
 private:
     void UpdateStopToBus (const std::string& name_number, const std::vector<std::string>& stops);

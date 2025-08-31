@@ -129,23 +129,6 @@ std::vector<svg::Circle> MapRenderer::GetStopsSymbols(const std::map<std::string
 
     std::vector<svg::Circle> result;
 
-    // Создаем временный вектор для сортировки остановок по названию
-    // std::vector<std::pair<std::string_view, const transport_catalogue::Stop*>> sorted_stops;
-    // sorted_stops.reserve(stops.size());
-
-    // for (const auto& [stop_name, stop] : stops) {
-    //     // Добавляем только остановки, которые используются в маршрутах
-    //     if (!stop->buses.empty()) {
-    //         sorted_stops.emplace_back(stop_name, stop);
-    //     }
-    // }
-
-    // // Сортируем остановки по алфавиту
-    // std::sort(sorted_stops.begin(), sorted_stops.end(),
-    //           [](const auto& lhs, const auto& rhs) {
-    //               return lhs.first < rhs.first;
-    //           });
-
     // Создаем кружки для каждой остановки
     for (const auto& [stop_name, stop] : stops) {
         svg::Point stop_point = sp(stop->coordinates);

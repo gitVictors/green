@@ -18,6 +18,7 @@
 
 
 namespace domain {
+
 using namespace std;
 using namespace geo;
 

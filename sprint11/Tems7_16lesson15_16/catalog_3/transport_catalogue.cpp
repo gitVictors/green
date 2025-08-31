@@ -19,15 +19,20 @@ void TransportCatalogue::SetDistance(const Stop* from, const Stop* to, int meter
 
 int TransportCatalogue::GetDistance(const Stop* from_stop, const Stop* to_stop) const {
 
-    if (distances_.count({from_stop, to_stop}))
-    {
-        return distances_.at({from_stop, to_stop});
+
+    auto key_pair_from_to = make_pair(from_stop, to_stop);
+    auto key_pair_to_from = make_pair(to_stop, from_stop);
+
+    auto itf = distances_.find(key_pair_from_to);
+    if (itf != distances_.end()){
+        return itf->second;
     }
 
-    if (distances_.count({to_stop,from_stop}))
-    {
-        return distances_.at({to_stop, from_stop});
+    auto itt = distances_.find(key_pair_to_from);
+    if (itt != distances_.end()){
+        return itt->second;
     }
+
     return 0;
 }
 
@@ -91,7 +96,12 @@ void TransportCatalogue::AddBus(const std::string& name_number, const std::vecto
 
 void TransportCatalogue::UpdateStopToBus (const std::string& name_number, const std::vector<std::string>& stops){
 
-    const Bus* bus_ptr = busname_to_bus_.at(name_number);
+    auto it = busname_to_bus_.find(name_number);
+    if (it == busname_to_bus_.end()){
+        return;
+    }
+
+    const Bus* bus_ptr = it->second;
 
     for (const auto& stop_name : stops) {
         if (auto it = stopname_to_stop_.find(stop_name); it != stopname_to_stop_.end()) {
@@ -203,18 +213,18 @@ const RouteInfo TransportCatalogue::RouteInformation(const std::string_view& num
 
 
 
-const std::map<std::string_view, const Bus*> TransportCatalogue::GetSortedAllBuses() const {
+// const std::map<std::string_view, const Bus*> TransportCatalogue::GetSortedAllBuses() const {
 
-    std::map<std::string_view, const Bus*> result;
+//     std::map<std::string_view, const Bus*> result;
 
-    for (const auto& bus : busname_to_bus_) {
-        // Проверка на валидность указателя
-        if (bus.second != nullptr) {
-            result.emplace(bus.first, bus.second);
-        }
-    }
-    return result;
-}
+//     for (const auto& bus : busname_to_bus_) {
+//         // Проверка на валидность указателя
+//         if (bus.second != nullptr) {
+//             result.emplace(bus.first, bus.second);
+//         }
+//     }
+//     return result;
+// }
 
 } //transport_catalogue
 

@@ -141,14 +141,15 @@ int main() {
     //  Инициализация компонентов
     json::Node json_input_request;
     transport_catalogue::TransportCatalogue catalogue;
-    json_reader::JsonReader json_reader(std::cin); //std::cin test_stream  загрузаем данные в формате Json
-    //MapRenderer renderer;
-    RequestHandler request_handler(catalogue, json_reader); //создаем обработчик
+    renderer::MapRenderer renderer;
+    json_reader::JsonReader json_reader(std::cin, catalogue, renderer);
+
+    request_handler::RequestHandler request_handler(catalogue, renderer); //создаем обработчик
 
 
     //  Загрузка данных в транспортный каталог
     try {
-        json_input_request = request_handler.LoadDataFromJson();
+        json_input_request = json_reader.LoadDataFromJson();
     } catch (const std::exception& e) {
         std::cerr << "Error loading data: " << e.what() << std::endl;
         return 1;
@@ -156,11 +157,11 @@ int main() {
 
 
     // Обработка "render_settings"
-    request_handler.HandRenderSettings();
+    json_reader.HandRenderSettings();
 
-    json::Document doc = request_handler.HandleJsonRequest(json_input_request);
+    json::Document doc = json_reader.HandleJsonRequest(json_input_request, request_handler);
 
-    Print(doc, std::cout);
+    json::Print(doc, std::cout);
 
     return 0;
 }

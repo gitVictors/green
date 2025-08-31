@@ -1,15 +1,22 @@
 #include <istream>
+#include <sstream>
+#include "domain.h"
 #include "json.h"
 #include "json_reader.h"
+#include "request_handler.h"
+#include "transport_catalogue.h"
 
 
 namespace json_reader {
 
+using namespace domain;
 using namespace json;
 using namespace std;
 
-JsonReader::JsonReader (std::istream& input ):
-    doc_input_( json::Load(input))
+JsonReader::JsonReader (std::istream& input, transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render ):
+    doc_input_( json::Load(input)),
+    catalogue_(catalogue),
+    render_ (render)
 {
 }
 
@@ -18,6 +25,118 @@ const json::Document& JsonReader::GetDocument() const {
     return doc_input_;
 }
 
+
+//-------
+//Становиться фасадом
+json::Node JsonReader::LoadDataFromJson() {
+
+    // Вся логика парсинга теперь в JsonReader
+    ParseBaseRequests(catalogue_);
+
+    // Получаем настройки рендеринга
+    if (auto render_settings = GetRenderSettings(); render_settings != nullptr) {
+        render_.SetRenderSettings(ParseRenderSettings(render_settings));
+    }
+
+    // Возвращаем stat_requests
+    return  GetStatRequests();
+}
+
+
+
+
+json::Document  JsonReader::HandleJsonRequest(const json::Node& json_request, request_handler::RequestHandler& request_handler) {
+
+    using namespace json;
+    using namespace std;
+
+    const Node& root = json_request; //request_doc.GetRoot();
+
+    if (!root.IsArray()) {
+        throw invalid_argument("Invalid JSON format: stat_requests should be an array");
+    }
+
+    Array responses;
+    const Array& requests = root.AsArray();
+
+    for (const Node& request_node : requests) {
+
+        const Dict& request = request_node.AsMap();
+        int id = request.at("id").AsInt();
+        string type = request.at("type").AsString();
+
+        Dict response;
+        response["request_id"] = id;
+
+        try {
+            if (type == "Bus") {
+                string name = request.at("name").AsString();
+                const Bus* bus = catalogue_.GetBus(name);
+
+                if (!bus) {
+                    string str = "not found";
+                    response["error_message"] = Node(str);
+                } else {
+                    RouteInfo info = catalogue_.RouteInformation(name);
+                    response["route_length"] = static_cast<int>(info.route_length);
+                    response["curvature"] = info.curvature;
+                    response["stop_count"] = static_cast<int>(info.stops_count);
+                    response["unique_stop_count"] = static_cast<int>(info.unique_stops_count);
+                }
+            }
+            else if (type == "Stop") {
+                string name = request.at("name").AsString();
+                const Stop* stop = catalogue_.GetStop(name);
+
+                if (!stop) {
+                    string str = "not found";
+                    response["error_message"] =  Node(str);
+                } else {
+                    set<const Bus*, transport_catalogue::BusPtrCompare> buses = catalogue_.GetBusesForStop(name);
+                    Array bus_names;
+                    for (const Bus* bus : buses) {
+                        bus_names.push_back(bus->name);
+                    }
+                    response["buses"] = std::move(bus_names);
+                }
+            }else if ( type == "Map"){
+                std::ostringstream out;
+                request_handler.RenderMap().Render(out);
+                response["map"] = Node(out.str());
+            }
+            else {
+                response["error_message"] = "unknown request type: " + type;
+            }
+        } catch (const exception& e) {
+            response["error_message"] = e.what();
+        }
+
+        responses.push_back(std::move(response));
+    }
+
+    json::Document doc(std::move(responses));
+    return doc;
+
+}
+
+void  JsonReader::HandRenderSettings () {
+
+    ostringstream out_map;
+    //выделяем "render_settings"
+    const json::Node rnd_sttng = GetRenderSettings();
+
+    if (rnd_sttng != nullptr){
+
+        const json::Dict& render_settings_dict = rnd_sttng.AsMap();
+
+        renderer::RenderSettings render_var = ParseRenderSettings(render_settings_dict);
+
+        render_.SetRenderSettings( std::move(render_var));
+
+    }
+
+}
+//----
 
 
 const json::Node& JsonReader::GetRenderSettings() const
@@ -39,7 +158,7 @@ const json::Node& JsonReader::GetStatRequests() const
 }
 
 // Реализации ParseStops, ParseBuses, ParseDistances...
-void JsonReader::ParseBaseRequests(TransportCatalogue& catalogue) const {
+void JsonReader::ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue) const {
 
     const json::Node& root = doc_input_.GetRoot();
     if (!root.IsMap()) return;
@@ -54,7 +173,7 @@ void JsonReader::ParseBaseRequests(TransportCatalogue& catalogue) const {
     ParseDistances(catalogue, base_requests);
 }
 
-void JsonReader::ParseBuses(TransportCatalogue& catalogue, const json::Array& base_requests) const {
+void JsonReader::ParseBuses(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
     // Затем добавляем маршруты (чтобы все остановки уже существовали)
     for (const json::Node& request_node : base_requests) {
         const json::Dict& request = request_node.AsMap();
@@ -74,7 +193,7 @@ void JsonReader::ParseBuses(TransportCatalogue& catalogue, const json::Array& ba
     }
 }
 
-void JsonReader::ParseDistances(TransportCatalogue& catalogue, const json::Array& base_requests) const {
+void JsonReader::ParseDistances(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
     // Добавляем расстояния между остановками
     for (const json::Node& request_node : base_requests) {
         const json::Dict& request = request_node.AsMap();
@@ -97,7 +216,7 @@ void JsonReader::ParseDistances(TransportCatalogue& catalogue, const json::Array
 
 
 
-void JsonReader::ParseStops(TransportCatalogue& catalogue, const json::Array& base_requests) const {
+void JsonReader::ParseStops(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
     // Сначала добавляем все остановки
     for (const json::Node& request_node : base_requests) {
         const json::Dict& request = request_node.AsMap();
