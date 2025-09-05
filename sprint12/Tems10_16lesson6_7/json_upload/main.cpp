@@ -6,6 +6,7 @@
 using namespace std;
 
 int main() {
+
     json::Print(
         json::Document{
             json::Builder{}
