@@ -57,6 +57,20 @@ void Builder::AddNode(Node&& node, bool one_shot) {
 
 
 Builder& Builder::StartDict() {
+
+    Node::Value& host_value = GetCurrentValue();
+
+    // Проверяем, можно ли начать словарь в текущем контексте
+    if (std::holds_alternative<Dict>(host_value) && current_key_.empty()) {
+        throw std::logic_error("StartDict called in dictionary without a key");
+    }
+
+    if (!std::holds_alternative<std::nullptr_t>(host_value) &&
+        !std::holds_alternative<Dict>(host_value) &&
+        !std::holds_alternative<Array>(host_value)) {
+        throw std::logic_error("StartDict called in invalid context");
+    }
+
     // Создаем новый словарь как Node
     Node dict_node{Dict{}};
     AddNode(std::move(dict_node), false);
@@ -71,15 +85,33 @@ Builder& Builder::Key(const std::string& key) {
         throw std::logic_error("Key method called outside a dictionary");
     }
 
+    // Проверяем, что нет незакрытого ключа
+    if (!current_key_.empty()) {
+        throw std::logic_error("Key called immediately after another Key without Value");
+    }
+
     current_key_ = key;
     return *this;
 }
 
 Builder& Builder::Value(Node::Value value) {
 
-    Node node(std::move(value));
-  //  auto* top_node = nodes_stack_.back();
+    Node::Value& host_value = GetCurrentValue();
 
+    // Проверяем, можно ли добавить значение в текущий контекст
+    if (std::holds_alternative<Dict>(host_value) && (current_key_.empty()&&  current_key_ != "" ) ) {
+        throw std::logic_error("Value called in dictionary without a key");
+    }
+
+    // Проверяем, что не пытаемся добавить значение в неподдерживаемый контекст
+    if (!std::holds_alternative<std::nullptr_t>(host_value) &&
+        !std::holds_alternative<Dict>(host_value) &&
+        !std::holds_alternative<Array>(host_value)) {
+        throw std::logic_error("Value called in invalid context");
+    }
+
+
+    Node node(std::move(value));
     AddNode(std::move(node), true);
     return *this;
 
@@ -100,6 +132,20 @@ Builder& Builder::EndDict() {
 }
 
 Builder& Builder::StartArray() {
+
+    Node::Value& host_value = GetCurrentValue();
+
+    // Проверяем, можно ли начать массив в текущем контексте
+    if (std::holds_alternative<Dict>(host_value) && current_key_.empty()) {
+        throw std::logic_error("StartArray called in dictionary without a key");
+    }
+
+    if (!std::holds_alternative<std::nullptr_t>(host_value) &&
+        !std::holds_alternative<Dict>(host_value) &&
+        !std::holds_alternative<Array>(host_value)) {
+        throw std::logic_error("StartArray called in invalid context");
+    }
+
     // Создаем новый массив как Node
     Node array_node{Array{}};
     AddNode(std::move(array_node), false);
