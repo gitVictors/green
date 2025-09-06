@@ -23,7 +23,7 @@ private:
     Node root_;
     std::vector<Node*> nodes_stack_;
     std::string current_key_;
-    bool has_key_ = false;
+    bool key_expected_ = false; // Ожидается ли ключ в словаре
 };
 
 }

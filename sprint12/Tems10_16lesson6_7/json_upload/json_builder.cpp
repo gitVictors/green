@@ -29,8 +29,7 @@ void Builder::AddNode(Node&& node, bool one_shot) {
             nodes_stack_.push_back(nodes_stack_.back());
         }
     } else if (auto* dict = std::get_if<Dict>(&host_value)) {
-        // Для словаря используем сохраненный ключ
-        if (!current_key_.empty() || current_key_ == "" ) {
+            // Для словаря используем сохраненный ключ
             // Вставляем и получаем итератор на вставленный элемент
             auto [it, inserted] = dict->emplace(current_key_, std::move(node));
             current_key_.clear();
@@ -39,9 +38,7 @@ void Builder::AddNode(Node&& node, bool one_shot) {
                 // Добавляем указатель на только что вставленный узел
                 nodes_stack_.push_back(&it->second);
             }
-        } else {
-            throw std::logic_error("AddNode in dictionary without a key");
-        }
+
     } else if (auto* array = std::get_if<Array>(&host_value)) {
         // Для массива просто добавляем узел
         array->push_back(std::move(node));
@@ -61,7 +58,7 @@ Builder& Builder::StartDict() {
     Node::Value& host_value = GetCurrentValue();
 
     // Проверяем, можно ли начать словарь в текущем контексте
-    if (std::holds_alternative<Dict>(host_value) && current_key_.empty()) {
+     if (std::holds_alternative<Dict>(host_value) && !key_expected_) {
         throw std::logic_error("StartDict called in dictionary without a key");
     }
 
@@ -74,6 +71,12 @@ Builder& Builder::StartDict() {
     // Создаем новый словарь как Node
     Node dict_node{Dict{}};
     AddNode(std::move(dict_node), false);
+
+    // Сбрасываем флаг ожидания ключа после начала словаря
+    if (std::holds_alternative<Dict>(host_value)) {
+        key_expected_ = false;
+    }
+
     return *this;
 }
 
@@ -85,12 +88,17 @@ Builder& Builder::Key(const std::string& key) {
         throw std::logic_error("Key method called outside a dictionary");
     }
 
+    if (key_expected_) {
+        throw std::logic_error("Key called immediately after another Key without Value");
+    }
+
     // Проверяем, что нет незакрытого ключа
     if (!current_key_.empty()) {
         throw std::logic_error("Key called immediately after another Key without Value");
     }
 
     current_key_ = key;
+    key_expected_ = true; // После Key ожидается Value
     return *this;
 }
 
@@ -99,7 +107,7 @@ Builder& Builder::Value(Node::Value value) {
     Node::Value& host_value = GetCurrentValue();
 
     // Проверяем, можно ли добавить значение в текущий контекст
-    if (std::holds_alternative<Dict>(host_value) && (current_key_.empty()&&  current_key_ != "" ) ) {
+    if (std::holds_alternative<Dict>(host_value) && !key_expected_) {
         throw std::logic_error("Value called in dictionary without a key");
     }
 
@@ -113,6 +121,13 @@ Builder& Builder::Value(Node::Value value) {
 
     Node node(std::move(value));
     AddNode(std::move(node), true);
+
+    // Сбрасываем флаг ожидания ключа после добавления значения
+    if (std::holds_alternative<Dict>(host_value)) {
+        key_expected_ = false;
+    }
+
+
     return *this;
 
 }
@@ -136,7 +151,7 @@ Builder& Builder::StartArray() {
     Node::Value& host_value = GetCurrentValue();
 
     // Проверяем, можно ли начать массив в текущем контексте
-    if (std::holds_alternative<Dict>(host_value) && current_key_.empty()) {
+   if (std::holds_alternative<Dict>(host_value) && !key_expected_)  {
         throw std::logic_error("StartArray called in dictionary without a key");
     }
 
@@ -149,6 +164,12 @@ Builder& Builder::StartArray() {
     // Создаем новый массив как Node
     Node array_node{Array{}};
     AddNode(std::move(array_node), false);
+
+    // Сбрасываем флаг ожидания ключа после начала массива
+    if (std::holds_alternative<Dict>(host_value)) {
+        key_expected_ = false;
+    }
+
     return *this;
 }
 
