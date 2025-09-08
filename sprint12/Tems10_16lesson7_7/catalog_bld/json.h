@@ -25,6 +25,7 @@ public:
     using Var = std::variant<std::nullptr_t, std::string, int, double, bool, Array, Dict>;
     // Делаем доступными все конструкторы родительского класса variant
     using variant::variant;
+    using Value = variant;
 
     Node(const char* value) ;
     explicit Node(Value value) : variant(std::move(value)) {}
@@ -46,6 +47,10 @@ public:
     double AsDouble() const;
 
     const Var& GetVariant() const;
+
+    Value& GetValueNoConst() {
+        return *this;
+    }
 
     bool operator==(const Node& rhs) const;
     bool operator!=(const Node& rhs) const;
