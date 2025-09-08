@@ -38,7 +38,6 @@ public:
 
     ArrayItemContext Value(Node::Value value);
     Builder& EndArray();
-
     // Методы для вложенных структур в массиве
     DictItemContext StartDict();
     ArrayItemContext StartArray();
@@ -48,13 +47,17 @@ public:
 
 class Builder {
 public :
+
+
     Builder ();
+
     DictKeyContext Key(const std::string&);
     Builder& Value(Node::Value);
     DictItemContext StartDict();
     ArrayItemContext StartArray();
     Builder& EndDict();
     Builder& EndArray();
+
     Node Build();
 
 
@@ -69,9 +72,11 @@ private:
     bool key_expected_ = false; // Ожидается ли ключ в словаре
 
     // Дружественные классы для доступа к приватным методам
-    friend class DictKeyContext;
-    friend class DictItemContext;
-    friend class ArrayItemContext;
+    class DictKeyContext;
+    class DictItemContext;
+    class  ArrayItemContext;
+
+
 };
 
 

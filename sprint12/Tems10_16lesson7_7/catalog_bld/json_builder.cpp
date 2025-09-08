@@ -99,6 +99,7 @@ DictKeyContext Builder::Key(const std::string& key) {
 
     current_key_ = key;
     key_expected_ = true; // После Key ожидается Value
+
     return DictKeyContext(*this);
 }
 
