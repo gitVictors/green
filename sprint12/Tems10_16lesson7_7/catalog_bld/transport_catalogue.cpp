@@ -38,31 +38,29 @@ int TransportCatalogue::GetDistance(const Stop* from_stop, const Stop* to_stop) 
 
 
 
-void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, string>>& pvc ){
+// void TransportCatalogue::AddDistance (const std::string& name, vector<pair<int, string>>& pvc ){
 
-    // Находим указатель на текущую остановку
-    const Stop* from_stop = GetStop(name);
+//     // Находим указатель на текущую остановку
+//     const Stop* from_stop = GetStop(name);
 
-    if (!from_stop)
-    {
-        return; // Остановка не найдена
-    }
+//     if (!from_stop)
+//     {
+//         return; // Остановка не найдена
+//     }
 
-    // Добавляем все расстояния из вектора pvc
-    for (const auto& [distance, to_stop_name] : pvc) {
+//     // Добавляем все расстояния из вектора pvc
+//     for (const auto& [distance, to_stop_name] : pvc) {
 
-        const Stop* to_stop = GetStop(to_stop_name);
-        if (!to_stop)
-        {
-            continue;
-        }
+//         const Stop* to_stop = GetStop(to_stop_name);
+//         if (!to_stop)
+//         {
+//             continue;
+//         }
 
-        SetDistance( from_stop,  to_stop, distance );
+//         SetDistance( from_stop,  to_stop, distance );
 
-    }
-
-
-}
+//     }
+// }
 
 
 void TransportCatalogue::AddStop(const std::string& name, Coordinates& coordinates) {

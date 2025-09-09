@@ -268,28 +268,63 @@ void JsonReader::ParseBuses(transport_catalogue::TransportCatalogue& catalogue, 
     }
 }
 
+// void JsonReader::ParseDistances(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
+//     // Добавляем расстояния между остановками
+//     for (const json::Node& request_node : base_requests) {
+//         const json::Dict& request = request_node.AsMap();
+//         if (request.at("type").AsString() == "Stop") {
+//             const std::string& name = request.at("name").AsString();
+
+//             if (request.count("road_distances")) {
+//                 const json::Dict& distances = request.at("road_distances").AsMap();
+//                 std::vector<std::pair<int, std::string>> dist_vec;
+
+//                 for (const auto& [stop_name, dist_node] : distances) {
+//                     dist_vec.emplace_back(dist_node.AsInt(), stop_name);
+//                 }
+
+//                 //catalogue.AddDistance(name, dist_vec);
+//                 const Stop* from_stop = catalogue.GetStop(name);
+//                 if (from_stop) {
+//                     for (const auto& [distance, to_stop_name] : distances) {
+//                         const Stop* to_stop = catalogue.GetStop(to_stop_name);
+//                         if (to_stop) {
+//                             catalogue.SetDistance(from_stop, to_stop, distance);
+//                         }
+//                     }
+//                 }
+
+
+//             }
+//         }
+//     }
+// }
+
 void JsonReader::ParseDistances(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
-    // Добавляем расстояния между остановками
     for (const json::Node& request_node : base_requests) {
         const json::Dict& request = request_node.AsMap();
         if (request.at("type").AsString() == "Stop") {
             const std::string& name = request.at("name").AsString();
 
             if (request.count("road_distances")) {
-                const json::Dict& distances = request.at("road_distances").AsMap();
-                std::vector<std::pair<int, std::string>> dist_vec;
+                const json::Dict& distances_dict = request.at("road_distances").AsMap();
 
-                for (const auto& [stop_name, dist_node] : distances) {
-                    dist_vec.emplace_back(dist_node.AsInt(), stop_name);
+                const Stop* from_stop = catalogue.GetStop(name);
+                if (!from_stop) {
+                    continue; // Пропускаем если остановка не найдена
                 }
 
-                catalogue.AddDistance(name, dist_vec);
+                for (const auto& [to_stop_name, dist_node] : distances_dict) {
+                    int distance = dist_node.AsInt();
+                    const Stop* to_stop = catalogue.GetStop(to_stop_name);
+                    if (to_stop) {
+                        catalogue.SetDistance(from_stop, to_stop, distance);
+                    }
+                }
             }
         }
     }
 }
-
-
 
 void JsonReader::ParseStops(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
     // Сначала добавляем все остановки

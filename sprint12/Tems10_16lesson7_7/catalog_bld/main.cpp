@@ -152,7 +152,6 @@ int main() {
     // Обработка "render_settings"
     json_reader.HandRenderSettings();
 
-    //json::Document doc = json_reader.HandleJsonRequest(json_input_request, request_handler);
     json::Node res_node = json_reader.JsonRequest(json_input_request, request_handler);
 
     json::Print( json::Document{res_node} , std::cout);
