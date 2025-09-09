@@ -53,7 +53,7 @@ void Builder::AddNode(Node&& node, bool one_shot) {
 }
 
 
-DictItemContext  Builder::StartDict() {
+json::Builder::DictItemContext  json::Builder::StartDict() {
 
     Node::Value& host_value = GetCurrentValue();
 
@@ -80,7 +80,7 @@ DictItemContext  Builder::StartDict() {
      return DictItemContext(*this);
 }
 
-DictKeyContext Builder::Key(const std::string& key) {
+Builder::DictKeyContext Builder::Key(const std::string& key) {
 
     Node::Value& host_value = GetCurrentValue();
 
@@ -147,7 +147,7 @@ Builder& Builder::EndDict() {
     return *this;
 }
 
-ArrayItemContext Builder::StartArray() {
+Builder::ArrayItemContext Builder::StartArray() {
 
     Node::Value& host_value = GetCurrentValue();
 
@@ -211,42 +211,42 @@ Node Builder::Build() {
 }
 
 // Реализации методов контекстных классов ===========================
-DictKeyContext DictItemContext::Key(const std::string& key) {
+Builder::DictKeyContext Builder::DictItemContext::Key(const std::string& key) {
     builder_.Key(key);
     return DictKeyContext(builder_); ;
 }
 
-Builder& DictItemContext::EndDict() {
+Builder& Builder::DictItemContext::EndDict() {
     return builder_.EndDict();
 }
 
-DictItemContext DictKeyContext::Value(Node::Value value) {
+Builder::DictItemContext Builder::DictKeyContext::Value(Node::Value value) {
     builder_.Value(std::move(value));
     return DictItemContext(builder_);
 }
 
-DictItemContext DictKeyContext::StartDict() {
+Builder::DictItemContext Builder::DictKeyContext::StartDict() {
     return builder_.StartDict();
 }
 
-ArrayItemContext DictKeyContext::StartArray() {
+Builder::ArrayItemContext Builder::DictKeyContext::StartArray() {
     return builder_.StartArray();
 }
 
-ArrayItemContext ArrayItemContext::Value(Node::Value value) {
+Builder::ArrayItemContext Builder::ArrayItemContext::Value(Node::Value value) {
     builder_.Value(std::move(value));
     return *this;
 }
 
-Builder& ArrayItemContext::EndArray() {
+Builder& Builder::ArrayItemContext::EndArray() {
     return builder_.EndArray();
 }
 
-DictItemContext ArrayItemContext::StartDict() {
+Builder::DictItemContext Builder::ArrayItemContext::StartDict() {
     return builder_.StartDict();
 }
 
-ArrayItemContext ArrayItemContext::StartArray() {
+Builder::ArrayItemContext Builder::ArrayItemContext::StartArray() {
     return builder_.StartArray();
 }
 
