@@ -20,24 +20,18 @@ public:
 
     }
 
-    double Cheer(int user_id) {
-        if (user_page_counts_[user_id] == -1) return 0; // пользователь не читал
 
-        int total_users = 0;
-        int users_with_less_pages = 0;
-
-        // Подсчитываем общее количество пользователей, которые что-то читали
-        for (int i = 0; i <= MAX_USER_COUNT_; ++i) {
-            if (user_page_counts_[i] != -1) {
-                total_users++;
-                if (user_page_counts_[i] < user_page_counts_[user_id]) {
-                    users_with_less_pages++;
-                }
-            }
+    double Cheer(int user_id) const {
+        const int pages_count = user_page_counts_[user_id];
+        if (pages_count == -1) {
+            return 0;
+        }
+        const int user_count = page_achieved_by_count_[0];
+        if (user_count == 1) {
+            return 1;
         }
 
-        if (total_users == 1) return 1; // только текущий пользователь
-        return static_cast<double>(users_with_less_pages) / (total_users - 1);
+        return 1.0 - (page_achieved_by_count_[pages_count] - 1.0) / (user_count - 1.0);
     }
 
 private:
