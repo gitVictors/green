@@ -29,16 +29,11 @@ public:
 
     // Метод для проверки, является ли данный домен поддоменом другого домена
     bool IsSubdomain(const Domain& parent) const {
-        // Используем lexicographical_compare для проверки, является ли текущий домен поддоменом родительского домена
-        return std::lexicographical_compare(
-            domain_.begin(), domain_.end(),
-            parent.domain_.begin(), parent.domain_.end(),
-            [](char l, char r) {
-                // Считаем точку самым маленьким символом
-                return (r != '.') && (l < r || l == '.');
-            }
-            );
-
+        // Простая проверка: если текущий домен начинается с родительского
+        if (domain_.size() < parent.domain_.size()) {
+            return false;
+        }
+        return domain_.substr(0, parent.domain_.size()) == parent.domain_;
     }
 
 
@@ -58,42 +53,41 @@ class DomainChecker {
 public:
     template <typename InputIt>
     DomainChecker(InputIt begin, InputIt end) {
-        // Сохраняем все запрещённые домены в вектор
         std::vector<Domain> all_domains(begin, end);
-
-        // Сортируем домены для дальнейшего удобства работы
         std::sort(all_domains.begin(), all_domains.end());
-
-        // Удаляем избыточные поддомены
-        sorted_domains_ = AbsorbSubdomains(std::move(all_domains));
+        sorted_domains_ = RemoveSubdomains(std::move(all_domains));
     }
-
 
     bool IsForbidden(const Domain& domain) const {
-        auto it = upper_bound(sorted_domains_.begin(), sorted_domains_.end(), domain, [](const Domain& lhs, const Domain& rhs){
-            return lhs.GetDomain() < rhs.GetDomain();
-        });
-        if (it == sorted_domains_.begin()) return false;
-        else return domain.IsSubdomain(*prev(it));
+        auto it = std::upper_bound(sorted_domains_.begin(), sorted_domains_.end(), domain);
+        if (it != sorted_domains_.begin()) {
+            --it;
+            if (domain.IsSubdomain(*it)) {
+                return true;
+            }
+        }
+        return false;
     }
-
 
 private:
-    std::vector<Domain> AbsorbSubdomains(std::vector<Domain> domains) {
-        domains.erase(std::unique(begin(domains), end(domains),
-                                  [](const Domain& lhs, const Domain& rhs) {
-                                      return lhs.IsSubdomain(rhs) || rhs.IsSubdomain(lhs);
-                                  }),
-                      end(domains));
-        return domains;
+    std::vector<Domain> RemoveSubdomains(std::vector<Domain> domains) {
+        if (domains.empty()) return domains;
+
+        std::vector<Domain> result;
+        result.push_back(domains[0]);
+
+        for (size_t i = 1; i < domains.size(); ++i) {
+            // Добавляем только если текущий домен не является поддоменом последнего добавленного
+            if (!domains[i].IsSubdomain(result.back())) {
+                result.push_back(domains[i]);
+            }
+        }
+        return result;
     }
-
-
 
 private:
     std::vector<Domain> sorted_domains_;
 };
-
 
 
 // разработайте функцию ReadDomains, читающую заданное количество доменов из стандартного входа
