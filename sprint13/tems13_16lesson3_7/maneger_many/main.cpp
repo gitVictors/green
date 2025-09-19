@@ -5,7 +5,25 @@
 
 void ParseAndProcessQuery(BudgetManager& manager, std::string_view line) {
     // Разработайте функцию чтения и обработки запроса.
+
 }
+
+void ParseAndProcessQuery(BudgetManager& manager, std::string_view line) {
+    // Разбиваем строку на команду и конфигурацию
+    auto [command, pconfig] = SplitFirst(line, ' ');
+
+    // Получаем соответствующую фабрику для создания запроса
+    const auto& factory = QueryFactory::GetFactory(command);
+
+    // Создаем запрос с помощью фабрики
+    auto query = factory.Construct(pconfig.value_or(std::string_view{}));
+
+    if (query) {
+        // Обрабатываем запрос и выводим результат
+        query->ProcessAndPrint(manager, std::cout);
+    }
+}
+
 
 int ReadNumberOnLine(std::istream& input) {
     std::string line;
