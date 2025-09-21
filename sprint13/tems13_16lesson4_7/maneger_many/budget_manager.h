@@ -10,6 +10,7 @@ inline static const double TAX = 0.87;
 
 struct DayState {
     double income = 0;
+    double spending = 0;  // Добавляем поле для трат
 };
 
 class Query;
@@ -26,14 +27,26 @@ public:
     DayState ComputeTotalIncome(const Date& startDate, const Date& endDate) const;
 
     void EarnMoney(const Date& startDate, const Date& endDate, double value);
-    void PayTax(const Date& startDate, const Date& endDate);
+   // void PayTax(const Date& startDate, const Date& endDate);
+    void SpendMoney(const Date& startDate, const Date& endDate, double value);  // Новый метод для трат
+    void PayTax(const Date& startDate, const Date& endDate, double tax_rate = 0.87);  // Добавляем параметр налога
+
+    static int GetDayIndex(const Date& date) {
+        return Date::ComputeDistance(START_DATE, date);
+    }
+
+    DayState& GetDayState(int index) {
+        return days_state_[index];
+    }
+
+    [[nodiscard]] const DayState& GetDayState(int index) const {
+        return days_state_[index];
+    }
 
 private:
     std::vector<DayState> days_state_;
 
-    int GetDayIndex(const Date& date) const {
-        return Date::ComputeDistance(START_DATE, date);
-    }
+
 
     friend class Query;
 };
