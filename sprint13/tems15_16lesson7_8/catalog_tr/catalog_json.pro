@@ -16,7 +16,8 @@ SOURCES += \
         map_renderer.cpp \
         request_handler.cpp \
         svg.cpp \
-        transport_catalogue.cpp
+        transport_catalogue.cpp \
+        transport_graph.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -35,4 +36,5 @@ HEADERS += \
     request_handler.h \
     router.h \
     svg.h \
-    transport_catalogue.h
+    transport_catalogue.h \
+    transport_graph.h

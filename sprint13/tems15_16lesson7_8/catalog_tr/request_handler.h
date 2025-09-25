@@ -23,7 +23,7 @@ namespace request_handler {
 class RequestHandler {
 public:
     // Конструктор: принимает ссылку на транспортный каталог и, возможно, JSON-ридер
-    RequestHandler(transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render);
+    RequestHandler(transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFind& router);
 
     // === Методы для обработки запросов ===
 
@@ -56,8 +56,8 @@ public:
 private:
 
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных
-    //JsonReader& json_reader_; // Внешний парсер JSON (если требуется)
     renderer::MapRenderer& render_;
+    transport_catalogue::RouterFind& router_;
 };
 
 }

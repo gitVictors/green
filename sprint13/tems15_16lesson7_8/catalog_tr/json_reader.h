@@ -4,6 +4,7 @@
 #include "json.h"
 #include "transport_catalogue.h"
 #include "map_renderer.h"
+#include "transport_graph.h"
 
 namespace json {
 class Document;
@@ -21,13 +22,14 @@ namespace json_reader {
 class JsonReader {
 public:
     // Конструктор, принимающий входной поток (std::cin в main.cpp)
-    explicit JsonReader(std::istream& input, transport_catalogue::TransportCatalogue& catalogue, renderer::MapRenderer& render_ );
+    explicit JsonReader(std::istream& input, transport_catalogue::TransportCatalogue& catalogue, renderer::MapRenderer& render_,
+                        transport_catalogue::RouterFind& router );
 
     // Заполняет транспортный каталог данными из JSON
     void FillCatalogue(transport_catalogue::TransportCatalogue& catalogue);
 
     // Новые методы для парсинга данных
-    void ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue) const;
+    void ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue, transport_catalogue::RouterFind& router) const;
 
    // renderer::RenderSettings ParseRenderSettings(const json::Dict& request_map) const;
 
@@ -37,6 +39,8 @@ public:
 
     const json::Node& GetStatRequests() const;
 
+    const json::Node& GetRoutingSettings() const ;
+
     renderer::RenderSettings ParseRenderSettings(const json::Node& root) const;
 
     json::Node LoadDataFromJson();
@@ -45,7 +49,11 @@ public:
 
     json::Node JsonRequest(const json::Node& json_request, request_handler::RequestHandler& request_handler);
 
+    transport_catalogue::RouterFind FillRoutingSettings(const json::Node& settings) const ;
+
     void  HandRenderSettings ();
+
+    void ParseRouterSetting ( transport_catalogue::RouterFind& router, const transport_catalogue::TransportCatalogue& catalogue) const;
 
 private:
 
@@ -58,11 +66,13 @@ private:
     void ParseDistances(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const;
 
 
+
     // Хранилище распарсенных данных
     json::Document doc_input_;
     json::Node null_node_ = nullptr;
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных
     renderer::MapRenderer& render_;
+    transport_catalogue::RouterFind& router_;
 
 };
 

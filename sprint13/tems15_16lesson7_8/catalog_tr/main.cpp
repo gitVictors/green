@@ -9,6 +9,7 @@
 #include "json_reader.h"
 #include "request_handler.h"
 #include "transport_catalogue.h"
+#include "transport_graph.h"
 
 using namespace std;
 using namespace literals;
@@ -134,11 +135,12 @@ int main() {
     //  Инициализация компонентов
     json::Node json_input_request;
     transport_catalogue::TransportCatalogue catalogue;
+    transport_catalogue::RouterFind router;
     renderer::MapRenderer renderer;
-    json_reader::JsonReader json_reader(std::cin, catalogue, renderer);
 
-    request_handler::RequestHandler request_handler(catalogue, renderer); //создаем обработчик
+    request_handler::RequestHandler request_handler(catalogue, renderer, router); //создаем обработчик
 
+    json_reader::JsonReader json_reader(std::cin, catalogue, renderer, router);
 
     //  Загрузка данных в транспортный каталог
     try {

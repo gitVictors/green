@@ -14,10 +14,12 @@ using namespace domain;
 using namespace json;
 using namespace std;
 
-JsonReader::JsonReader (std::istream& input, transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render ):
+JsonReader::JsonReader (std::istream& input, transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render,
+                                transport_catalogue::RouterFind& router  ):
     doc_input_( json::Load(input)),
     catalogue_(catalogue),
-    render_ (render)
+    render_ (render),
+    router_(router)
 {
 }
 
@@ -32,7 +34,7 @@ const json::Document& JsonReader::GetDocument() const {
 json::Node JsonReader::LoadDataFromJson() {
 
     // Вся логика парсинга теперь в JsonReader
-    ParseBaseRequests(catalogue_);
+    ParseBaseRequests(catalogue_, router_);
 
     // Получаем настройки рендеринга
     if (auto render_settings = GetRenderSettings(); render_settings != nullptr) {
@@ -232,8 +234,16 @@ const json::Node& JsonReader::GetStatRequests() const
     return doc_input_.GetRoot().AsMap().at("stat_requests");
 }
 
+const json::Node& JsonReader::GetRoutingSettings() const {
+
+    if (!doc_input_.GetRoot().AsMap().count("routing_settings"s)) return null_node_;
+
+    return doc_input_.GetRoot().AsMap().at("routing_settings"s);
+
+}
+
 // Реализации ParseStops, ParseBuses, ParseDistances...
-void JsonReader::ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue) const {
+void JsonReader::ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue, transport_catalogue::RouterFind& router) const {
 
     const json::Node& root = doc_input_.GetRoot();
     if (!root.IsMap()) return;
@@ -246,7 +256,25 @@ void JsonReader::ParseBaseRequests(transport_catalogue::TransportCatalogue& cata
     ParseStops(catalogue, base_requests);
     ParseBuses(catalogue, base_requests);
     ParseDistances(catalogue, base_requests);
+    ParseRouterSetting (router, catalogue);
 }
+
+void JsonReader::ParseRouterSetting (transport_catalogue::RouterFind& router, const transport_catalogue::TransportCatalogue& catalogue) const{
+
+    const json::Node& routing_settings_node = GetRoutingSettings() ;
+
+    if (!routing_settings_node.IsNull()) {
+        // Создаем новый объект RouterFind с настройками и каталогом
+        router = transport_catalogue::RouterFind(
+            routing_settings_node.AsMap().at("bus_wait_time").AsInt(),
+            routing_settings_node.AsMap().at("bus_velocity").AsDouble()
+            );
+
+        // Строим граф на основе каталога
+        router.BuildGraph(catalogue);
+    }
+}
+
 
 void JsonReader::ParseBuses(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
     // Затем добавляем маршруты (чтобы все остановки уже существовали)
@@ -268,37 +296,7 @@ void JsonReader::ParseBuses(transport_catalogue::TransportCatalogue& catalogue, 
     }
 }
 
-// void JsonReader::ParseDistances(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
-//     // Добавляем расстояния между остановками
-//     for (const json::Node& request_node : base_requests) {
-//         const json::Dict& request = request_node.AsMap();
-//         if (request.at("type").AsString() == "Stop") {
-//             const std::string& name = request.at("name").AsString();
 
-//             if (request.count("road_distances")) {
-//                 const json::Dict& distances = request.at("road_distances").AsMap();
-//                 std::vector<std::pair<int, std::string>> dist_vec;
-
-//                 for (const auto& [stop_name, dist_node] : distances) {
-//                     dist_vec.emplace_back(dist_node.AsInt(), stop_name);
-//                 }
-
-//                 //catalogue.AddDistance(name, dist_vec);
-//                 const Stop* from_stop = catalogue.GetStop(name);
-//                 if (from_stop) {
-//                     for (const auto& [distance, to_stop_name] : distances) {
-//                         const Stop* to_stop = catalogue.GetStop(to_stop_name);
-//                         if (to_stop) {
-//                             catalogue.SetDistance(from_stop, to_stop, distance);
-//                         }
-//                     }
-//                 }
-
-
-//             }
-//         }
-//     }
-// }
 
 void JsonReader::ParseDistances(transport_catalogue::TransportCatalogue& catalogue, const json::Array& base_requests) const {
     for (const json::Node& request_node : base_requests) {
@@ -400,5 +398,11 @@ svg::Color JsonReader::ParseColor(const json::Node& color_node) const {
 
     return render_settings;
 }
+
+ transport_catalogue::RouterFind JsonReader::FillRoutingSettings(const json::Node& settings) const {
+     //transport::Router routing_settings;
+     return transport_catalogue::RouterFind{ settings.AsDict().at("bus_wait_time"s).AsInt(), settings.AsDict().at("bus_velocity"s).AsDouble() };
+ }
+
 
 }//namespace

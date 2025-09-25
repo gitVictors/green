@@ -13,9 +13,10 @@
 
 namespace request_handler {
 
-RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render):
+RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFind router):
     catalogue_(catalogue),
-    render_(render)
+    render_(render),
+    router_(router)
 {
 }
 
