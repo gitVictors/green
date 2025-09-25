@@ -14,12 +14,12 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
     stop_ids_.clear();
 
     // Добавляем вершины для каждой остановки
-    for (const auto& stop : catalogue.GetStops()) {
+    for (const auto& stop : catalogue.GetStop()) {
         stop_ids_[stop->name] = graph_.AddVertex();
     }
 
     // Добавляем рёбра для каждого маршрута автобуса
-    for (const auto& bus : catalogue.GetBuses()) {
+    for (const auto& bus : catalogue.GetBus()) {
         for (size_t i = 0; i < bus->stops.size() - 1; ++i) {
             const auto& from_stop = bus->stops[i];
             const auto& to_stop = bus->stops[i + 1];
