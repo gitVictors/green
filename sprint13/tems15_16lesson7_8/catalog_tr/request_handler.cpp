@@ -1,6 +1,6 @@
 // #include <sstream>
 //#include <istream>
-// #include "request_handler.h"
+#include "request_handler.h"
 #include "json_reader.h"
 
 /*
@@ -13,11 +13,8 @@
 
 namespace request_handler {
 
-RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFind router):
-    catalogue_(catalogue),
-    render_(render),
-    router_(router)
-{
+RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFind& router):
+    catalogue_(catalogue), render_(render), router_(router){
 }
 
 

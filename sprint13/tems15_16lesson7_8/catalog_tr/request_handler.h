@@ -5,6 +5,7 @@
 #include "domain.h"
 #include "svg.h"
 #include "map_renderer.h"
+#include "transport_graph.h"
 
 // using namespace json_reader;
 
@@ -58,6 +59,7 @@ private:
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных
     renderer::MapRenderer& render_;
     transport_catalogue::RouterFind& router_;
+
 };
 
 }
