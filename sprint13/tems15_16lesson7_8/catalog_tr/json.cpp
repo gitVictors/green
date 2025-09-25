@@ -4,7 +4,8 @@
 
 namespace json {
 
-namespace {
+    namespace {
+
 using namespace std::literals;
 
 Node LoadNode(std::istream& input);
@@ -222,6 +223,117 @@ Node LoadNode(std::istream& input) {
     }
 }
 
+}  // namespace
+
+//--------------- NODE  ---------------------------------------------------------
+
+//конструктор для const char*
+Node::Node(const char* value) : Var(std::string(value)) {}
+
+const Array& Node::AsArray() const {
+    if (!std::holds_alternative<Array>(*this)) {
+        throw std::logic_error("Узел не содержит массива");
+    }
+    return std::get<Array>(*this);
+}
+
+const Dict& Node::AsMap() const {
+    if (!std::holds_alternative<Dict>(*this)){
+        throw std::logic_error("Узел не содержит map");
+    }
+    return std::get<Dict>(*this);
+}
+
+int Node::AsInt() const {
+    if (!std::holds_alternative<int>(*this)) {
+        throw std::logic_error("Узел не содержит целого числа");
+    }
+    return std::get<int>(*this);
+
+}
+
+const std::string& Node::AsString() const {
+    if (!std::holds_alternative<std::string>(*this)) {
+        throw std::logic_error("Узел не содержит строки");
+    }
+    return std::get<std::string>(*this);
+}
+
+bool Node::AsBool() const{
+    if (!std::holds_alternative<bool>(*this)) {
+        throw std::logic_error("Узел не содержит bool");
+    }
+    return std::get<bool>(*this);
+}
+
+double Node::AsDouble() const{
+    if (!IsDouble()) throw std::logic_error("wrong type");
+    if (IsInt()) return static_cast<double>(std::get<int>(*this));
+    return std::get<double>(*this);
+}
+
+bool Node::IsInt() const {
+    return std::holds_alternative<int>(*this);
+}
+bool Node::IsDouble() const{
+    return std::holds_alternative<int>(*this) || std::holds_alternative<double>(*this);
+}
+bool Node::IsPureDouble() const{
+    return std::holds_alternative<double>(*this);
+}
+bool Node::IsBool() const {
+    return std::holds_alternative<bool>(*this);
+}
+bool Node::IsString() const{
+    return std::holds_alternative<std::string>(*this);
+}
+bool Node::IsNull() const{
+    return std::holds_alternative<std::nullptr_t>(*this);
+}
+bool Node::IsArray() const{
+    return std::holds_alternative<Array>(*this);
+
+}
+bool Node::IsMap() const{
+    return std::holds_alternative<Dict>(*this);
+}
+
+bool Node::operator==(const Node& rhs) const {
+    return  static_cast<const Var&>(*this) == static_cast<const Var&>(rhs);
+}
+
+bool Node::operator!=(const Node& rhs) const {
+    return !(*this == rhs);
+}
+
+const Node::Var& Node::GetVariant() const {
+    return *this;
+}
+//-----------------------------------------------------------------------------------
+//-------- Document  ----------------------------------------------------------------
+Document::Document(Node root)
+    :  root_(std::move(root))
+{
+}
+
+const Node& Document::GetRoot() const {
+    return root_;
+}
+
+Document Load(std::istream& input) {
+    return Document{LoadNode(input)};
+}
+
+bool Document::operator==(const Document& rhs) const {
+    return root_ == rhs.root_;
+}
+
+bool Document::operator!=(const Document& rhs) const {
+    return !(*this == rhs);
+}
+
+//------------------------------------------------------------------------------------
+
 struct PrintContext {
     std::ostream& out;
     int indent_step = 4;
@@ -341,14 +453,15 @@ void PrintNode(const Node& node, const PrintContext& ctx) {
         node.GetValue());
 }
 
-}  // namespace
 
-Document Load(std::istream& input) {
-    return Document{LoadNode(input)};
-}
+
+// Document Load(std::istream& input) {
+//     return Document{LoadNode(input)};
+// }
 
 void Print(const Document& doc, std::ostream& output) {
     PrintNode(doc.GetRoot(), PrintContext{output});
 }
+
 
 }  // namespace json

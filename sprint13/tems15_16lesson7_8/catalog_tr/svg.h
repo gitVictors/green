@@ -73,6 +73,9 @@ std::ostream& operator<<(std::ostream& out, const Color& color);
 template<class... Ts>
 struct overloads : Ts... { using Ts::operator()...; };
 
+template<class... Ts>
+overloads(Ts...)->overloads<Ts...>;  // ← Добавьте эту строку
+
 template <typename Owner>
 class PathProps {
 public:

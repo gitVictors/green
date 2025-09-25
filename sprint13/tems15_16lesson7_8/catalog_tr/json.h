@@ -52,6 +52,10 @@ public:
         return *this;
     }
 
+    const Value& GetValue () const{
+        return *this;
+    }
+
     bool operator==(const Node& rhs) const;
     bool operator!=(const Node& rhs) const;
 
