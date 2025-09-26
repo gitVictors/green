@@ -52,7 +52,7 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
                 graph::VertexId to_vertex = stop_ids_.at(stop_to->name);         // вершина прибытия
 
                 // Рассчитываем реальное расстояние между остановками i и j
-                int real_distance = 0;
+                double real_distance = 0;
                 for (size_t k = i + 1; k <= j; ++k) {
                     real_distance += catalogue.GetDistance(stops[k - 1], stops[k]);
                 }
