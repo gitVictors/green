@@ -56,6 +56,16 @@ public:
         return busname_to_bus_;
     }
 
+    // Добавьте этот метод для получения всех остановок
+    const std::deque<Stop>& GetStops() const {
+        return all_stops_;
+    }
+
+    // Также добавьте метод для получения всех автобусов
+    const std::deque<Bus>& GetBuses() const {
+        return all_buses_;
+    }
+
 private:
     void UpdateStopToBus (const std::string& name_number, const std::vector<std::string>& stops);
 

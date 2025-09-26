@@ -181,6 +181,47 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                 request_handler.RenderMap().Render(out);
                 builder.Key("map").Value(out.str());
             }
+            else if (type == "Route"){
+
+                string from = request.at("from").AsString();
+                string to = request.at("to").AsString();
+
+                auto route_info = router_.FindRoute(from, to);
+
+                if (!route_info) {
+                    builder.Key("error_message").Value("not found"s);
+                } else {
+                    builder.Key("items").StartArray();
+
+                    double total_time = 0.0;
+
+                    // Упрощенная реализация - только базовая структура
+                    builder.StartDict()
+                        .Key("type").Value("Wait"s)
+                        .Key("stop_name").Value(from)
+                        .Key("time").Value(router_.GetWaitTime())
+                        .EndDict();
+
+                    total_time += router_.GetWaitTime();
+
+                    // Для простоты предполагаем один автобус без пересадок
+                    if (!route_info->edges.empty()) {
+                        const auto& first_edge = router_.GetGraph().GetEdge(route_info->edges[0]);
+                        builder.StartDict()
+                            .Key("type").Value("Bus"s)
+                            .Key("bus").Value("Unknown"s) // Заглушка
+                            .Key("span_count").Value(1)   // Заглушка
+                            .Key("time").Value(first_edge.weight)
+                            .EndDict();
+
+                        total_time += first_edge.weight;
+                    }
+
+                    builder.EndArray();
+                    builder.Key("total_time").Value(total_time);
+                }
+
+            }
             else {
                 builder.Key("error_message").Value("unknown request type: "s + type);
             }
@@ -401,7 +442,7 @@ svg::Color JsonReader::ParseColor(const json::Node& color_node) const {
 
  transport_catalogue::RouterFind JsonReader::FillRoutingSettings(const json::Node& settings) const {
      //transport::Router routing_settings;
-     return transport_catalogue::RouterFind{ settings.AsDict().at("bus_wait_time"s).AsInt(), settings.AsDict().at("bus_velocity"s).AsDouble() };
+     return transport_catalogue::RouterFind{ settings.AsMap().at("bus_wait_time"s).AsInt(), settings.AsMap().at("bus_velocity"s).AsDouble() };
  }
 
 
