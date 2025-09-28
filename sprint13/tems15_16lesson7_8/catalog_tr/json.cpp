@@ -306,9 +306,7 @@ bool Node::operator!=(const Node& rhs) const {
     return !(*this == rhs);
 }
 
-const Node::Var& Node::GetVariant() const {
-    return *this;
-}
+
 //-----------------------------------------------------------------------------------
 //-------- Document  ----------------------------------------------------------------
 Document::Document(Node root)

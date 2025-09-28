@@ -81,7 +81,7 @@ json::Document  JsonReader::HandleJsonRequest(const json::Node& json_request, re
                     response["error_message"] = Node(str);
                 } else {
                     RouteInfo info = catalogue_.RouteInformation(name);
-                    response["route_length"] = static_cast<int>(info.route_length);
+                    response["route_length"] = static_cast<double>(info.route_length);
                     response["curvature"] = info.curvature;
                     response["stop_count"] = static_cast<int>(info.stops_count);
                     response["unique_stop_count"] = static_cast<int>(info.unique_stops_count);
@@ -155,7 +155,7 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                     builder.Key("error_message").Value("not found"s);
                 } else {
                     RouteInfo info = catalogue_.RouteInformation(name);
-                    builder.Key("route_length").Value(static_cast<int>(info.route_length))
+                    builder.Key("route_length").Value(static_cast<double>(info.route_length))
                         .Key("curvature").Value(info.curvature)
                         .Key("stop_count").Value(static_cast<int>(info.stops_count))
                         .Key("unique_stop_count").Value(static_cast<int>(info.unique_stops_count));
@@ -193,7 +193,7 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                 if (!route_opt) {
                     builder
                         .Key("request_id"s).Value(id)
-                        .Key("error_message"s).Value("Route not found"s);
+                        .Key("error_message"s).Value("not found"s);
                 }else {
 
                     json::Array items;

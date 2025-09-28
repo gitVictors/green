@@ -46,15 +46,20 @@ public:
     bool AsBool() const;
     double AsDouble() const;
 
-    const Var& GetVariant() const;
+
+    // const Var& GetVariant() const {
+    //     return *this;
+    // }
+
+
+    const Value& GetValue () const{
+        return *this;
+    }
 
     Value& GetValueNoConst() {
         return *this;
     }
 
-    const Value& GetValue () const{
-        return *this;
-    }
 
     bool operator==(const Node& rhs) const;
     bool operator!=(const Node& rhs) const;
