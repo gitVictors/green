@@ -2,6 +2,12 @@ QT = core
 
 CONFIG += c++23 cmdline
 
+# Строгие флаги компиляции
+ QMAKE_CXXFLAGS += # -Wall  -Werror  -Wextra -pedantic
+# QMAKE_CXXFLAGS += -Wconversion -Wsign-conversion
+# QMAKE_CXXFLAGS += -Wshadow -Wunused -Wmissing-field-initializers
+# QMAKE_CXXFLAGS += -Wold-style-cast -Wnarrowing
+
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
@@ -17,7 +23,7 @@ SOURCES += \
         request_handler.cpp \
         svg.cpp \
         transport_catalogue.cpp \
-        transport_graph.cpp
+        transport_router.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -37,4 +43,4 @@ HEADERS += \
     router.h \
     svg.h \
     transport_catalogue.h \
-    transport_graph.h
+    transport_router.h

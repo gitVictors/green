@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma once
 
 #include "svg.h"
 #include "geo.h"

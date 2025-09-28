@@ -1,4 +1,4 @@
-#include "transport_graph.h"
+#include "transport_router.h"
 #include "graph.h"
 #include "domain.h"
 #include "router.h"
@@ -24,6 +24,8 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
         // Добавляем ребро "ожидания" между вершиной прибытия и вершиной отправления
         // Вес = время ожидания автобуса (в минутах)
         graph_.AddEdge({
+            stop.name,
+            static_cast<size_t>(0),
             vertex_id,                    // from: вершина прибытия
             vertex_id + 1,                // to: вершина отправления
             static_cast<double>(bus_wait_time_) // вес: время ожидания
@@ -52,7 +54,7 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
                 graph::VertexId to_vertex = stop_ids_.at(stop_to->name);         // вершина прибытия
 
                 // Рассчитываем реальное расстояние между остановками i и j
-                double real_distance = 0;
+                int real_distance = 0;
                 for (size_t k = i + 1; k <= j; ++k) {
                     real_distance += catalogue.GetDistance(stops[k - 1], stops[k]);
                 }
@@ -62,7 +64,13 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
                 double travel_time = real_distance / (bus_velocity_ * 1000.0 / 60.0);
 
                 // Добавляем ребро для движения от остановки i к j
-                graph_.AddEdge({from_vertex, to_vertex, travel_time});
+                graph_.AddEdge({
+                    bus.name,        // поле name
+                    static_cast<size_t>(j - i),           // поле cnt (span_count)
+                    from_vertex,
+                    to_vertex,
+                    travel_time
+                });
 
                 // Для некольцевого маршрута добавляем обратное направление
                 if (!bus.is_roundtrip) {
@@ -75,7 +83,8 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
                     double reverse_travel_time = reverse_distance / (bus_velocity_ * 1000.0 / 60.0);
 
                     // Ребро для обратного направления
-                    graph_.AddEdge({
+                    graph_.AddEdge({ bus.name,
+                                    j-i,
                         stop_ids_.at(stop_to->name) + 1, // вершина отправления остановки j
                         stop_ids_.at(stop_from->name),   // вершина прибытия остановки i
                         reverse_travel_time

@@ -5,7 +5,7 @@
 #include "domain.h"
 #include "svg.h"
 #include "map_renderer.h"
-#include "transport_graph.h"
+#include "transport_router.h"
 
 // using namespace json_reader;
 
@@ -53,6 +53,9 @@ public:
 
     svg::Document RenderMap() const;
 
+    const std::optional<graph::Router<double>::RouteInfo> GetOptimalRoute(const std::string_view stop_from, const std::string_view stop_to) const;
+
+    const graph::DirectedWeightedGraph<double>& GetRouterGraph() const;
 
 private:
 

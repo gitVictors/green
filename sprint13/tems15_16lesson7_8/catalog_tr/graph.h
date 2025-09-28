@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <vector>
+#include <string>
 
 namespace graph {
 
@@ -12,9 +13,14 @@ using EdgeId = size_t;
 
 template <typename Weight>
 struct Edge {
+    std::string name;
+    size_t cnt;
     VertexId from;
     VertexId to;
     Weight weight;
+
+    Edge(std::string n, size_t c, VertexId f, VertexId t, Weight w)
+        : name(std::move(n)), cnt(c), from(f), to(t), weight(w) {}
 };
 
 template <typename Weight>

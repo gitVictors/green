@@ -183,43 +183,62 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
             }
             else if (type == "Route"){
 
-                string from = request.at("from").AsString();
-                string to = request.at("to").AsString();
+                using namespace std::string_literals;
 
-                auto route_info = router_.FindRoute(from, to);
+                const int id = request.at("id"s).AsInt();
+                const auto from = request.at("from"s).AsString();
+                const auto to = request.at("to"s).AsString();
+                const auto& route_opt = request_handler.GetOptimalRoute(from, to);
 
-                if (!route_info) {
-                    builder.Key("error_message").Value("not found"s);
-                } else {
-                    builder.Key("items").StartArray();
+                if (!route_opt) {
+                    builder
+                        .Key("request_id"s).Value(id)
+                        .Key("error_message"s).Value("Route not found"s);
+                }else {
 
+                    json::Array items;
                     double total_time = 0.0;
+                    const auto& route = route_opt.value();
 
-                    // Упрощенная реализация - только базовая структура
-                    builder.StartDict()
-                        .Key("type").Value("Wait"s)
-                        .Key("stop_name").Value(from)
-                        .Key("time").Value(router_.GetWaitTime())
-                        .EndDict();
+                    for (const auto edge_id : route.edges) {
 
-                    total_time += router_.GetWaitTime();
+                        const auto& edge = request_handler.GetRouterGraph().GetEdge(edge_id);
+                        const bool is_wait_edge = (edge.cnt == 0); //(edge.weight == request_handler.GetBusWaitTim);
 
-                    // Для простоты предполагаем один автобус без пересадок
-                    if (!route_info->edges.empty()) {
-                        const auto& first_edge = router_.GetGraph().GetEdge(route_info->edges[0]);
-                        builder.StartDict()
-                            .Key("type").Value("Bus"s)
-                            .Key("bus").Value("Unknown"s) // Заглушка
-                            .Key("span_count").Value(1)   // Заглушка
-                            .Key("time").Value(first_edge.weight)
-                            .EndDict();
+                        json::Node item_node;
+                        if (is_wait_edge) {
+                            // Элемент ожидания
+                            item_node = json::Builder{}
+                                                .StartDict()
+                                                    .Key("type"s).Value("Wait"s)
+                                                    .Key("stop_name"s).Value(edge.name)  // имя остановки
+                                                    .Key("time"s).Value(edge.weight)
+                                            .EndDict().
+                                        Build();
 
-                        total_time += first_edge.weight;
+                        } else {
+                            // Элемент поездки на автобусе
+                            item_node = json::Builder{}
+                                                .StartDict()
+                                                .Key("type"s).Value("Bus"s)
+                                                .Key("bus"s).Value(edge.name)        // имя автобуса
+                                                .Key("span_count"s).Value(static_cast<int>(edge.cnt))
+                                                .Key("time"s).Value(edge.weight)
+                                             .EndDict().
+                                         Build();
+                        }
+
+                        items.push_back(std::move(item_node));
+                        total_time += edge.weight;
                     }
 
-                    builder.EndArray();
-                    builder.Key("total_time").Value(total_time);
+                    builder
+                        .Key("request_id"s).Value(id)
+                        .Key("total_time"s).Value(total_time)
+                        .Key("items"s).Value(std::move(items));
+
                 }
+
 
             }
             else {
@@ -447,3 +466,6 @@ svg::Color JsonReader::ParseColor(const json::Node& color_node) const {
 
 
 }//namespace
+
+
+
