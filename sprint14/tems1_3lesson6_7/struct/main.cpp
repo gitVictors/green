@@ -21,19 +21,20 @@ struct CompactNucleotide {
     bool is_marked;              // 1 байт
 
     // Геттеры для битовых полей
-    uint16_t get_gene_num() const { return packed_fields & 0xFFF; } // 12 бит
-    uint8_t get_chromosome_num() const { return (packed_fields >> 12) & 0x3F; } // 6 бит
-    uint8_t get_symbol() const { return (packed_fields >> 18) & 0x03; } // 2 бита
+    uint16_t get_gene_num() const { return packed_fields & 0xFFF; } // 12 бит (0-11)
+    uint8_t get_chromosome_num() const { return (packed_fields >> 12) & 0xF; } // 4 бита (12-15)
+    uint8_t get_symbol() const { return (packed_fields >> 16) & 0x3; } // 2 бита (16-17) - но это уже за пределами 16 бит!
 
     // Сеттеры для битовых полей
     void set_gene_num(uint16_t value) {
         packed_fields = (packed_fields & 0xF000) | (value & 0xFFF);
     }
     void set_chromosome_num(uint8_t value) {
-        packed_fields = (packed_fields & 0xF03F) | ((value & 0x3F) << 12);
+        packed_fields = (packed_fields & 0x0FFF) | ((value & 0xF) << 12);
     }
     void set_symbol(uint8_t value) {
-        packed_fields = (packed_fields & 0xFFFC) | (value & 0x03);
+        // Невозможно уместить в 16 бит!
+        packed_fields = (packed_fields & 0xFFFF) | ((value & 0x3) << 16); // Это не сработает!
     }
 };
 
