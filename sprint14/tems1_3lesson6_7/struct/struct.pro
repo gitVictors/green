@@ -3,7 +3,7 @@ QT = core
 CONFIG += c++23 cmdline
 
 # Строгие флаги компиляции
-QMAKE_CXXFLAGS += -Werror  -Wall    -Wextra -pedantic
+# QMAKE_CXXFLAGS += -Werror=c++26-extensions   -Wall    -Wextra -pedantic
 # QMAKE_CXXFLAGS += -Wconversion -Wsign-conversion
 # QMAKE_CXXFLAGS += -Wshadow -Wunused -Wmissing-field-initializers
 # QMAKE_CXXFLAGS += -Wold-style-cast -Wnarrowing
