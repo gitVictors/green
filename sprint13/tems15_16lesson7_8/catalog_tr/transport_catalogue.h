@@ -45,9 +45,6 @@ public:
 
     const RouteInfo RouteInformation(const std::string_view& number_name) const;
 
-    //дистанция между остановками
-   // void AddDistance (const std::string& name, vector<pair<int, string>>& pvc );
-
     void SetDistance(const Stop* from, const Stop* to, int meters);
     int GetDistance(const Stop* from, const Stop* to) const;
 

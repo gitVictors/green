@@ -325,13 +325,14 @@ void JsonReader::ParseRouterSetting (transport_catalogue::RouterFind& router, co
 
     if (!routing_settings_node.IsNull()) {
         // Создаем новый объект RouterFind с настройками и каталогом
-        router = transport_catalogue::RouterFind(
+        transport_catalogue::RouterFind setting = transport_catalogue::RouterFind(
             routing_settings_node.AsMap().at("bus_wait_time").AsInt(),
             routing_settings_node.AsMap().at("bus_velocity").AsDouble()
             );
 
         // Строим граф на основе каталога
-        router.BuildGraph(catalogue);
+        transport_catalogue::RouterFind router_var(setting, catalogue);
+        router = std::move(router_var);
     }
 }
 
