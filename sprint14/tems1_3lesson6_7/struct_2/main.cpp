@@ -123,7 +123,7 @@ void TestCompressDecompress() {
     CompactNucleotide compressedSource = Compress(source);
     Nucleotide decompressedSource = Decompress(compressedSource);
 
-    std::cout << "chr = " << compressedSource.service_info << std::endl;
+    std::cout << "chr = " << compressedSource.get_chromosome_num() << " source " << source.chromosome_num << std::endl;
     assert(source == decompressedSource);
 }
 

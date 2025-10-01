@@ -49,7 +49,7 @@ public:
 
     json::Node JsonRequest(const json::Node& json_request, request_handler::RequestHandler& request_handler);
 
-    transport_catalogue::RouterFind FillRoutingSettings(const json::Node& settings) const ;
+    // transport_catalogue::RouterFind FillRoutingSettings(const json::Node& settings) const ;
 
     void  HandRenderSettings ();
 

@@ -325,13 +325,17 @@ void JsonReader::ParseRouterSetting (transport_catalogue::RouterFind& router, co
 
     if (!routing_settings_node.IsNull()) {
         // Создаем новый объект RouterFind с настройками и каталогом
-        transport_catalogue::RouterFind setting = transport_catalogue::RouterFind(
-            routing_settings_node.AsMap().at("bus_wait_time").AsInt(),
-            routing_settings_node.AsMap().at("bus_velocity").AsDouble()
-            );
+        // transport_catalogue::RouterFind setting = transport_catalogue::RouterFind(
+        //     routing_settings_node.AsMap().at("bus_wait_time").AsInt(),
+        //     routing_settings_node.AsMap().at("bus_velocity").AsDouble()
+        //     );
+
+        struct transport_catalogue::Router_Setting router_setting;
+        router_setting.bus_wait_time = routing_settings_node.AsMap().at("bus_wait_time").AsInt();
+        router_setting.bus_velocity = routing_settings_node.AsMap().at("bus_velocity").AsDouble();
 
         // Строим граф на основе каталога
-        transport_catalogue::RouterFind router_var(setting, catalogue);
+        transport_catalogue::RouterFind router_var(router_setting, catalogue);
         router = std::move(router_var);
     }
 }
@@ -460,10 +464,10 @@ svg::Color JsonReader::ParseColor(const json::Node& color_node) const {
     return render_settings;
 }
 
- transport_catalogue::RouterFind JsonReader::FillRoutingSettings(const json::Node& settings) const {
-     //transport::Router routing_settings;
-     return transport_catalogue::RouterFind{ settings.AsMap().at("bus_wait_time"s).AsInt(), settings.AsMap().at("bus_velocity"s).AsDouble() };
- }
+ // transport_catalogue::RouterFind JsonReader::FillRoutingSettings(const json::Node& settings) const {
+ //     //transport::Router routing_settings;
+ //     return transport_catalogue::RouterFind{ settings.AsMap().at("bus_wait_time"s).AsInt(), settings.AsMap().at("bus_velocity"s).AsDouble() };
+ // }
 
 
 }//namespace
