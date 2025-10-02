@@ -202,7 +202,8 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
 
                     for (const auto edge_id : route.edges) {
 
-                        const auto& edge = request_handler.GetRouterGraph().GetEdge(edge_id);
+                        const auto& edge = request_handler.GetRouterGraph(from, to); //.GetEdge(edge_id);
+
                         const bool is_wait_edge = (edge.cnt == 0); //(edge.weight == request_handler.GetBusWaitTim);
 
                         json::Node item_node;
