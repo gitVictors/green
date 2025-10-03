@@ -14,7 +14,9 @@
 namespace request_handler {
 
 RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFind& router):
-    catalogue_(catalogue), render_(render), router_(router){
+    catalogue_(catalogue),
+    render_(render),
+    router_(router){
 }
 
 
@@ -38,9 +40,9 @@ svg::Document RequestHandler::RenderMap() const {
 }
 
 
-const std::optional<graph::Router<double>::RouteInfo> RequestHandler::GetOptimalRoute(const std::string_view stop_from, const std::string_view stop_to) const {
-    return router_.FindRoute(stop_from, stop_to);
-}
+// const std::optional<graph::Router<double>::RouteInfo> RequestHandler::GetOptimalRoute(const std::string_view stop_from, const std::string_view stop_to) const {
+//     return router_.FindRoute(stop_from, stop_to);
+// }
 
 // const graph::DirectedWeightedGraph<double>& RequestHandler::GetRouterGraph(const std::string_view stop_from, const std::string_view stop_to) const {
 //     // return router_.GetGraph();

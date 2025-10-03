@@ -2,8 +2,9 @@
 
 #include "router.h"
 #include "transport_catalogue.h"
-
+#include <chrono>
 #include <memory>
+#include <variant>
 
 // Предварительное объявление
 namespace request_handler {
@@ -18,16 +19,42 @@ struct Router_Setting {
     double bus_velocity;
 };
 
+using Minutes = std::chrono::duration<double, std::chrono::minutes::period>;
+
+struct RouteOptimal {
+
+        Minutes total_time;
+
+        struct BusItem {
+            const domain::Bus* bus_ptr;
+            Minutes time;
+            size_t span_count;
+        };
+
+        struct  WaitItem {
+            const domain::Stop* stop_ptr;
+            Minutes time;
+        };
+
+        using Item = std::variant<BusItem, WaitItem>;
+        std::vector<Item> items;
+
+};
+
 class RouterFind {
 public:
 
 
     RouterFind() = default;
 
-    RouterFind(struct Router_Setting& settings, const TransportCatalogue& db){
-        bus_wait_time_ = settings.bus_wait_time;
-        bus_velocity_ = settings.bus_velocity;
-        BuildGraph(db);
+    RouterFind(struct Router_Setting& settings, const TransportCatalogue* db):
+        bus_wait_time_ (settings.bus_wait_time)
+        ,bus_velocity_ (settings.bus_velocity)
+        ,transtport_catalog_ (db)
+    {
+        if (db) {
+            BuildGraph(*db);
+        }
     }
 
 
@@ -39,20 +66,25 @@ public:
             graph_ = std::move(other.graph_);
             stop_ids_ = std::move(other.stop_ids_);
             router_ = std::move(other.router_);
+            transtport_catalog_ = other.transtport_catalog_;
         }
         return *this;
     }
 
 
-    std::optional<graph::Router<double>::RouteInfo> FindRoute( std::string_view stop_from,  std::string_view stop_to) const;
+    std::optional<RouteOptimal> FindRoute( std::string_view stop_from,  std::string_view stop_to) const;
 
-    const graph::DirectedWeightedGraph<double>& GetGraph() const;
+    //const graph::DirectedWeightedGraph<double>& GetGraph() const;
 
 private:
 
     graph::DirectedWeightedGraph<double>& BuildGraph(const TransportCatalogue& catalogue);
     int GetWaitTime() const { return bus_wait_time_; }
 
+    // Проверка инициализации
+    bool IsInitialized() const {
+        return transtport_catalog_ != nullptr && router_ != nullptr;
+    }
 
     int bus_wait_time_ = 0;
     double bus_velocity_ = 0.0;
@@ -60,8 +92,7 @@ private:
     graph::DirectedWeightedGraph<double> graph_;
     std::map<std::string, graph::VertexId, std::less<>> stop_ids_;
     std::unique_ptr<graph::Router<double>> router_;
-
-
+    const TransportCatalogue* transtport_catalog_ = nullptr;
 
 };
 

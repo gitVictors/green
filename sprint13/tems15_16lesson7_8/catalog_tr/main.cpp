@@ -134,13 +134,18 @@ int main() {
 
     //  Инициализация компонентов
     json::Node json_input_request;
+
     transport_catalogue::TransportCatalogue catalogue;
     transport_catalogue::RouterFind router;
+
+
     renderer::MapRenderer renderer;
 
     request_handler::RequestHandler request_handler(catalogue, renderer, router); //создаем обработчик
 
+
     json_reader::JsonReader json_reader(std::cin, catalogue, renderer, router);
+
 
     //  Загрузка данных в транспортный каталог
     try {
@@ -154,7 +159,9 @@ int main() {
     // Обработка "render_settings"
     json_reader.HandRenderSettings();
 
+
     json::Node res_node = json_reader.JsonRequest(json_input_request, request_handler);
+    std::cerr << " OUT res_node" << std::endl;
 
     json::Print( json::Document{res_node} , std::cout);
 
