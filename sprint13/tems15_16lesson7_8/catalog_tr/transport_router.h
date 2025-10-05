@@ -5,6 +5,7 @@
 #include <chrono>
 #include <memory>
 #include <variant>
+#include <iostream>
 
 // Предварительное объявление
 namespace request_handler {
@@ -58,15 +59,22 @@ public:
     }
 
 
-    // Добавить оператор присваивания перемещением
+   // Добавить оператор присваивания перемещением
     RouterFind& operator=(RouterFind&& other) noexcept {
         if (this != &other) {
             bus_wait_time_ = other.bus_wait_time_;
             bus_velocity_ = other.bus_velocity_;
             graph_ = std::move(other.graph_);
             stop_ids_ = std::move(other.stop_ids_);
-            router_ = std::move(other.router_);
-            transtport_catalog_ = other.transtport_catalog_;
+            // router_ = std::move(other.router_);
+            transtport_catalog_ =  other.transtport_catalog_ ;
+
+            // Пересоздаем маршрутизатор
+            if (other.graph_.GetEdgeCount() != 0) {
+                router_ = std::make_unique<graph::Router<double>>(graph_);
+            } else {
+                router_.reset();
+            }
         }
         return *this;
     }
@@ -74,17 +82,17 @@ public:
 
     std::optional<RouteOptimal> FindRoute( std::string_view stop_from,  std::string_view stop_to) const;
 
-    //const graph::DirectedWeightedGraph<double>& GetGraph() const;
+    void test_print (void){
+        std::cerr << "test print" << std::endl;
+    }
+
+
 
 private:
 
     graph::DirectedWeightedGraph<double>& BuildGraph(const TransportCatalogue& catalogue);
     int GetWaitTime() const { return bus_wait_time_; }
-
-    // Проверка инициализации
-    bool IsInitialized() const {
-        return transtport_catalog_ != nullptr && router_ != nullptr;
-    }
+    //const graph::DirectedWeightedGraph<double>& GetGraph() const;
 
     int bus_wait_time_ = 0;
     double bus_velocity_ = 0.0;
@@ -92,7 +100,7 @@ private:
     graph::DirectedWeightedGraph<double> graph_;
     std::map<std::string, graph::VertexId, std::less<>> stop_ids_;
     std::unique_ptr<graph::Router<double>> router_;
-    const TransportCatalogue* transtport_catalog_ = nullptr;
+    const TransportCatalogue* transtport_catalog_; //= nullptr;
 
 };
 

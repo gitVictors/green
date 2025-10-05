@@ -192,11 +192,14 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                 const auto from = request.at("from"s).AsString();
                 const auto to = request.at("to"s).AsString();
 
+                // router_.test_print();
+                std::cerr << "IN findRroute 1 " << std::endl;
                 // Используем новую функцию FindRoute
-                const auto& route_opt = router_.FindRoute(from, to);
+                const auto& route_opt = router_.FindRoute(std::string_view {from}, std::string_view {to} );
+                std::cerr << "OUT findRroute 1 " << std::endl;
 
 
-                if (!route_opt) {
+                if (!route_opt.has_value()) {
                     builder
                         .Key("request_id"s).Value(id)
                         .Key("error_message"s).Value("not found"s);
@@ -241,6 +244,7 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                 builder.Key("error_message").Value("unknown request type: "s + type);
             }
         } catch (const exception& e) {
+            std::cerr << "exception out type " << type << std::endl;
             builder.Key("error_message").Value(e.what());
         }
 
@@ -320,11 +324,6 @@ void JsonReader::ParseRouterSetting (transport_catalogue::RouterFind& router, co
     const json::Node& routing_settings_node = GetRoutingSettings() ;
 
     if (!routing_settings_node.IsNull()) {
-        // Создаем новый объект RouterFind с настройками и каталогом
-        // transport_catalogue::RouterFind setting = transport_catalogue::RouterFind(
-        //     routing_settings_node.AsMap().at("bus_wait_time").AsInt(),
-        //     routing_settings_node.AsMap().at("bus_velocity").AsDouble()
-        //     );
 
         struct transport_catalogue::Router_Setting router_setting;
         router_setting.bus_wait_time = routing_settings_node.AsMap().at("bus_wait_time").AsInt();

@@ -1,9 +1,7 @@
 #include <sstream>
 #include <string>
-#include <sstream>
 // #include <iomanip>
 // #include <vector>
-#include <sstream>
 #include <iomanip>
 
 #include "json_reader.h"
@@ -17,69 +15,135 @@ using namespace literals;
 
 // Временная строка с тестовыми данными
 std::string test_data = R"({
-        "base_requests": [
-            {
-                "type": "Bus",
-                "name": "114",
-                "stops": ["Морской вокзал", "Ривьерский мост"],
-                "is_roundtrip": false
-            },
-            {
-                "type": "Stop",
-                "name": "Ривьерский мост",
-                "latitude": 43.587795,
-                "longitude": 39.716901,
-                "road_distances": {"Морской вокзал": 850}
-            },
-            {
-                "type": "Stop",
-                "name": "Морской вокзал",
-                "latitude": 43.581969,
-                "longitude": 39.719848,
-                "road_distances": {"Ривьерский мост": 850}
-            }
-        ],
-        "stat_requests": [
+      "base_requests": [
+          {
+              "is_roundtrip": true,
+              "name": "297",
+              "stops": [
+                  "Biryulyovo Zapadnoye",
+                  "Biryulyovo Tovarnaya",
+                  "Universam",
+                  "Biryulyovo Zapadnoye"
+              ],
+              "type": "Bus"
+          },
+          {
+              "is_roundtrip": false,
+              "name": "635",
+              "stops": [
+                  "Biryulyovo Tovarnaya",
+                  "Universam",
+                  "Prazhskaya"
+              ],
+              "type": "Bus"
+          },
+          {
+              "latitude": 55.574371,
+              "longitude": 37.6517,
+              "name": "Biryulyovo Zapadnoye",
+              "road_distances": {
+                  "Biryulyovo Tovarnaya": 2600
+              },
+              "type": "Stop"
+          },
+          {
+              "latitude": 55.587655,
+              "longitude": 37.645687,
+              "name": "Universam",
+              "road_distances": {
+                  "Biryulyovo Tovarnaya": 1380,
+                  "Biryulyovo Zapadnoye": 2500,
+                  "Prazhskaya": 4650
+              },
+              "type": "Stop"
+          },
+          {
+              "latitude": 55.592028,
+              "longitude": 37.653656,
+              "name": "Biryulyovo Tovarnaya",
+              "road_distances": {
+                  "Universam": 890
+              },
+              "type": "Stop"
+          },
+          {
+              "latitude": 55.611717,
+              "longitude": 37.603938,
+              "name": "Prazhskaya",
+              "road_distances": {},
+              "type": "Stop"
+          }
+      ],
+      "render_settings": {
+          "bus_label_font_size": 20,
+          "bus_label_offset": [
+              7,
+              15
+          ],
+          "color_palette": [
+              "green",
+              [
+                  255,
+                  160,
+                  0
+              ],
+              "red"
+          ],
+          "height": 200,
+          "line_width": 14,
+          "padding": 30,
+          "stop_label_font_size": 20,
+          "stop_label_offset": [
+              7,
+              -3
+          ],
+          "stop_radius": 5,
+          "underlayer_color": [
+              255,
+              255,
+              255,
+              0.85
+          ],
+          "underlayer_width": 3,
+          "width": 200
+      },
+      "routing_settings": {
+          "bus_velocity": 40,
+          "bus_wait_time": 6
+      },
+      "stat_requests": [
+          {
+              "id": 1,
+              "name": "297",
+              "type": "Bus"
+          },
+          {
+              "id": 2,
+              "name": "635",
+              "type": "Bus"
+          },
+          {
+              "id": 3,
+              "name": "Universam",
+              "type": "Stop"
+          },
+          {
+              "from": "Biryulyovo Zapadnoye",
+              "id": 4,
+              "to": "Universam",
+              "type": "Route"
+          },
+          {
+              "from": "Biryulyovo Zapadnoye",
+              "id": 5,
+              "to": "Prazhskaya",
+              "type": "Route"
+          }
+      ]
 
-            { "id": 2, "type": "Bus", "name": "114" },
-            { "id": 1, "type": "Stop", "name": "Ривьерский мост" },
-            { "id": 3, "type": "Stop", "name": "A" },
-            { "id": 4, "type": "Stop", "name": "И" }
-        ]
     })";
 
 
-/*
-
- *  Ожидаемый вывод:
-
- [
-     {
-         "buses": [
-             "114"
-         ],
-         "request_id": 1
-     },
-     {
-         "curvature": 1.23199,
-         "request_id": 2,
-         "route_length": 1700,
-         "stop_count": 3,
-         "unique_stop_count": 2
-     }
- ]
-
-----------------------
---------------------------------------
-
- Bus 256: 6 stops on route, 5 unique stops, 5950 route length, 1.36124 curvature
- Bus 750: 7 stops on route, 3 unique stops, 27400 route length, 1.30853 curvature
- Bus 751: not found
- Stop Samara: not found
- Stop Prazhskaya: no buses
- Stop Biryulyovo Zapadnoye: buses 256 828
-
- */
 
 
 
@@ -130,13 +194,17 @@ int main() {
 
 
     // Используем строковый поток вместо std::cin
-    //std::istringstream test_stream(test_data);
+    std::istringstream test_stream(test_data);
 
     //  Инициализация компонентов
     json::Node json_input_request;
 
     transport_catalogue::TransportCatalogue catalogue;
+
+
     transport_catalogue::RouterFind router;
+    // transport_catalogue::Router_Setting temp_settings{6, 40}; // значения по умолчанию
+    // transport_catalogue::RouterFind router(temp_settings, catalogue);
 
 
     renderer::MapRenderer renderer;
@@ -144,7 +212,7 @@ int main() {
     request_handler::RequestHandler request_handler(catalogue, renderer, router); //создаем обработчик
 
 
-    json_reader::JsonReader json_reader(std::cin, catalogue, renderer, router);
+    json_reader::JsonReader json_reader(/*std::cin*/ test_stream, catalogue, renderer, router);
 
 
     //  Загрузка данных в транспортный каталог
@@ -159,9 +227,7 @@ int main() {
     // Обработка "render_settings"
     json_reader.HandRenderSettings();
 
-
     json::Node res_node = json_reader.JsonRequest(json_input_request, request_handler);
-    std::cerr << " OUT res_node" << std::endl;
 
     json::Print( json::Document{res_node} , std::cout);
 

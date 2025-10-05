@@ -4,6 +4,9 @@
 #include "router.h"
 #include "transport_catalogue.h"
 
+#include <iostream>
+#include <string>
+
 using namespace graph;
 
 namespace transport_catalogue {
@@ -11,6 +14,7 @@ namespace transport_catalogue {
 graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCatalogue& catalogue) {
     // Получаем все остановки и создаем граф с удвоенным количеством вершин
     const auto& all_stops = catalogue.GetStops();
+    std::cerr << "DEBUG: Total stops in catalogue: " << all_stops.size() << std::endl;
     graph_ = DirectedWeightedGraph<double>(all_stops.size() * 2);
     stop_ids_.clear();
 
@@ -36,9 +40,10 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
 
     // Добавляем рёбра для поездок на автобусах
     for (const auto& bus : catalogue.GetBuses()) {
+
         const auto& stops = bus.stops;
         size_t stops_count = stops.size();
-
+        std::cerr << "DEBUG: stops.size() " << stops_count << std::endl;
         // Для каждой пары остановок на маршруте создаем ребро
         for (size_t i = 0; i < stops_count; ++i) {
             for (size_t j = i + 1; j < stops_count; ++j) {
@@ -100,12 +105,18 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
     return graph_;
 }
 
+
+
+
 std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
+
 
     // Проверяем, инициализирован ли маршрутизатор
     if (!router_) {
         return std::nullopt;
+        std::cerr << " if (!router_)" << std::endl;
     }
+
 
     // Ищем вершины для остановок (используем вершины прибытия)
     auto it_from = stop_ids_.find(stop_from);
@@ -114,15 +125,21 @@ std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, st
     // Если хотя бы одна остановка не найдена
     if (it_from == stop_ids_.end() || it_to == stop_ids_.end()) {
         return std::nullopt;
+        std::cerr << " if (it_from == stop_ids_.end() || it_to == stop_ids_.end())" << std::endl;
+
     }
 
-    // Ищем маршрут между вершинами прибытия остановок
+    std::cerr << "********" << std::endl;
+
     // Ищем маршрут между вершинами прибытия остановок
     const auto& route_info = router_->BuildRoute(it_from->second, it_to->second);
 
+
     if (!route_info.has_value()) {
         return std::nullopt;
+         std::cerr << "if (!route_info.has_value())" << std::endl;
     }
+
 
     // Создаем результат маршрута
     RouteOptimal result;
@@ -136,10 +153,12 @@ std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, st
         vertex_to_stop[vertex_id] = stop_name;
     }
 
+
     // Заполняем элементы маршрута
     for (const auto edge_id : route_info->edges) {
 
         const auto& edge = graph.GetEdge(edge_id);
+
 
         // Проверяем тип ребра по имени (пустая строка для ребер ожидания)
         if (edge.name.empty()) {
@@ -162,6 +181,7 @@ std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, st
     }
 
     return result;
+
 
 }
 
