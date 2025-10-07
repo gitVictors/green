@@ -202,17 +202,18 @@ int main() {
     transport_catalogue::TransportCatalogue catalogue;
 
 
-    transport_catalogue::RouterFind router;
+    //transport_catalogue::RouterFind router;
     // transport_catalogue::Router_Setting temp_settings{6, 40}; // значения по умолчанию
     // transport_catalogue::RouterFind router(temp_settings, catalogue);
+    transport_catalogue::RouterFindPtr router_ptr;
 
 
     renderer::MapRenderer renderer;
 
-    request_handler::RequestHandler request_handler(catalogue, renderer, router); //создаем обработчик
+    request_handler::RequestHandler request_handler(catalogue, renderer, router_ptr); //создаем обработчик
 
 
-    json_reader::JsonReader json_reader(/*std::cin*/ test_stream, catalogue, renderer, router);
+    json_reader::JsonReader json_reader(/*std::cin*/ test_stream, catalogue, renderer, router_ptr);
 
 
     //  Загрузка данных в транспортный каталог
@@ -226,6 +227,11 @@ int main() {
 
     // Обработка "render_settings"
     json_reader.HandRenderSettings();
+
+    // Проверяем, что router инициализирован перед использованием
+    if (!router_ptr) {
+        std::cerr << "Warning: Router was not initialized" << std::endl;
+    }
 
     json::Node res_node = json_reader.JsonRequest(json_input_request, request_handler);
 

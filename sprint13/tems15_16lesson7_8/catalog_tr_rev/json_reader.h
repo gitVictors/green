@@ -53,8 +53,9 @@ public:
 
     void  HandRenderSettings ();
 
-     void ParseRouterSetting ( transport_catalogue::RouterFindPtr& router, const transport_catalogue::TransportCatalogue& catalogue) const;
-   // void ParseRouterSetting (void) const;
+    //void ParseRouterSetting ( transport_catalogue::RouterFind& router, const transport_catalogue::TransportCatalogue& catalogue) const;
+
+    void ParseRouterSetting () const;
 
 private:
 
@@ -73,10 +74,7 @@ private:
     json::Node null_node_ = nullptr;
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных
     renderer::MapRenderer& render_;
-
-    //transport_catalogue::RouterFind& router_;
-
-    transport_catalogue::RouterFindPtr& router_;
+    transport_catalogue::RouterFindPtr& router_jsr_;
 
 };
 

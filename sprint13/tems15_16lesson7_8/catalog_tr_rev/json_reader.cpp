@@ -19,7 +19,7 @@ JsonReader::JsonReader (std::istream& input, transport_catalogue::TransportCatal
     doc_input_( json::Load(input)),
     catalogue_(catalogue),
     render_ (render),
-    router_(router)
+    router_jsr_(router)
 {
 }
 
@@ -34,7 +34,7 @@ const json::Document& JsonReader::GetDocument() const {
 json::Node JsonReader::LoadDataFromJson() {
 
     // Вся логика парсинга теперь в JsonReader
-    ParseBaseRequests(catalogue_, router_);
+    ParseBaseRequests(catalogue_, router_jsr_);
 
     // Получаем настройки рендеринга
     if (auto render_settings = GetRenderSettings(); render_settings != nullptr) {
@@ -148,7 +148,6 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
 
         try {
             if (type == "Bus") {
-
                 string name = request.at("name").AsString();
                 const Bus* bus = catalogue_.GetBus(name);
 
@@ -161,10 +160,8 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                         .Key("stop_count").Value(static_cast<int>(info.stops_count))
                         .Key("unique_stop_count").Value(static_cast<int>(info.unique_stops_count));
                 }
-
             }
             else if (type == "Stop") {
-
                 string name = request.at("name").AsString();
                 const Stop* stop = catalogue_.GetStop(name);
 
@@ -191,22 +188,17 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                 const int id = request.at("id"s).AsInt();
                 const auto from = request.at("from"s).AsString();
                 const auto to = request.at("to"s).AsString();
+                const auto& route_opt = request_handler.GetOptimalRoute(from, to);
 
-                if (!router_){
-                    builder
-                        .Key("request_id"s).Value(id)
-                        .Key("error_message"s).Value("not found"s);
-                    continue;
-                }
                 // Используем новую функцию FindRoute
-                const auto& route_opt = router_->FindRoute(std::string_view {from}, std::string_view {to} );
-
+                //const auto& route_opt = router_jsr_->FindRoute(std::string_view {from}, std::string_view {to} );
 
                 if (!route_opt.has_value()) {
                     builder
                         .Key("request_id"s).Value(id)
                         .Key("error_message"s).Value("not found"s);
-                } else {
+                }else {
+
                     const auto& route = route_opt.value();
 
                     json::Array items;
@@ -239,6 +231,7 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                         .Key("request_id"s).Value(id)
                         .Key("total_time"s).Value(route.total_time.count())
                         .Key("items"s).Value(std::move(items));
+
                 }
 
 
@@ -247,7 +240,6 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                 builder.Key("error_message").Value("unknown request type: "s + type);
             }
         } catch (const exception& e) {
-            std::cerr << "exception out type " << type << std::endl;
             builder.Key("error_message").Value(e.what());
         }
 
@@ -319,28 +311,32 @@ void JsonReader::ParseBaseRequests(transport_catalogue::TransportCatalogue& cata
     ParseStops(catalogue, base_requests);
     ParseBuses(catalogue, base_requests);
     ParseDistances(catalogue, base_requests);
-
-    ParseRouterSetting (router, catalogue);
-    // ParseRouterSetting ();
+    // ParseRouterSetting (router, catalogue);
+    ParseRouterSetting();
 }
 
- void JsonReader::ParseRouterSetting (transport_catalogue::RouterFindPtr& router, const transport_catalogue::TransportCatalogue& catalogue) const{
-//void JsonReader::ParseRouterSetting () const{
+// void JsonReader::ParseRouterSetting (transport_catalogue::RouterFindPtr& router, const transport_catalogue::TransportCatalogue& catalogue) const
+void JsonReader::ParseRouterSetting () const
+{
 
     const json::Node& routing_settings_node = GetRoutingSettings() ;
 
     if (!routing_settings_node.IsNull()) {
+
+        // Создаем новый объект RouterFind с настройками и каталогом
+        // transport_catalogue::RouterFind router_setting = transport_catalogue::RouterFind(
+        //     routing_settings_node.AsMap().at("bus_wait_time").AsInt(),
+        //     routing_settings_node.AsMap().at("bus_velocity").AsDouble()
+        //     );
 
         struct transport_catalogue::Router_Setting router_setting;
         router_setting.bus_wait_time = routing_settings_node.AsMap().at("bus_wait_time").AsInt();
         router_setting.bus_velocity = routing_settings_node.AsMap().at("bus_velocity").AsDouble();
 
         // Строим граф на основе каталога
-        // transport_catalogue::RouterFind router_var(router_setting, &catalogue);
-        // router = std::move(router_var);
-
-        // Создаем новый RouterFind и перемещаем в router_
-        router_ = std::make_unique<transport_catalogue::RouterFind>(router_setting, catalogue);
+        //transport_catalogue::RouterFind router_var(setting, catalogue);
+        //router = std::move(router_var);
+        router_jsr_ = std::make_unique<transport_catalogue::RouterFind>(router_setting, catalogue_);
     }
 }
 

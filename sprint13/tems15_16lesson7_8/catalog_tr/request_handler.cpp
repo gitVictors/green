@@ -1,5 +1,6 @@
 // #include <sstream>
 //#include <istream>
+#include <optional>
 #include "request_handler.h"
 #include "json_reader.h"
 
@@ -13,7 +14,8 @@
 
 namespace request_handler {
 
-RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFind& router):
+RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render,
+                               transport_catalogue::RouterFindPtr& router):
     catalogue_(catalogue),
     render_(render),
     router_(router){
@@ -37,6 +39,13 @@ svg::Document RequestHandler::RenderMap() const {
 
     return render_.GetSVG( result );
 
+}
+
+std::optional<transport_catalogue::RouteOptimal> RequestHandler::GetOptimalRoute(std::string_view from, std::string_view to) const {
+    if (!router_) {
+        return std::nullopt;
+    }
+    return RequestHandler::router_->FindRoute(from, to);
 }
 
 

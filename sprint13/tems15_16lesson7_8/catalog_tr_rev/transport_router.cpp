@@ -5,16 +5,15 @@
 #include "transport_catalogue.h"
 
 #include <iostream>
-#include <string>
 
 using namespace graph;
 
 namespace transport_catalogue {
 
 graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCatalogue& catalogue) {
+
     // Получаем все остановки и создаем граф с удвоенным количеством вершин
     const auto& all_stops = catalogue.GetStops();
-    std::cerr << "DEBUG: Total stops in catalogue: " << all_stops.size() << std::endl;
     graph_ = DirectedWeightedGraph<double>(all_stops.size() * 2);
     stop_ids_.clear();
 
@@ -40,10 +39,9 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
 
     // Добавляем рёбра для поездок на автобусах
     for (const auto& bus : catalogue.GetBuses()) {
-
         const auto& stops = bus.stops;
         size_t stops_count = stops.size();
-        std::cerr << "DEBUG: stops.size() " << stops_count << std::endl;
+
         // Для каждой пары остановок на маршруте создаем ребро
         for (size_t i = 0; i < stops_count; ++i) {
             for (size_t j = i + 1; j < stops_count; ++j) {
@@ -105,20 +103,12 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
     return graph_;
 }
 
-
-
-
 std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
 
-     std::cout << "********" << std::endl;
-
     // Проверяем, инициализирован ли маршрутизатор
-    // if (router_.get() != nullptr ) {
-    //     return std::nullopt;
-    //     std::cerr << " if (!router_)" << std::endl;
-    // }
-
-
+    if (router_.get() != nullptr ) {
+        return std::nullopt;
+    }
 
 
     // Ищем вершины для остановок (используем вершины прибытия)
@@ -128,22 +118,15 @@ std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, st
     // Если хотя бы одна остановка не найдена
     if (it_from == stop_ids_.end() || it_to == stop_ids_.end()) {
         return std::nullopt;
-        std::cerr << " if (it_from == stop_ids_.end() || it_to == stop_ids_.end())" << std::endl;
-
     }
-
-
-    router_->test_out();
 
     // Ищем маршрут между вершинами прибытия остановок
     const auto& route_info = router_->BuildRoute(it_from->second, it_to->second);
 
-
-
     if (!route_info.has_value()) {
         return std::nullopt;
-         std::cerr << "if (!route_info.has_value())" << std::endl;
     }
+
 
 
     // Создаем результат маршрута
@@ -164,33 +147,50 @@ std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, st
 
         const auto& edge = graph.GetEdge(edge_id);
 
-
         // Проверяем тип ребра по имени (пустая строка для ребер ожидания)
         if (edge.name.empty()) {
             // Ребро ожидания - находим остановку по from вершине
             auto stop_it = vertex_to_stop.find(edge.from);
             if (stop_it != vertex_to_stop.end()) {
                 RouteOptimal::WaitItem wait_item;
-                wait_item.stop_ptr = transtport_catalog_.GetStop(stop_it->second);
+                wait_item.stop_ptr = tc_rf_.GetStop(stop_it->second);
                 wait_item.time = Minutes(edge.weight);
                 result.items.push_back(wait_item);
             }
         } else {
             // Ребро автобуса
             RouteOptimal::BusItem bus_item;
-            bus_item.bus_ptr = transtport_catalog_.GetBus(edge.name);
+            bus_item.bus_ptr = tc_rf_.GetBus(edge.name);
             bus_item.time = Minutes(edge.weight);
             bus_item.span_count = edge.cnt;
             result.items.push_back(bus_item);
         }
     }
 
-    return result;
+    return route_info;
 
-
-//    return nullopt;
 
 }
+
+
+// std::optional<Router<double>::RouteInfo> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
+//     // Проверяем, инициализирован ли маршрутизатор
+//     if (!router_) {
+//         return std::nullopt;
+//     }
+
+//     // Ищем вершины для остановок (используем вершины прибытия)
+//     auto it_from = stop_ids_.find(stop_from);
+//     auto it_to = stop_ids_.find(stop_to);
+
+//     // Если хотя бы одна остановка не найдена
+//     if (it_from == stop_ids_.end() || it_to == stop_ids_.end()) {
+//         return std::nullopt;
+//     }
+
+//     // Ищем маршрут между вершинами прибытия остановок
+//     return router_->BuildRoute(it_from->second, it_to->second);
+// }
 
 // const graph::DirectedWeightedGraph<double>& RouterFind::GetGraph() const {
 //     return graph_;

@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <iostream>
 
 namespace graph {
 
@@ -29,10 +28,6 @@ public:
     };
 
     std::optional<RouteInfo> BuildRoute(VertexId from, VertexId to) const;
-
-    void test_out (void) {
-        std::cout << "test out Router " << std::endl;
-    }
 
 private:
     struct RouteInternalData {
@@ -102,13 +97,10 @@ Router<Weight>::Router(const Graph& graph)
 template <typename Weight>
 std::optional<typename Router<Weight>::RouteInfo> Router<Weight>::BuildRoute(VertexId from,
                                                                              VertexId to) const {
-    std::cerr << "start" << std::endl;
     const auto& route_internal_data = routes_internal_data_.at(from).at(to);
     if (!route_internal_data) {
-        std::cerr << "out connect verctor" << std::endl;
         return std::nullopt;
     }
-
     const Weight weight = route_internal_data->weight;
     std::vector<EdgeId> edges;
     for (std::optional<EdgeId> edge_id = route_internal_data->prev_edge;

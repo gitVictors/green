@@ -53,8 +53,7 @@ public:
 
     svg::Document RenderMap() const;
 
-    // std::optional<graph::Router<double>::RouteInfo> GetOptimalRoute( std::string_view stop_from,  std::string_view stop_to) const;
-    std::optional<transport_catalogue::RouteOptimal> GetOptimalRoute(std::string_view from, std::string_view to) const ;
+    const std::optional<graph::Router<double>::RouteInfo> GetOptimalRoute(const std::string_view stop_from, const std::string_view stop_to) const;
 
     const graph::DirectedWeightedGraph<double>& GetRouterGraph() const;
 
@@ -62,7 +61,7 @@ private:
 
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных
     renderer::MapRenderer& render_;
-    transport_catalogue::RouterFindPtr& router_;
+    transport_catalogue::RouterFindPtr& router_hd_;
 
 };
 
