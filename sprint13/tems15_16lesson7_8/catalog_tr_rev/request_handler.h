@@ -6,6 +6,8 @@
 #include "svg.h"
 #include "map_renderer.h"
 #include "transport_router.h"
+#include <chrono>
+#include <variant>
 
 // using namespace json_reader;
 
@@ -20,6 +22,29 @@ class Node;
 }
 
 namespace request_handler {
+
+
+using Minutes = std::chrono::duration<double, std::chrono::minutes::period>;
+
+struct RouteOptimal {
+
+    Minutes total_time;
+
+    struct BusItem {
+        const domain::Bus* bus_ptr;
+        Minutes time;
+        size_t span_count;
+    };
+
+    struct  WaitItem {
+        const domain::Stop* stop_ptr;
+        Minutes time;
+    };
+
+    using Item = std::variant<BusItem, WaitItem>;
+    std::vector<Item> items;
+
+};
 
 class RequestHandler {
 public:
@@ -53,7 +78,7 @@ public:
 
     svg::Document RenderMap() const;
 
-    const std::optional<graph::Router<double>::RouteInfo> GetOptimalRoute(const std::string_view stop_from, const std::string_view stop_to) const;
+    const std::optional<RouteOptimal>  GetOptimalRoute(const std::string_view stop_from, const std::string_view stop_to) const;
 
     const graph::DirectedWeightedGraph<double>& GetRouterGraph() const;
 

@@ -3,9 +3,9 @@
 #include "router.h"
 #include "transport_catalogue.h"
 
+// #include <chrono>
 #include <memory>
-#include <chrono>
-#include <variant>
+// #include <variant>
 
 // Предварительное объявление
 namespace request_handler {
@@ -21,27 +21,6 @@ struct Router_Setting {
 };
 
 
-using Minutes = std::chrono::duration<double, std::chrono::minutes::period>;
-
-struct RouteOptimal {
-
-    Minutes total_time;
-
-    struct BusItem {
-        const domain::Bus* bus_ptr;
-        Minutes time;
-        size_t span_count;
-    };
-
-    struct  WaitItem {
-        const domain::Stop* stop_ptr;
-        Minutes time;
-    };
-
-    using Item = std::variant<BusItem, WaitItem>;
-    std::vector<Item> items;
-
-};
 
 
 class RouterFind {
@@ -55,7 +34,7 @@ public:
     RouterFind(struct Router_Setting settings, const TransportCatalogue& db):
         bus_wait_time_ (settings.bus_wait_time)
         ,bus_velocity_ (settings.bus_velocity)
-        ,tc_rf_(db)
+
     {
 
         BuildGraph(db);
@@ -79,9 +58,9 @@ public:
     // }
 
 
-    // std::optional<graph::Router<double>::RouteInfo> FindRoute( std::string_view stop_from,  std::string_view stop_to) const;
+    std::optional<graph::Router<double>::RouteInfo> FindRoute( std::string_view stop_from,  std::string_view stop_to) const;
 
-    std::optional<RouteOptimal> FindRoute(std::string_view stop_from, std::string_view stop_to) const ;
+    // std::optional<RouteOptimal> FindRoute(std::string_view stop_from, std::string_view stop_to) const ;
 
 
 private:
@@ -94,7 +73,7 @@ private:
 
     int bus_wait_time_ = 0;
     double bus_velocity_ = 0.0;
-    const TransportCatalogue& tc_rf_;
+
 
     graph::DirectedWeightedGraph<double> graph_;
     std::map<std::string, graph::VertexId, std::less<>> stop_ids_;

@@ -3,6 +3,7 @@
 #include "domain.h"
 #include "router.h"
 #include "transport_catalogue.h"
+#include "request_handler.h"
 
 #include <iostream>
 
@@ -103,13 +104,14 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
     return graph_;
 }
 
-std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
+
+
+std::optional<graph::Router<double>::RouteInfo> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
 
     // Проверяем, инициализирован ли маршрутизатор
-    if (router_.get() != nullptr ) {
+    if (!router_) {
         return std::nullopt;
     }
-
 
     // Ищем вершины для остановок (используем вершины прибытия)
     auto it_from = stop_ids_.find(stop_from);
@@ -121,76 +123,8 @@ std::optional<RouteOptimal> RouterFind::FindRoute(std::string_view stop_from, st
     }
 
     // Ищем маршрут между вершинами прибытия остановок
-    const auto& route_info = router_->BuildRoute(it_from->second, it_to->second);
-
-    if (!route_info.has_value()) {
-        return std::nullopt;
-    }
-
-
-
-    // Создаем результат маршрута
-    RouteOptimal result;
-    result.total_time = Minutes(route_info->weight);
-
-    // Получаем граф для доступа к информации о ребрам
-    const auto& graph = graph_;
-
-    std::unordered_map<graph::VertexId, std::string> vertex_to_stop;
-    for (const auto& [stop_name, vertex_id] : stop_ids_) {
-        vertex_to_stop[vertex_id] = stop_name;
-    }
-
-
-    // Заполняем элементы маршрута
-    for (const auto edge_id : route_info->edges) {
-
-        const auto& edge = graph.GetEdge(edge_id);
-
-        // Проверяем тип ребра по имени (пустая строка для ребер ожидания)
-        if (edge.name.empty()) {
-            // Ребро ожидания - находим остановку по from вершине
-            auto stop_it = vertex_to_stop.find(edge.from);
-            if (stop_it != vertex_to_stop.end()) {
-                RouteOptimal::WaitItem wait_item;
-                wait_item.stop_ptr = tc_rf_.GetStop(stop_it->second);
-                wait_item.time = Minutes(edge.weight);
-                result.items.push_back(wait_item);
-            }
-        } else {
-            // Ребро автобуса
-            RouteOptimal::BusItem bus_item;
-            bus_item.bus_ptr = tc_rf_.GetBus(edge.name);
-            bus_item.time = Minutes(edge.weight);
-            bus_item.span_count = edge.cnt;
-            result.items.push_back(bus_item);
-        }
-    }
-
-    return route_info;
-
-
+    return router_->BuildRoute(it_from->second, it_to->second);
 }
-
-
-// std::optional<Router<double>::RouteInfo> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
-//     // Проверяем, инициализирован ли маршрутизатор
-//     if (!router_) {
-//         return std::nullopt;
-//     }
-
-//     // Ищем вершины для остановок (используем вершины прибытия)
-//     auto it_from = stop_ids_.find(stop_from);
-//     auto it_to = stop_ids_.find(stop_to);
-
-//     // Если хотя бы одна остановка не найдена
-//     if (it_from == stop_ids_.end() || it_to == stop_ids_.end()) {
-//         return std::nullopt;
-//     }
-
-//     // Ищем маршрут между вершинами прибытия остановок
-//     return router_->BuildRoute(it_from->second, it_to->second);
-// }
 
 // const graph::DirectedWeightedGraph<double>& RouterFind::GetGraph() const {
 //     return graph_;
