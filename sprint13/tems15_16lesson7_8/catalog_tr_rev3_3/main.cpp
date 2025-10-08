@@ -1,7 +1,9 @@
 #include <sstream>
 #include <string>
+#include <sstream>
 // #include <iomanip>
 // #include <vector>
+#include <sstream>
 #include <iomanip>
 
 #include "json_reader.h"
@@ -15,6 +17,7 @@ using namespace literals;
 
 // Временная строка с тестовыми данными
 std::string test_data = R"({
+
       "base_requests": [
           {
               "is_roundtrip": true,
@@ -139,11 +142,44 @@ std::string test_data = R"({
               "to": "Prazhskaya",
               "type": "Route"
           }
+
       ]
+
 
     })";
 
 
+/*
+
+ *  Ожидаемый вывод:
+
+ [
+     {
+         "buses": [
+             "114"
+         ],
+         "request_id": 1
+     },
+     {
+         "curvature": 1.23199,
+         "request_id": 2,
+         "route_length": 1700,
+         "stop_count": 3,
+         "unique_stop_count": 2
+     }
+ ]
+
+----------------------
+--------------------------------------
+
+ Bus 256: 6 stops on route, 5 unique stops, 5950 route length, 1.36124 curvature
+ Bus 750: 7 stops on route, 3 unique stops, 27400 route length, 1.30853 curvature
+ Bus 751: not found
+ Stop Samara: not found
+ Stop Prazhskaya: no buses
+ Stop Biryulyovo Zapadnoye: buses 256 828
+
+ */
 
 
 
@@ -198,23 +234,13 @@ int main() {
 
     //  Инициализация компонентов
     json::Node json_input_request;
-
     transport_catalogue::TransportCatalogue catalogue;
-
-
-    //transport_catalogue::RouterFind router;
-    // transport_catalogue::Router_Setting temp_settings{6, 40}; // значения по умолчанию
-    // transport_catalogue::RouterFind router(temp_settings, catalogue);
-    transport_catalogue::RouterFindPtr router_ptr;
-
-
+    transport_catalogue::RouterFind router;
     renderer::MapRenderer renderer;
 
-    request_handler::RequestHandler request_handler(catalogue, renderer, router_ptr); //создаем обработчик
+    request_handler::RequestHandler request_handler(catalogue, renderer, router); //создаем обработчик
 
-
-    json_reader::JsonReader json_reader( std::cin /* test_stream*/, catalogue, renderer, router_ptr);
-
+    json_reader::JsonReader json_reader(/*std::cin*/ test_stream, catalogue, renderer, router);
 
     //  Загрузка данных в транспортный каталог
     try {
@@ -227,11 +253,6 @@ int main() {
 
     // Обработка "render_settings"
     json_reader.HandRenderSettings();
-
-    // Проверяем, что router инициализирован перед использованием
-    if (!router_ptr) {
-        std::cerr << "Warning: Router was not initialized" << std::endl;
-    }
 
     json::Node res_node = json_reader.JsonRequest(json_input_request, request_handler);
 
