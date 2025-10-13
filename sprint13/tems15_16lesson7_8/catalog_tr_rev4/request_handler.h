@@ -1,13 +1,12 @@
 #pragma once
 
 #include "transport_catalogue.h"
-// #include "json_reader.h"
 #include "domain.h"
 #include "svg.h"
 #include "map_renderer.h"
 #include "transport_router.h"
 
-// using namespace json_reader;
+
 
 // Предварительное объявление классов
 namespace json_reader {

@@ -107,28 +107,7 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
     return graph_;
 }
 
-// std::optional<Router<double>::RouteInfo> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
-//     // Проверяем, инициализирован ли маршрутизатор
-//     if (!router_) {
-//         return std::nullopt;
-//     }
 
-//     // Ищем вершины для остановок (используем вершины прибытия)
-//     auto it_from = stop_ids_.find(stop_from);
-//     auto it_to = stop_ids_.find(stop_to);
-
-//     // Если хотя бы одна остановка не найдена
-//     if (it_from == stop_ids_.end() || it_to == stop_ids_.end()) {
-//         return std::nullopt;
-//     }
-
-//     // Ищем маршрут между вершинами прибытия остановок
-//     return router_->BuildRoute(it_from->second, it_to->second);
-// }
-
-// const graph::DirectedWeightedGraph<double>& RouterFind::GetGraph() const {
-//     return graph_;
-// }
 
 
 //поиск маршрута
@@ -169,7 +148,6 @@ std::optional<RouteOptimal> RouterFind::FindRouteDirect(
         const auto& edge = graph.GetEdge(edge_id);
 
         if (edge.from % 2 == 0 && edge.to == edge.from + 1){
-        //if (edge.cnt == 0) {
             // Ребро ожидания
             auto stop_it = vertex_to_stop.find(edge.from);
             if (stop_it != vertex_to_stop.end()) {

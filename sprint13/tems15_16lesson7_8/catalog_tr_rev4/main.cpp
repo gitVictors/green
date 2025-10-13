@@ -136,7 +136,6 @@ int main() {
     json::Node json_input_request;
     transport_catalogue::TransportCatalogue catalogue;
     renderer::MapRenderer renderer;
-    // transport_catalogue::RouterFind router;
     transport_catalogue::RouterFindPtr router_ptr;
 
     request_handler::RequestHandler request_handler(catalogue, renderer, router_ptr); //создаем обработчик

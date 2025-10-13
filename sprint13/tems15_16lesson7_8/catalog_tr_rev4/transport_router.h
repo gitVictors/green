@@ -41,12 +41,6 @@ struct RouteOptimal {
 class RouterFind {
 public:
 
-    // RouterFind() = default;
-
-    // RouterFind(const int bus_wait_time, const double bus_velocity)
-    //     : bus_wait_time_(bus_wait_time)
-    //     , bus_velocity_(bus_velocity) {}
-
 
     RouterFind(struct Router_Setting settings, const TransportCatalogue& db):
         bus_wait_time_ (settings.bus_wait_time)

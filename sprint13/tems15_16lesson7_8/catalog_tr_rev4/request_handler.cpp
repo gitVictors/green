@@ -50,9 +50,6 @@ std::optional<transport_catalogue::RouteOptimal> RequestHandler::GetOptimalRoute
 }
 
 
-// const graph::DirectedWeightedGraph<double>& RequestHandler::GetRouterGraph() const {
-//     return router_.GetGraph();
-// }
 
 }//namespace
 
