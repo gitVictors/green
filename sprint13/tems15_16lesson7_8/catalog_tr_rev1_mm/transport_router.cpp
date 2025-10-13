@@ -3,9 +3,14 @@
 #include "domain.h"
 #include "router.h"
 #include "transport_catalogue.h"
-#include "request_handler.h"
+// #include "request_handler.h"
 
 using namespace graph;
+
+// Предварительное объявление
+namespace request_handler {
+class RequestHandler;
+}
 
 namespace transport_catalogue {
 
@@ -84,8 +89,9 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
                     double reverse_travel_time = reverse_distance / (bus_velocity_ * 1000.0 / 60.0);
 
                     // Ребро для обратного направления
-                    graph_.AddEdge({ bus.name,
-                                    j-i,
+                    graph_.AddEdge({
+                        bus.name,
+                        j-i,
                         stop_ids_.at(stop_to->name) + 1, // вершина отправления остановки j
                         stop_ids_.at(stop_from->name),   // вершина прибытия остановки i
                         reverse_travel_time
@@ -101,119 +107,94 @@ graph::DirectedWeightedGraph<double>& RouterFind::BuildGraph(const TransportCata
     return graph_;
 }
 
-std::optional<Router<double>::RouteInfo> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
-    // Проверяем, инициализирован ли маршрутизатор
-    if (!router_) {
-        return std::nullopt;
-    }
+// std::optional<Router<double>::RouteInfo> RouterFind::FindRoute(std::string_view stop_from, std::string_view stop_to) const {
+//     // Проверяем, инициализирован ли маршрутизатор
+//     if (!router_) {
+//         return std::nullopt;
+//     }
 
-    // Ищем вершины для остановок (используем вершины прибытия)
-    auto it_from = stop_ids_.find(stop_from);
-    auto it_to = stop_ids_.find(stop_to);
+//     // Ищем вершины для остановок (используем вершины прибытия)
+//     auto it_from = stop_ids_.find(stop_from);
+//     auto it_to = stop_ids_.find(stop_to);
 
-    // Если хотя бы одна остановка не найдена
-    if (it_from == stop_ids_.end() || it_to == stop_ids_.end()) {
-        return std::nullopt;
-    }
+//     // Если хотя бы одна остановка не найдена
+//     if (it_from == stop_ids_.end() || it_to == stop_ids_.end()) {
+//         return std::nullopt;
+//     }
 
-    // Ищем маршрут между вершинами прибытия остановок
-    return router_->BuildRoute(it_from->second, it_to->second);
-}
+//     // Ищем маршрут между вершинами прибытия остановок
+//     return router_->BuildRoute(it_from->second, it_to->second);
+// }
 
-const graph::DirectedWeightedGraph<double>& RouterFind::GetGraph() const {
-    return graph_;
-}
+// const graph::DirectedWeightedGraph<double>& RouterFind::GetGraph() const {
+//     return graph_;
+// }
 
 
-std::optional<transport_catalogue::RouteOptimal> RouterFind::FindRoute_m(
+//поиск маршрута
+std::optional<RouteOptimal> RouterFind::FindRouteDirect(
     std::string_view stop_from,
     std::string_view stop_to,
-    request_handler::RequestHandler& request_handler) const
+    const TransportCatalogue& catalogue) const
 {
-    // Проверяем, инициализирован ли маршрутизатор
     if (!router_) {
-        std::cerr << "Router is not initialized" << std::endl;
         return std::nullopt;
     }
 
-    // Ищем вершины для остановок (используем вершины прибытия)
     auto it_from = stop_ids_.find(stop_from);
     auto it_to = stop_ids_.find(stop_to);
 
-    // Если хотя бы одна остановка не найдена
     if (it_from == stop_ids_.end() || it_to == stop_ids_.end()) {
-        std::cerr << "Stop not found in graph: " << stop_from << " or " << stop_to << std::endl;
         return std::nullopt;
     }
 
-    // Проверяем существование остановок через RequestHandler
-    const auto* from_stop = request_handler.GetStopByName(stop_from);
-    const auto* to_stop = request_handler.GetStopByName(stop_to);
-
-    if (!from_stop || !to_stop) {
-        std::cerr << "Stop not found in catalogue: " << stop_from << " or " << stop_to << std::endl;
-        return std::nullopt;
-    }
-
-    // Ищем маршрут между вершинами прибытия остановок
     const auto& route_info = router_->BuildRoute(it_from->second, it_to->second);
 
     if (!route_info.has_value()) {
-        std::cerr << "No route found between " << stop_from << " and " << stop_to << std::endl;
         return std::nullopt;
     }
 
-    // Создаем результат маршрута
     RouteOptimal result;
     result.total_time = Minutes(route_info->weight);
 
-    // Получаем граф для доступа к информации о ребрах
     const auto& graph = graph_;
-
-    // Создаем маппинг vertex_id -> stop_name
     std::unordered_map<graph::VertexId, std::string> vertex_to_stop;
+
     for (const auto& [stop_name, vertex_id] : stop_ids_) {
         vertex_to_stop[vertex_id] = stop_name;
     }
 
-    // Заполняем элементы маршрута
     for (const auto edge_id : route_info->edges) {
+
         const auto& edge = graph.GetEdge(edge_id);
 
-        // Проверяем тип ребра по имени (пустая строка для ребер ожидания)
-        if (edge.name.empty()) {
-            // Ребро ожидания - находим остановку по from вершине
+        if (edge.from % 2 == 0 && edge.to == edge.from + 1){
+        //if (edge.cnt == 0) {
+            // Ребро ожидания
             auto stop_it = vertex_to_stop.find(edge.from);
             if (stop_it != vertex_to_stop.end()) {
                 RouteOptimal::WaitItem wait_item;
-                // Используем RequestHandler для получения указателя на остановку
-                wait_item.stop_ptr = request_handler.GetStopByName(stop_it->second);
+                wait_item.stop_ptr = catalogue.GetStop(stop_it->second);
                 wait_item.time = Minutes(edge.weight);
 
                 if (wait_item.stop_ptr) {
                     result.items.push_back(wait_item);
-                } else {
-                    std::cerr << "Warning: Stop pointer is null for vertex " << edge.from << std::endl;
                 }
             }
         } else {
             // Ребро автобуса
             RouteOptimal::BusItem bus_item;
-            // Используем RequestHandler для получения указателя на автобус
-            bus_item.bus_ptr = request_handler.GetBusByName(edge.name);
+            bus_item.bus_ptr = catalogue.GetBus(edge.name);
             bus_item.time = Minutes(edge.weight);
             bus_item.span_count = edge.cnt;
 
             if (bus_item.bus_ptr) {
                 result.items.push_back(bus_item);
-            } else {
-                std::cerr << "Warning: Bus pointer is null for bus " << edge.name << std::endl;
             }
         }
     }
 
     return result;
 }
-
 
 } // namespace transport_catalogue

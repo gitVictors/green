@@ -23,13 +23,13 @@ class JsonReader {
 public:
     // Конструктор, принимающий входной поток (std::cin в main.cpp)
     explicit JsonReader(std::istream& input, transport_catalogue::TransportCatalogue& catalogue, renderer::MapRenderer& render_,
-                        transport_catalogue::RouterFind& router );
+                        transport_catalogue::RouterFindPtr& router );
 
     // Заполняет транспортный каталог данными из JSON
     void FillCatalogue(transport_catalogue::TransportCatalogue& catalogue);
 
     // Новые методы для парсинга данных
-    void ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue, transport_catalogue::RouterFind& router) const;
+    void ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue, transport_catalogue::RouterFindPtr& router) const;
 
    // renderer::RenderSettings ParseRenderSettings(const json::Dict& request_map) const;
 
@@ -49,11 +49,11 @@ public:
 
     json::Node JsonRequest(const json::Node& json_request, request_handler::RequestHandler& request_handler);
 
-    transport_catalogue::RouterFind FillRoutingSettings(const json::Node& settings) const ;
+    // transport_catalogue::RouterFind FillRoutingSettings(const json::Node& settings) const ;
 
     void  HandRenderSettings ();
 
-    void ParseRouterSetting ( transport_catalogue::RouterFind& router, const transport_catalogue::TransportCatalogue& catalogue) const;
+    void ParseRouterSetting (  const transport_catalogue::TransportCatalogue& catalogue, transport_catalogue::RouterFindPtr& router) const;
 
 private:
 
@@ -72,7 +72,7 @@ private:
     json::Node null_node_ = nullptr;
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных
     renderer::MapRenderer& render_;
-    transport_catalogue::RouterFind& router_;
+    transport_catalogue::RouterFindPtr& router_;
 
 };
 

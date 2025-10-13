@@ -135,12 +135,13 @@ int main() {
     //  Инициализация компонентов
     json::Node json_input_request;
     transport_catalogue::TransportCatalogue catalogue;
-    transport_catalogue::RouterFind router;
     renderer::MapRenderer renderer;
+    // transport_catalogue::RouterFind router;
+    transport_catalogue::RouterFindPtr router_ptr;
 
-    request_handler::RequestHandler request_handler(catalogue, renderer, router); //создаем обработчик
+    request_handler::RequestHandler request_handler(catalogue, renderer, router_ptr); //создаем обработчик
 
-    json_reader::JsonReader json_reader(std::cin, catalogue, renderer, router);
+    json_reader::JsonReader json_reader(std::cin, catalogue, renderer, router_ptr);
 
     //  Загрузка данных в транспортный каталог
     try {

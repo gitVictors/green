@@ -2,6 +2,7 @@
 //#include <istream>
 #include "request_handler.h"
 #include "json_reader.h"
+#include "transport_router.h"
 
 /*
  * Здесь можно было бы разместить код обработчика запросов к базе, содержащего логику, которую не
@@ -13,8 +14,10 @@
 
 namespace request_handler {
 
-RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFind& router):
-    catalogue_(catalogue), render_(render), router_(router){
+RequestHandler::RequestHandler (transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFindPtr& router):
+    catalogue_(catalogue),
+    render_(render),
+    router_(router){
 }
 
 
@@ -38,13 +41,18 @@ svg::Document RequestHandler::RenderMap() const {
 }
 
 
-const std::optional<graph::Router<double>::RouteInfo> RequestHandler::GetOptimalRoute(const std::string_view stop_from, const std::string_view stop_to) const {
-    return router_.FindRoute(stop_from, stop_to);
+std::optional<transport_catalogue::RouteOptimal> RequestHandler::GetOptimalRoute(
+    std::string_view stop_from,
+    std::string_view stop_to) const
+{
+    // return router_.FindRoute(stop_from, stop_to);
+    return router_->FindRouteDirect(stop_from, stop_to, catalogue_);
 }
 
-const graph::DirectedWeightedGraph<double>& RequestHandler::GetRouterGraph() const {
-    return router_.GetGraph();
-}
+
+// const graph::DirectedWeightedGraph<double>& RequestHandler::GetRouterGraph() const {
+//     return router_.GetGraph();
+// }
 
 }//namespace
 

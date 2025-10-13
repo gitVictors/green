@@ -1,7 +1,7 @@
 #pragma once
 
 #include "transport_catalogue.h"
-#include "json_reader.h"
+// #include "json_reader.h"
 #include "domain.h"
 #include "svg.h"
 #include "map_renderer.h"
@@ -24,7 +24,8 @@ namespace request_handler {
 class RequestHandler {
 public:
     // Конструктор: принимает ссылку на транспортный каталог и, возможно, JSON-ридер
-    RequestHandler(transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render, transport_catalogue::RouterFind& router);
+    RequestHandler(transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render,
+                   transport_catalogue::RouterFindPtr& router);
 
     // === Методы для обработки запросов ===
 
@@ -53,9 +54,11 @@ public:
 
     svg::Document RenderMap() const;
 
-    const std::optional<graph::Router<double>::RouteInfo> GetOptimalRoute(const std::string_view stop_from, const std::string_view stop_to) const;
+    std::optional<transport_catalogue::RouteOptimal> GetOptimalRoute(
+        std::string_view from,
+        std::string_view to) const;
 
-    const graph::DirectedWeightedGraph<double>& GetRouterGraph() const;
+    // const graph::DirectedWeightedGraph<double>& GetRouterGraph() const;
 
     const domain::Stop* GetStopByName(std::string_view name) const {
         return catalogue_.GetStop(name);
@@ -65,11 +68,12 @@ public:
         return catalogue_.GetBus(name);
     }
 
+
 private:
 
     transport_catalogue::TransportCatalogue& catalogue_; // Основной каталог данных
     renderer::MapRenderer& render_;
-    transport_catalogue::RouterFind& router_;
+    transport_catalogue::RouterFindPtr& router_;
 
 };
 

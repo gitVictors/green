@@ -1,12 +1,20 @@
 #pragma once
 
+#include <memory>
+#include <chrono>
+#include <variant>
+
 #include "router.h"
 #include "transport_catalogue.h"
-
-#include <memory>
+// #include "request_handler.h"
 
 
 namespace transport_catalogue {
+
+struct Router_Setting {
+    int  bus_wait_time ;
+    double bus_velocity;
+};
 
 using Minutes = std::chrono::duration<double, std::chrono::minutes::period>;
 
@@ -33,44 +41,30 @@ struct RouteOptimal {
 class RouterFind {
 public:
 
-    RouterFind() = default;
+    // RouterFind() = default;
 
-    RouterFind(const int bus_wait_time, const double bus_velocity)
-        : bus_wait_time_(bus_wait_time)
-        , bus_velocity_(bus_velocity) {}
+    // RouterFind(const int bus_wait_time, const double bus_velocity)
+    //     : bus_wait_time_(bus_wait_time)
+    //     , bus_velocity_(bus_velocity) {}
 
 
-    // Новые методы для получения информации о ребрах
-    int GetWaitTime() const { return bus_wait_time_; }
+    RouterFind(struct Router_Setting settings, const TransportCatalogue& db):
+        bus_wait_time_ (settings.bus_wait_time)
+        ,bus_velocity_ (settings.bus_velocity)
 
-    // const std::map<std::string, graph::VertexId, std::less<>>& GetStopIds() const {
-    //         return stop_ids_;
-    // }
+    {
 
-    // // Метод для получения информации о автобусе для ребра
-    // std::string GetBusNameForEdge(graph::EdgeId edge_id) const {
-    //     if (edge_to_bus_.count(edge_id)) {
-    //         return edge_to_bus_.at(edge_id);
-    //     }
-    //     return "";
-    // }
+        BuildGraph(db);
+    }
 
-    // // Метод для получения span_count для ребра
-    // int GetSpanCountForEdge(graph::EdgeId edge_id) const {
-    //     if (edge_to_span_count_.count(edge_id)) {
-    //         return edge_to_span_count_.at(edge_id);
-    //     }
-    //     return 1;
-    // }
 
-    graph::DirectedWeightedGraph<double>& BuildGraph(const TransportCatalogue& catalogue);
-    std::optional<graph::Router<double>::RouteInfo> FindRoute( std::string_view stop_from,  std::string_view stop_to) const;
-    const graph::DirectedWeightedGraph<double>& GetGraph() const;
+    std::optional<RouteOptimal> FindRouteDirect( std::string_view stop_from, std::string_view stop_to, const TransportCatalogue& catalogue) const;
 
-    std::optional<graph::Router<double>::RouteInfo> FindRoute_m( std::string_view stop_from,  std::string_view stop_to,
-                                                                const TransportCatalogue& catalogue) const;
 
 private:
+
+    graph::DirectedWeightedGraph<double>& BuildGraph(const TransportCatalogue& catalogue);
+
     int bus_wait_time_ = 0;
     double bus_velocity_ = 0.0;
 
@@ -78,10 +72,9 @@ private:
     std::map<std::string, graph::VertexId, std::less<>> stop_ids_;
     std::unique_ptr<graph::Router<double>> router_;
 
-    // Новые поля для хранения информации о ребрах
-    // std::unordered_map<graph::EdgeId, std::string> edge_to_bus_;
-    // std::unordered_map<graph::EdgeId, int> edge_to_span_count_;
 
 };
+
+using RouterFindPtr = std::unique_ptr<RouterFind>;
 
 } //namespace transport_catalogue

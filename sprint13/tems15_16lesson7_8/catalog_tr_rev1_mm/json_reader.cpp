@@ -15,7 +15,7 @@ using namespace json;
 using namespace std;
 
 JsonReader::JsonReader (std::istream& input, transport_catalogue::TransportCatalogue& catalogue,  renderer::MapRenderer& render,
-                                transport_catalogue::RouterFind& router  ):
+                                transport_catalogue::RouterFindPtr& router  ):
     doc_input_( json::Load(input)),
     catalogue_(catalogue),
     render_ (render),
@@ -188,58 +188,56 @@ json::Node JsonReader::JsonRequest(const json::Node& json_request, request_handl
                 const int id = request.at("id"s).AsInt();
                 const auto from = request.at("from"s).AsString();
                 const auto to = request.at("to"s).AsString();
+
                 const auto& route_opt = request_handler.GetOptimalRoute(from, to);
 
-                if (!route_opt) {
-                    builder
-                        .Key("request_id"s).Value(id)
-                        .Key("error_message"s).Value("not found"s);
-                }else {
+                    if (!route_opt.has_value()) {
+                        builder
+                            .Key("request_id"s).Value(id)
+                            .Key("error_message"s).Value("not found"s);
+                    } else {
+                        const auto& route = route_opt.value();
 
-                    json::Array items;
-                    double total_time = 0.0;
-                    const auto& route = route_opt.value();
+                        // Создаем массив для элементов маршрута
+                        Array items;
 
-                    for (const auto edge_id : route.edges) {
+                        // Заполняем элементы маршрута
+                        for (const auto& item : route.items) {
 
-                        const auto& edge = request_handler.GetRouterGraph().GetEdge(edge_id);
-                        const bool is_wait_edge = (edge.cnt == 0); //(edge.weight == request_handler.GetBusWaitTim);
+                            if (std::holds_alternative<transport_catalogue::RouteOptimal::WaitItem>(item)) {
+                                // Элемент ожидания
+                                const auto& wait_item = std::get<transport_catalogue::RouteOptimal::WaitItem>(item);
 
-                        json::Node item_node;
-                        if (is_wait_edge) {
-                            // Элемент ожидания
-                            item_node = json::Builder{}
-                                                .StartDict()
-                                                    .Key("type"s).Value("Wait"s)
-                                                    .Key("stop_name"s).Value(edge.name)  // имя остановки
-                                                    .Key("time"s).Value(edge.weight)
-                                            .EndDict().
-                                        Build();
+                                // Создаем словарь для элемента ожидания
+                                Dict wait_dict;
+                                wait_dict["type"s] = "Wait"s;
+                                wait_dict["stop_name"s] = wait_item.stop_ptr->name;
+                                wait_dict["time"s] = wait_item.time.count();
 
-                        } else {
-                            // Элемент поездки на автобусе
-                            item_node = json::Builder{}
-                                                .StartDict()
-                                                .Key("type"s).Value("Bus"s)
-                                                .Key("bus"s).Value(edge.name)        // имя автобуса
-                                                .Key("span_count"s).Value(static_cast<int>(edge.cnt))
-                                                .Key("time"s).Value(edge.weight)
-                                             .EndDict().
-                                         Build();
+                                items.push_back(std::move(wait_dict));
+
+                            } else {
+                                // Элемент поездки на автобусе
+                                const auto& bus_item = std::get<transport_catalogue::RouteOptimal::BusItem>(item);
+
+                                // Создаем словарь для элемента автобуса
+                                Dict bus_dict;
+                                bus_dict["type"s] = "Bus"s;
+                                bus_dict["bus"s] = bus_item.bus_ptr->name;
+                                bus_dict["span_count"s] = static_cast<int>(bus_item.span_count);
+                                bus_dict["time"s] = bus_item.time.count();
+
+                                items.push_back(std::move(bus_dict));
+
+                            }
                         }
-
-                        items.push_back(std::move(item_node));
-                        total_time += edge.weight;
-                    }
-
-                    builder
-                        .Key("request_id"s).Value(id)
-                        .Key("total_time"s).Value(total_time)
-                        .Key("items"s).Value(std::move(items));
+                        // Формируем окончательный ответ
+                        builder
+                            .Key("request_id"s).Value(id)
+                            .Key("total_time"s).Value(route.total_time.count())
+                            .Key("items"s).Value(std::move(items));
 
                 }
-
-
             }
             else {
                 builder.Key("error_message").Value("unknown request type: "s + type);
@@ -303,7 +301,7 @@ const json::Node& JsonReader::GetRoutingSettings() const {
 }
 
 // Реализации ParseStops, ParseBuses, ParseDistances...
-void JsonReader::ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue, transport_catalogue::RouterFind& router) const {
+void JsonReader::ParseBaseRequests(transport_catalogue::TransportCatalogue& catalogue, transport_catalogue::RouterFindPtr& router) const {
 
     const json::Node& root = doc_input_.GetRoot();
     if (!root.IsMap()) return;
@@ -316,22 +314,29 @@ void JsonReader::ParseBaseRequests(transport_catalogue::TransportCatalogue& cata
     ParseStops(catalogue, base_requests);
     ParseBuses(catalogue, base_requests);
     ParseDistances(catalogue, base_requests);
-    ParseRouterSetting (router, catalogue);
+    ParseRouterSetting ( catalogue, router);
 }
 
-void JsonReader::ParseRouterSetting (transport_catalogue::RouterFind& router, const transport_catalogue::TransportCatalogue& catalogue) const{
+void JsonReader::ParseRouterSetting (const transport_catalogue::TransportCatalogue& catalogue, transport_catalogue::RouterFindPtr& router) const{
 
     const json::Node& routing_settings_node = GetRoutingSettings() ;
 
     if (!routing_settings_node.IsNull()) {
+
         // Создаем новый объект RouterFind с настройками и каталогом
-        router = transport_catalogue::RouterFind(
-            routing_settings_node.AsMap().at("bus_wait_time").AsInt(),
-            routing_settings_node.AsMap().at("bus_velocity").AsDouble()
-            );
+        // router = transport_catalogue::RouterFind(
+        //     routing_settings_node.AsMap().at("bus_wait_time").AsInt(),
+        //     routing_settings_node.AsMap().at("bus_velocity").AsDouble()
+        //     );
+
+        struct transport_catalogue::Router_Setting router_setting;
+        router_setting.bus_wait_time = routing_settings_node.AsMap().at("bus_wait_time").AsInt();
+        router_setting.bus_velocity = routing_settings_node.AsMap().at("bus_velocity").AsDouble();
 
         // Строим граф на основе каталога
-        router.BuildGraph(catalogue);
+       // router->BuildGraph(catalogue);
+        router = std::make_unique<transport_catalogue::RouterFind>(router_setting, catalogue);
+
     }
 }
 
@@ -459,13 +464,68 @@ svg::Color JsonReader::ParseColor(const json::Node& color_node) const {
     return render_settings;
 }
 
- transport_catalogue::RouterFind JsonReader::FillRoutingSettings(const json::Node& settings) const {
-     //transport::Router routing_settings;
-     return transport_catalogue::RouterFind{ settings.AsMap().at("bus_wait_time"s).AsInt(), settings.AsMap().at("bus_velocity"s).AsDouble() };
- }
+ // transport_catalogue::RouterFind JsonReader::FillRoutingSettings(const json::Node& settings) const {
+ //     //transport::Router routing_settings;
+ //     return transport_catalogue::RouterFind{ settings.AsMap().at("bus_wait_time"s).AsInt(), settings.AsMap().at("bus_velocity"s).AsDouble() };
+ // }
 
 
 }//namespace
 
 
 
+// using namespace std::string_literals;
+
+// const int id = request.at("id"s).AsInt();
+// const auto from = request.at("from"s).AsString();
+// const auto to = request.at("to"s).AsString();
+// const auto& route_opt = request_handler.GetOptimalRoute(from, to);
+
+// if (!route_opt) {
+//     builder
+//         .Key("request_id"s).Value(id)
+//         .Key("error_message"s).Value("not found"s);
+// }else {
+
+//     json::Array items;
+//     double total_time = 0.0;
+//     const auto& route = route_opt.value();
+
+//     for (const auto edge_id : route.edges) {
+
+//         const auto& edge = request_handler.GetRouterGraph().GetEdge(edge_id);
+//         const bool is_wait_edge = (edge.cnt == 0); //(edge.weight == request_handler.GetBusWaitTim);
+
+//         json::Node item_node;
+//         if (is_wait_edge) {
+//             // Элемент ожидания
+//             item_node = json::Builder{}
+//                             .StartDict()
+//                             .Key("type"s).Value("Wait"s)
+//                             .Key("stop_name"s).Value(edge.name)  // имя остановки
+//                             .Key("time"s).Value(edge.weight)
+//                             .EndDict().
+//                         Build();
+
+//         } else {
+//             // Элемент поездки на автобусе
+//             item_node = json::Builder{}
+//                             .StartDict()
+//                             .Key("type"s).Value("Bus"s)
+//                             .Key("bus"s).Value(edge.name)        // имя автобуса
+//                             .Key("span_count"s).Value(static_cast<int>(edge.cnt))
+//                             .Key("time"s).Value(edge.weight)
+//                             .EndDict().
+//                         Build();
+//         }
+
+//         items.push_back(std::move(item_node));
+//         total_time += edge.weight;
+//     }
+
+//     builder
+//         .Key("request_id"s).Value(id)
+//         .Key("total_time"s).Value(total_time)
+//         .Key("items"s).Value(std::move(items));
+
+// }
