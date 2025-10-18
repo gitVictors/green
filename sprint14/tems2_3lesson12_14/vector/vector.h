@@ -175,11 +175,8 @@ public:
 
         RawMemory<T> new_data(new_capacity);
 
-        if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
-            std::uninitialized_move_n(data_.GetAddress(), size_, new_data.GetAddress());
-        } else {
-            std::uninitialized_copy_n(data_.GetAddress(), size_, new_data.GetAddress());
-        }
+        // Переносим элементы после позиции вставки
+        MoveOrCopyElements(data_.GetAddress(), size_ , new_data.GetAddress());
 
         std::destroy_n(data_.GetAddress(), size_);
         data_.Swap(new_data);
@@ -236,13 +233,7 @@ public:
 
     template <typename... Args>
     T& EmplaceBack(Args&&... args) {
-        if (size_ == Capacity()) {
-            return EmplaceBackWithRealloc(std::forward<Args>(args)...);
-        } else {
-            // Есть место - строгая гарантия обеспечивается легко
-            new (data_ + size_) T(std::forward<Args>(args)...);
-            return *(data_ + size_++);
-        }
+        return *Emplace(end(), std::forward<Args>(args)...);
     }
 
     using iterator = T*;
@@ -279,23 +270,14 @@ public:
             RawMemory<T> new_data(new_capacity);
 
             // Переносим элементы до позиции вставки
-            if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
-                std::uninitialized_move_n(data_.GetAddress(), offset, new_data.GetAddress());
-            } else {
-                std::uninitialized_copy_n(data_.GetAddress(), offset, new_data.GetAddress());
-            }
+            MoveOrCopyElements(data_.GetAddress() , offset, new_data.GetAddress());
 
             // Создаем новый элемент
             new (new_data + offset) T(std::forward<Args>(args)...);
 
             // Переносим элементы после позиции вставки
-            if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
-                std::uninitialized_move_n(data_.GetAddress() + offset, size_ - offset,
-                                          new_data.GetAddress() + offset + 1);
-            } else {
-                std::uninitialized_copy_n(data_.GetAddress() + offset, size_ - offset,
-                                          new_data.GetAddress() + offset + 1);
-            }
+            MoveOrCopyElements(data_.GetAddress() + offset, size_ - offset,
+                               new_data.GetAddress() + offset + 1);
 
             std::destroy_n(data_.GetAddress(), size_);
             data_.Swap(new_data);
@@ -347,30 +329,13 @@ public:
 
 private:
 
-
-    template <typename... Args>
-    T& EmplaceBackWithRealloc(Args&&... args) {
-        size_t new_capacity = Capacity() == 0 ? 1 : Capacity() * 2;
-        RawMemory<T> new_data(new_capacity);
-
-        // Копируем существующие элементы
+    void MoveOrCopyElements(T* src, size_t count, T* dest) {
         if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
-            std::uninitialized_move_n(data_.GetAddress(), size_, new_data.GetAddress());
+            std::uninitialized_move_n(src, count, dest);
         } else {
-            std::uninitialized_copy_n(data_.GetAddress(), size_, new_data.GetAddress());
+            std::uninitialized_copy_n(src, count, dest);
         }
-
-        // Создаем новый элемент
-        T* new_element = new (new_data + size_) T(std::forward<Args>(args)...);
-
-        // Завершаем операцию
-        std::destroy_n(data_.GetAddress(), size_);
-        data_.Swap(new_data);
-        ++size_;
-
-        return *new_element;
     }
-
 
 
     RawMemory<T> data_;
