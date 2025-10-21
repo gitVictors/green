@@ -5,28 +5,22 @@
 
 using namespace std;
 
-namespace img_lib {
-
 byte Negate(byte b) {
-    return byte(255 - static_cast<unsigned char>(b));
+    return byte(255 - to_integer<int>(b));
 }
 
-Color Negate(Color c) {
-    return Color{Negate(c.r), Negate(c.g), Negate(c.b), c.a};
+img_lib::Color Negate(img_lib::Color c) {
+    return {Negate(c.r), Negate(c.g), Negate(c.b), c.a};
 }
 
-void NegateInplace(Image& image) {
+void NegateInplace(img_lib::Image& image) {
     for (int y = 0; y < image.GetHeight(); ++y) {
-        Color* line = image.GetLine(y);
+        img_lib::Color* line = image.GetLine(y);
         for (int x = 0; x < image.GetWidth(); ++x) {
             line[x] = Negate(line[x]);
         }
     }
 }
-
-
-}
-
 
 int main(int argc, const char** argv) {
     if (argc != 3) {
@@ -40,7 +34,7 @@ int main(int argc, const char** argv) {
         return 2;
     }
 
-    img_lib::NegateInplace(image);
+    NegateInplace(image);
 
     if (!img_lib::SavePPM(argv[2], image)) {
         cerr << "Error saving image"sv << endl;

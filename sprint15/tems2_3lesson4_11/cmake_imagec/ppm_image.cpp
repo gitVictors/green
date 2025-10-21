@@ -11,52 +11,31 @@ namespace img_lib {
 static const string_view PPM_SIG = "P6"sv;
 static const int PPM_MAX = 255;
 
-
-
-// реализуйте эту функцию самостоятельно
 bool SavePPM(const Path& file, const Image& image) {
-    // проверяем, что изображение валидное
-    if (!image) {
-        return false;
-    }
+    ofstream out(file, ios::binary);
 
-    // открываем файл для записи в двоичном режиме
-    ofstream ofs(file, ios::binary);
-    if (!ofs) {
-        return false;
-    }
+    out << PPM_SIG << '\n' << image.GetWidth() << ' ' << image.GetHeight() << '\n' << PPM_MAX << '\n';
 
-    const int width = image.GetWidth();
-    const int height = image.GetHeight();
+    const int w = image.GetWidth();
+    const int h = image.GetHeight();
+    std::vector<char> buff(w * 3);
 
-    // записываем заголовок PPM файла
-    ofs << PPM_SIG << '\n'
-        << width << ' ' << height << '\n'
-        << PPM_MAX << '\n';
-
-    // создаем временный буфер для хранения строки пикселей
-    std::vector<char> buffer(width * 3);
-
-    for (int y = 0; y < height; ++y) {
+    for (int y = 0; y < h; ++y) {
         const Color* line = image.GetLine(y);
-
-        // преобразуем цвета из формата Color в последовательность байтов
-        for (int x = 0; x < width; ++x) {
-            buffer[x * 3 + 0] = static_cast<char>(line[x].r);
-            buffer[x * 3 + 1] = static_cast<char>(line[x].g);
-            buffer[x * 3 + 2] = static_cast<char>(line[x].b);
+        for (int x = 0; x < w; ++x) {
+            buff[x * 3 + 0] = static_cast<char>(line[x].r);
+            buff[x * 3 + 1] = static_cast<char>(line[x].g);
+            buff[x * 3 + 2] = static_cast<char>(line[x].b);
         }
-
-        // записываем строку в файл
-        ofs.write(buffer.data(), width * 3);
+        out.write(buff.data(), w * 3);
     }
 
-    return ofs.good();
+    return out.good();
 }
 
 Image LoadPPM(const Path& file) {
     // открываем поток с флагом ios::binary
-    // поскольку будем читать даные в двоичном формате
+    // поскольку будем читать данные в двоичном формате
     ifstream ifs(file, ios::binary);
     std::string sign;
     int w, h, color_max;
