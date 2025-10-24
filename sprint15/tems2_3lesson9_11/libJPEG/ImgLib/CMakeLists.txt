@@ -21,7 +21,7 @@ add_library(ImgLib STATIC ${IMGLIB_MAIN_FILES}
             ${IMGLIB_FORMAT_FILES})
 
 # Include-директории теперь включают LibJPEG
-target_include_directories(ImgLib PUBLIC "${LIBJPEG_DIR}/include")
+target_include_directories(ImgLib PUBLIC "../${LIBJPEG_DIR}")
 
 # Флаг INTERFACE обозначает видимость параметра - только для зависимых целей.
 # Для самой ImgLib не нужно указывать зависимости компоновки, поскольку
