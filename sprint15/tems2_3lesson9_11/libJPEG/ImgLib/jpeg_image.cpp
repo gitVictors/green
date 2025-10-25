@@ -27,9 +27,11 @@ my_error_exit (j_common_ptr cinfo) {
     longjmp(myerr->setjmp_buffer, 1);
 }
 
+
 // В эту функцию вставлен код примера из библиотеки libjpeg.
 // Измените его, чтобы адаптировать к переменным file и image.
 // Задание качества уберите - будет использовано качество по умолчанию
+#if 0
 bool SaveJPEG(const Path& file, const Image& image) {
     /* This struct contains the JPEG compression parameters and pointers to
     * working space (which is allocated as needed by the JPEG library).
@@ -135,6 +137,67 @@ bool SaveJPEG(const Path& file, const Image& image) {
 
     /* And we're done! */
 }
+#endif
+
+bool SaveJPEG(const Path& file, const Image& image) {
+    jpeg_compress_struct cinfo;
+    jpeg_error_mgr jerr;
+
+    FILE* outfile;
+    JSAMPROW row_pointer[1];
+    int row_stride;
+
+    // Инициализация
+    cinfo.err = jpeg_std_error(&jerr);
+    jpeg_create_compress(&cinfo);
+
+// Открытие файла (с поддержкой Windows)
+#ifdef _MSC_VER
+    if ((outfile = _wfopen(file.wstring().c_str(), L"wb")) == NULL) {
+#else
+    if ((outfile = fopen(file.string().c_str(), "wb")) == NULL) {
+#endif
+        return false;
+    }
+
+    jpeg_stdio_dest(&cinfo, outfile);
+
+    // Параметры изображения
+    cinfo.image_width = image.GetWidth();
+    cinfo.image_height = image.GetHeight();
+    cinfo.input_components = 3;  // RGB
+    cinfo.in_color_space = JCS_RGB;
+
+    jpeg_set_defaults(&cinfo);
+    // Качество по умолчанию (убрана строка jpeg_set_quality)
+
+    jpeg_start_compress(&cinfo, TRUE);
+
+    // Подготовка буфера для строки изображения
+    row_stride = image.GetWidth() * 3;
+    std::vector<JSAMPLE> row_buffer(row_stride);
+
+    while (cinfo.next_scanline < cinfo.image_height) {
+        int y = cinfo.next_scanline;
+        const Color* line = image.GetLine(y);
+
+        // Конвертация Color -> RGB байты
+        for (int x = 0; x < image.GetWidth(); ++x) {
+            row_buffer[x * 3] = static_cast<JSAMPLE>(line[x].r);
+            row_buffer[x * 3 + 1] = static_cast<JSAMPLE>(line[x].g);
+            row_buffer[x * 3 + 2] = static_cast<JSAMPLE>(line[x].b);
+        }
+
+        row_pointer[0] = row_buffer.data();
+        jpeg_write_scanlines(&cinfo, row_pointer, 1);
+    }
+
+    jpeg_finish_compress(&cinfo);
+    fclose(outfile);
+    jpeg_destroy_compress(&cinfo);
+
+    return true;
+}
 
 // тип JSAMPLE фактически псевдоним для unsigned char
 void SaveSсanlineToImage(const JSAMPLE* row, int y, Image& out_image) {
@@ -158,7 +221,7 @@ Image LoadJPEG(const Path& file) {
     // Под Visual Studio это может быть опасно, и нужно применить
     // нестандартную функцию _wfopen
 #ifdef _MSC_VER
-    if ((infile = _wfopen(file.wstring().c_str(), "rb")) == NULL) {
+    if ((infile = _wfopen(file.wstring().c_str(), L"rb")) == NULL) {
 #else
     if ((infile = fopen(file.string().c_str(), "rb")) == NULL) {
 #endif

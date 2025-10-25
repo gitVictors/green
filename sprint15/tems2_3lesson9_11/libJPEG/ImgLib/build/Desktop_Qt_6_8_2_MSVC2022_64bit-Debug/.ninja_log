@@ -1,0 +1,8 @@
+# ninja log v6
+8	430	7831004648280509	CMakeFiles/ImgLib.dir/ppm_image.cpp.obj	deefccf778bef134
+2	150	7831004648220511	CMakeFiles/ImgLib.dir/img_lib.cpp.obj	73838288397c3f4e
+1	8	7831004647705467	clean	9c4b4372737ab8da
+1	216	7831014631733883	build.ninja	2e8a14213602844f
+1	8	7831014671342864	clean	9c4b4372737ab8da
+2	428	7831014671862864	CMakeFiles/ImgLib.dir/img_lib.cpp.obj	73838288397c3f4e
+8	710	7831014671922867	CMakeFiles/ImgLib.dir/ppm_image.cpp.obj	deefccf778bef134

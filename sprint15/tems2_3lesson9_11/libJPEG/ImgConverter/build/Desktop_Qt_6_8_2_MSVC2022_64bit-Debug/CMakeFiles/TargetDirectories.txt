@@ -1,0 +1,6 @@
+C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgConverter/build/Desktop_Qt_6_8_2_MSVC2022_64bit-Debug/CMakeFiles/imgconv.dir
+C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgConverter/build/Desktop_Qt_6_8_2_MSVC2022_64bit-Debug/CMakeFiles/edit_cache.dir
+C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgConverter/build/Desktop_Qt_6_8_2_MSVC2022_64bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgConverter/build/Desktop_Qt_6_8_2_MSVC2022_64bit-Debug/ImgLibBuildDir/CMakeFiles/ImgLib.dir
+C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgConverter/build/Desktop_Qt_6_8_2_MSVC2022_64bit-Debug/ImgLibBuildDir/CMakeFiles/edit_cache.dir
+C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgConverter/build/Desktop_Qt_6_8_2_MSVC2022_64bit-Debug/ImgLibBuildDir/CMakeFiles/rebuild_cache.dir

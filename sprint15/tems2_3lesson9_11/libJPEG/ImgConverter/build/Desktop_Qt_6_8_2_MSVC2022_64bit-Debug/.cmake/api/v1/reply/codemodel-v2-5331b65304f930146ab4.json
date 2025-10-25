@@ -1,0 +1,102 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "ImgLibBuildDir",
+					"jsonFile" : "directory-ImgLibBuildDir-Debug-21f9d389a241db1c393d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgLib",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Negate",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "ImgLib",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "ImgLib::@7c81c3c88117f9368b6f",
+					"jsonFile" : "target-ImgLib-Debug-a2173b2a4d814ea35836.json",
+					"name" : "ImgLib",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "imgconv::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-imgconv-Debug-a1b63b25f47e71ec071c.json",
+					"name" : "imgconv",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgConverter/build/Desktop_Qt_6_8_2_MSVC2022_64bit-Debug",
+		"source" : "C:/home/Yandex.Praktikum/green/sprint15/tems2_3lesson9_11/libJPEG/ImgConverter"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
