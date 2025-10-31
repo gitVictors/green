@@ -22,3 +22,6 @@ double FormulaAST::Execute() const {
 Мы будем тестировать то, что вы реализовали в файле FormulaAST.cpp. 
 Мы протестируем метод double FormulaAST::Execute(). Для этого вызовем метод FormulaAST ParseFormulaAST(const std::string& in_str);, чтобы создать объект FormulaAST. Строка in_str будет содержать синтаксически корректную формулу. Затем у полученного объекта FormulaAST будем вызывать метод Execute().
 Возможные тесты вы найдёте в файле main.cpp.
+
+Инструкция для windows
+https://std-viktor.yonote.ru/share/e7c29d93-9a01-49dc-b13e-34dec9889913
