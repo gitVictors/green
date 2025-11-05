@@ -32,11 +32,6 @@ private:
     };
 
     std::unordered_map<Position, std::unique_ptr<Cell>, PositionHash> cells_;
-    mutable std::optional<Size> cached_size_;
-
-    void InvalidateCache() const {
-        cached_size_.reset();
-    }
 
     Size CalculatePrintableSize() const;
     void Print(std::ostream& output, bool print_values) const;
