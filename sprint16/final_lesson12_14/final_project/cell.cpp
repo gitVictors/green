@@ -180,9 +180,9 @@ bool Cell::IsCacheValid() const {
     return cache_is_valid_;
 }
 
-Position Cell::GetPosition() const {
-    // return Position{0, 0}; // Заглушка - в реальной реализации нужно хранить позицию
-}
+// Position Cell::GetPosition() const {
+//     // return Position{0, 0}; // Заглушка - в реальной реализации нужно хранить позицию
+// }
 
 void Cell::UpdateDependencies(const std::vector<Position>& new_deps) {
     // TODO: реализовать обновление зависимостей
