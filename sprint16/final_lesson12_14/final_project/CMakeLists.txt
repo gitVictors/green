@@ -14,7 +14,7 @@ else()
     )
 endif()
 
-set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/antlr-4.12.0-complete.jar)
+set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/../../antlr4_runtime/antlr-4.12.0-complete.jar)
 include(${CMAKE_CURRENT_SOURCE_DIR}/FindANTLR.cmake)
 
 add_definitions(
@@ -23,7 +23,10 @@ add_definitions(
 )
 
 set(WITH_STATIC_CRT OFF CACHE BOOL "Visual C++ static CRT for ANTLR" FORCE)
-add_subdirectory(../../antlr4_runtime)
+# add_subdirectory(C:/home/Yandex.Praktikum/green/sprint16/antlr4_runtime )
+add_subdirectory(
+    ../../antlr4_runtime ${CMAKE_BINARY_DIR}/antlr4_runtime/dist
+)  # Source dir + binary dir
 
 antlr_target(FormulaParser Formula.g4 LEXER PARSER LISTENER)
 
