@@ -13,7 +13,7 @@ class Sheet;
 
 class Cell : public CellInterface {
 public:
-    Cell(Sheet& sheet);  // Добавлен параметр - ссылка на таблицу
+    Cell(Sheet& sheet, Position pos);
     ~Cell();
 
     void Set(std::string text); // override;
@@ -22,7 +22,6 @@ public:
     Value GetValue() const override;
     std::string GetText() const override;
 
-    // Новые методы для управления зависимостями
    // const std::unordered_set<Position, PositionHash>& GetReferencedCells() const override;
     std::vector<Position> GetReferencedCells() const override;
 
@@ -30,7 +29,7 @@ public:
     void RemoveDependent(Position pos);
     void InvalidateCache();
     bool IsCacheValid() const;
-    // Position GetPosition() const;
+    Position GetPosition() const;
 
 private:
     class Impl;
@@ -46,6 +45,7 @@ private:
 
     std::unique_ptr<Impl> impl_;
     Sheet& sheet_;  // Ссылка на таблицу для вычисления формул
+    Position position_;
 
     // Граф зависимостей
     std::unordered_set<Position, PositionHash> dependencies_;  // Ячейки, от которых зависит эта

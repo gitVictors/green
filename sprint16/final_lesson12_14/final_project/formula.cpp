@@ -23,7 +23,7 @@ public:
 
     }
 
-    Value Evaluate(const SheetInterface& sheet) const override {  // ИСПРАВЛЕНО: добавлен параметр sheet
+    Value Evaluate(const SheetInterface& sheet) const override {  //  добавлен параметр sheet
         try {
             // Создаем функцию для получения значения ячейки
             auto get_cell_value = [&sheet](Position pos) -> double {
@@ -57,11 +57,12 @@ public:
                     throw FormulaError(FormulaError::Category::Value);
                 } else {
                     // Если ячейка содержит ошибку, пробрасываем её
-                    throw std::get<FormulaError>(value);
+                    // throw std::get<FormulaError>(value)
+                    throw FormulaError(FormulaError::Category::Arithmetic);
                 }
             };
 
-            double result = ast_.Execute(get_cell_value);  // ИСПРАВЛЕНО: передаем функцию
+            double result = ast_.Execute(get_cell_value);  //  передаем функцию
             return result;
 
         } catch (const FormulaError& e) {

@@ -24,3 +24,5 @@ build/
 *.exe
 *.obj
 *.zip
+*.lib
+*.dll

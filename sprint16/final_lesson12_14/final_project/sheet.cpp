@@ -14,24 +14,9 @@ using namespace std::literals;
 
 Sheet::~Sheet() {}
 
-// void Sheet::SetCell(Position pos, std::string text) {
-
-//     if (!pos.IsValid()) {
-//         throw InvalidPositionException("Invalid position");
-//     }
-
-//     // Создаем новую ячейку или получаем существующую
-//     auto& cell_ptr = cells_[pos];
-//     if (!cell_ptr) {
-//         cell_ptr = std::make_unique<Cell>(*this);
-//     }
-
-//     // Устанавливаем текст ячейки
-//     cell_ptr->Set(std::move(text));
-
-// }
 
 void Sheet::SetCell(Position pos, std::string text) {
+
     if (!pos.IsValid()) {
         throw InvalidPositionException("Invalid position");
     }
@@ -43,7 +28,7 @@ void Sheet::SetCell(Position pos, std::string text) {
         it->second->Set(std::move(text));
     } else {
         // Создаем новую ячейку
-        cells_[pos] = std::make_unique<Cell>(*this);
+        cells_[pos] = std::make_unique<Cell>(*this, pos);
         cells_[pos]->Set(std::move(text));
     }
 }
@@ -73,6 +58,7 @@ CellInterface* Sheet::GetCell(Position pos) {
 }
 
 void Sheet::ClearCell(Position pos) {
+
     if (!pos.IsValid()) {
         throw InvalidPositionException("Invalid position");
     }

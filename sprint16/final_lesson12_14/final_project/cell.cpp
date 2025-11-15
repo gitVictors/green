@@ -6,6 +6,7 @@
 #include <string>
 #include <optional>
 #include <memory>
+#include <cmath>
 
 // Базовый класс для реализации ячейки
 class Cell::Impl {
@@ -60,26 +61,31 @@ public:
         : formula_(ParseFormula(std::move(expression)))
         , sheet_(sheet) {}
     
+
     Value GetValue() const override {
 
-        // Если есть кэшированное значение, возвращаем его
         if (cached_value_.has_value()) {
             return cached_value_.value();
         }
 
-        try {
-            auto result = formula_->Evaluate(sheet_);
+        auto result = formula_->Evaluate(sheet_);
 
-            // Конвертируем Formula::Value в Cell::Value
-            if (std::holds_alternative<double>(result)) {
-                cached_value_ = std::get<double>(result);
+        if (std::holds_alternative<double>(result)) {
+            double value = std::get<double>(result);
+
+            // проверяем специальные значения
+            if (std::isinf(value)) {
+                // Бесконечность = арифметическая ошибка
+                cached_value_ = FormulaError(FormulaError::Category::Arithmetic);
+            } else if (std::isnan(value)) {
+                // NaN = арифметическая ошибка (0/0)
+                cached_value_ = FormulaError(FormulaError::Category::Arithmetic);
             } else {
-                cached_value_ = std::get<FormulaError>(result);
+                cached_value_ = value;
             }
-        } catch (const FormulaError& e) {
-            cached_value_ = e;
-        } catch (const std::exception&) {
-            cached_value_ = FormulaError(FormulaError::Category::Value);
+        } else {
+            // Уже FormulaError
+            cached_value_ = std::get<FormulaError>(result);
         }
 
         return cached_value_.value();
@@ -103,38 +109,77 @@ private:
     mutable std::optional<Value> cached_value_;
 };
 
-// Реализация методов Cell
-// Cell::Cell(Sheet& sheet)
-//     : impl_(std::make_unique<EmptyImpl>())
-//     , sheet_(sheet) {}
 
-Cell::Cell(Sheet& sheet)
+
+Cell::Cell(Sheet& sheet, Position pos)
     : impl_(std::make_unique<EmptyImpl>())
-    , sheet_(sheet) {}
+    , sheet_(sheet)
+    , position_(pos)
+{}
 
 Cell::~Cell() = default;
 
+
 void Cell::Set(std::string text) {
+
     if (text.empty()) {
         impl_ = std::make_unique<EmptyImpl>();
+        // Обновляем зависимости (удаляем все старые)
+        UpdateDependencies({});
         return;
     }
-    
-    // Проверяем, является ли текст формулой
-    if (text[0] == FORMULA_SIGN && text.length() > 1) {
-        // Это формула
-            std::string formula_expression = text.substr(1);
-            // impl_ = std::make_unique<FormulaImpl>(std::move(formula_expression));
-            impl_ = std::make_unique<FormulaImpl>(std::move(formula_expression), (SheetInterface&) sheet_);
 
-    } else if (text[0] == ESCAPE_SIGN) {
-        // Экранированный текст
-        impl_ = std::make_unique<TextImpl>(std::move(text));
-    } else {
-        // Обычный текст
-        impl_ = std::make_unique<TextImpl>(std::move(text));
+    // Создаем временную копию текущего состояния
+    auto old_impl = std::move(impl_);
+    auto old_dependencies = dependencies_;
+
+    try {
+        // Проверяем, является ли текст формулой
+        if (text[0] == FORMULA_SIGN && text.length() > 1) {
+            // Это формула
+            std::string formula_expression = text.substr(1);
+
+            // Создаем временную реализацию формулы для проверки зависимостей
+            auto temp_formula_impl = std::make_unique<FormulaImpl>(formula_expression, (SheetInterface&)sheet_);
+
+            // Получаем ссылки зависимостей
+            std::vector<Position> new_deps = temp_formula_impl->GetReferencedCells();
+
+            // Проверить циклические зависимости
+            CheckCircularDependencies(new_deps);
+
+
+            impl_ = std::move(temp_formula_impl);
+
+            // Обновляем граф зависимостей
+            UpdateDependencies(new_deps);
+
+        } else if (text[0] == ESCAPE_SIGN) {
+
+            impl_ = std::make_unique<TextImpl>(std::move(text));
+            // Обновляем зависимости (удаляем все старые)
+            UpdateDependencies({});
+        } else {
+            // Обычный текст
+            impl_ = std::make_unique<TextImpl>(std::move(text));
+            // Обновляем зависимости (удаляем все старые)
+            UpdateDependencies({});
+        }
+
+        // Инвалидируем кэш и зависимые ячейки
+        InvalidateCache();
+
+        // Обновляем размеры таблицы при необходимости
+        // (это должно быть реализовано в классе Sheet)
+
+    } catch (const std::exception& e) {
+        // В случае ошибки восстанавливаем предыдущее состояние
+        impl_ = std::move(old_impl);
+        dependencies_ = old_dependencies;
+        throw; // Пробрасываем исключение дальше
     }
 }
+
 
 void Cell::Clear() {
     impl_ = std::make_unique<EmptyImpl>();
@@ -180,19 +225,73 @@ bool Cell::IsCacheValid() const {
     return cache_is_valid_;
 }
 
-// Position Cell::GetPosition() const {
-//     // return Position{0, 0}; // Заглушка - в реальной реализации нужно хранить позицию
-// }
+Position Cell::GetPosition() const {
+    return position_;
+}
 
 void Cell::UpdateDependencies(const std::vector<Position>& new_deps) {
-    // TODO: реализовать обновление зависимостей
+    // Удаляем старые зависимости
+    for (const auto& old_dep : dependencies_) {
+        if (auto* cell = sheet_.GetCell(old_dep)) {
+            if (auto* concrete_cell = dynamic_cast<Cell*>(cell)) {
+                concrete_cell->RemoveDependent(GetPosition());
+            }
+        }
+    }
+
+    // Очищаем старые зависимости
+    dependencies_.clear();
+
+    // Добавляем новые зависимости
+    for (const auto& new_dep : new_deps) {
+        // Создаем ячейку, если она не существует
+        if (!sheet_.GetCell(new_dep)) {
+            sheet_.SetCell(new_dep, "");
+        }
+
+        if (auto* cell = sheet_.GetCell(new_dep)) {
+            if (auto* concrete_cell = dynamic_cast<Cell*>(cell)) {
+                concrete_cell->AddDependent(GetPosition());
+                dependencies_.insert(new_dep);
+            }
+        }
+    }
 }
 
 bool Cell::WouldCreateCycle(const Position& pos, std::unordered_set<Position, PositionHash>& visited) const {
-    // TODO: реализовать проверку циклических зависимостей
+    // Если достигли текущей ячейки - цикл найден
+    if (pos == GetPosition()) {
+        return true;
+    }
+
+    // Если уже посещали эту позицию - пропускаем
+    if (visited.count(pos)) {
+        return false;
+    }
+
+    visited.insert(pos);
+
+    // Получаем ячейку по позиции
+    if (auto* cell = sheet_.GetCell(pos)) {
+        if (auto* concrete_cell = dynamic_cast<Cell*>(cell)) {
+            // Рекурсивно проверяем все зависимости этой ячейки
+            for (const auto& dep : concrete_cell->GetReferencedCells()) {
+                if (WouldCreateCycle(dep, visited)) {
+                    return true;
+                }
+            }
+        }
+    }
+
     return false;
 }
 
 void Cell::CheckCircularDependencies(const std::vector<Position>& new_deps) const {
-    // TODO: реализовать проверку циклических зависимостей
+    std::unordered_set<Position, PositionHash> visited;
+
+    for (const auto& dep : new_deps) {
+        if (WouldCreateCycle(dep, visited)) {
+            throw CircularDependencyException("Обнаружена циклическая зависимость");
+        }
+    }
 }
